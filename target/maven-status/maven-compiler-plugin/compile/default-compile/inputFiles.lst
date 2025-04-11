@@ -3,6 +3,7 @@ C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\LogoutServlet
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\dao\DoctorDAO.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\dao\DiagnosisDAO.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\dao\NurseDAO.java
+C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\NurseDashboardServlet.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\util\DBConnection.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\AdminPasswordUpdateServlet.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\dao\UserDAO.java
@@ -11,6 +12,7 @@ C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\RegisterServl
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\nurse\PatientRegistrationServlet.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\filter\AuthenticationFilter.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\util\PasswordUtil.java
+C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\DoctorDashboardServlet.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\dao\PatientDAO.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\model\Patient.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\SignupServlet.java

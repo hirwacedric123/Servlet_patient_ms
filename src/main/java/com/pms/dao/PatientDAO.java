@@ -356,4 +356,129 @@ public class PatientDAO {
         
         return result;
     }
+    
+    /**
+     * Get all patients who don't have a diagnosis yet
+     * 
+     * @return list of patients without diagnosis
+     */
+    public List<Patient> getPatientsWithoutDiagnosis() {
+        // Query to get patients that don't have an entry in the diagnosis table
+        String sql = "SELECT p.* FROM patients p LEFT JOIN diagnosis d ON p.PatientID = d.PatientID WHERE d.DiagnosisID IS NULL";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Patient> patients = new ArrayList<>();
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Patient patient = new Patient();
+                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setUserID(rs.getInt("UserID"));
+                patient.setFirstName(rs.getString("FirstName"));
+                patient.setLastName(rs.getString("LastName"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                patient.setContactNumber(rs.getString("ContactNumber"));
+                patient.setAddress(rs.getString("Address"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                patient.setNurseID(rs.getInt("NurseID"));
+                patient.setSymptoms(rs.getString("Symptoms"));
+                patient.setReferrable(rs.getBoolean("IsReferrable"));
+                
+                patients.add(patient);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return patients;
+    }
+    
+    /**
+     * Calculate age from date of birth
+     * 
+     * @param dob date of birth
+     * @return calculated age
+     */
+    private int calculateAge(Date dob) {
+        if (dob == null) {
+            return 0;
+        }
+        
+        long dobTime = dob.getTime();
+        long currentTime = System.currentTimeMillis();
+        
+        // Calculate difference in milliseconds
+        long diff = currentTime - dobTime;
+        
+        // Convert to years
+        return (int) (diff / (1000L * 60 * 60 * 24 * 365));
+    }
+    
+    /**
+     * Get the name of the nurse who registered a patient
+     * 
+     * @param patientID the patient's ID
+     * @return nurse's name (first + last)
+     */
+    public String getRegisteringNurseName(int patientID) {
+        String sql = "SELECT n.FirstName, n.LastName FROM patients p JOIN nurses n ON p.NurseID = n.NurseID WHERE p.PatientID = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String nurseName = "Unknown";
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, patientID);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                nurseName = rs.getString("FirstName") + " " + rs.getString("LastName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return nurseName;
+    }
 } 

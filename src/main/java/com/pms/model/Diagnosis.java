@@ -2,99 +2,141 @@ package com.pms.model;
 
 import java.sql.Timestamp;
 
+/**
+ * Model class representing a diagnosis entry in the system
+ */
 public class Diagnosis {
     private int diagnosisID;
     private int patientID;
-    private int nurseID;
-    private Integer doctorID;
-    private String diagnoStatus;
-    private String result;
-    private Timestamp createdDate;
-    private Timestamp updatedDate;
+    private int doctorID;
+    private String diagnosis;
+    private String treatment;
+    private Timestamp diagnosisDate;
+    private String notes;
     
+    /**
+     * Default constructor
+     */
     public Diagnosis() {
     }
     
-    public Diagnosis(int patientID, int nurseID, Integer doctorID, String diagnoStatus, String result) {
-        this.patientID = patientID;
-        this.nurseID = nurseID;
-        this.doctorID = doctorID;
-        this.diagnoStatus = diagnoStatus;
-        this.result = result;
-    }
-    
-    public Diagnosis(int diagnosisID, int patientID, int nurseID, Integer doctorID, String diagnoStatus, String result, Timestamp createdDate, Timestamp updatedDate) {
+    /**
+     * Constructor with parameters
+     * 
+     * @param diagnosisID the diagnosis ID
+     * @param patientID the patient ID
+     * @param doctorID the doctor ID
+     * @param diagnosis the diagnosis text
+     * @param treatment the treatment plan
+     * @param diagnosisDate the date of diagnosis
+     * @param notes additional notes
+     */
+    public Diagnosis(int diagnosisID, int patientID, int doctorID, String diagnosis, String treatment, 
+                     Timestamp diagnosisDate, String notes) {
         this.diagnosisID = diagnosisID;
         this.patientID = patientID;
-        this.nurseID = nurseID;
         this.doctorID = doctorID;
-        this.diagnoStatus = diagnoStatus;
-        this.result = result;
-        this.createdDate = createdDate;
-        this.updatedDate = updatedDate;
+        this.diagnosis = diagnosis;
+        this.treatment = treatment;
+        this.diagnosisDate = diagnosisDate;
+        this.notes = notes;
     }
     
+    /**
+     * @return the diagnosisID
+     */
     public int getDiagnosisID() {
         return diagnosisID;
     }
     
+    /**
+     * @param diagnosisID the diagnosisID to set
+     */
     public void setDiagnosisID(int diagnosisID) {
         this.diagnosisID = diagnosisID;
     }
     
+    /**
+     * @return the patientID
+     */
     public int getPatientID() {
         return patientID;
     }
     
+    /**
+     * @param patientID the patientID to set
+     */
     public void setPatientID(int patientID) {
         this.patientID = patientID;
     }
     
-    public int getNurseID() {
-        return nurseID;
-    }
-    
-    public void setNurseID(int nurseID) {
-        this.nurseID = nurseID;
-    }
-    
-    public Integer getDoctorID() {
+    /**
+     * @return the doctorID
+     */
+    public int getDoctorID() {
         return doctorID;
     }
     
-    public void setDoctorID(Integer doctorID) {
+    /**
+     * @param doctorID the doctorID to set
+     */
+    public void setDoctorID(int doctorID) {
         this.doctorID = doctorID;
     }
     
-    public String getDiagnoStatus() {
-        return diagnoStatus;
+    /**
+     * @return the diagnosis
+     */
+    public String getDiagnosis() {
+        return diagnosis;
     }
     
-    public void setDiagnoStatus(String diagnoStatus) {
-        this.diagnoStatus = diagnoStatus;
+    /**
+     * @param diagnosis the diagnosis to set
+     */
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
     }
     
-    public String getResult() {
-        return result;
+    /**
+     * @return the treatment
+     */
+    public String getTreatment() {
+        return treatment;
     }
     
-    public void setResult(String result) {
-        this.result = result;
+    /**
+     * @param treatment the treatment to set
+     */
+    public void setTreatment(String treatment) {
+        this.treatment = treatment;
     }
     
-    public Timestamp getCreatedDate() {
-        return createdDate;
+    /**
+     * @return the diagnosisDate
+     */
+    public Timestamp getDiagnosisDate() {
+        return diagnosisDate;
     }
     
-    public void setCreatedDate(Timestamp createdDate) {
-        this.createdDate = createdDate;
+    /**
+     * @param diagnosisDate the diagnosisDate to set
+     */
+    public void setDiagnosisDate(Timestamp diagnosisDate) {
+        this.diagnosisDate = diagnosisDate;
     }
     
-    public Timestamp getUpdatedDate() {
-        return updatedDate;
+    /**
+     * @return the notes
+     */
+    public String getNotes() {
+        return notes;
     }
     
-    public void setUpdatedDate(Timestamp updatedDate) {
-        this.updatedDate = updatedDate;
+    /**
+     * @param notes the notes to set
+     */
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 } 
