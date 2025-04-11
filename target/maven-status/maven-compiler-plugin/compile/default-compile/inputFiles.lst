@@ -12,6 +12,7 @@ C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\filter\AuthenticationFil
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\util\PasswordUtil.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\dao\PatientDAO.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\model\Patient.java
+C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\SignupServlet.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\model\User.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\controller\admin\AdminDashboardServlet.java
 C:\Users\educa\Desktop\patient_ms\src\main\java\com\pms\model\Doctor.java

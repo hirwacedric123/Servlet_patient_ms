@@ -14,4 +14,5 @@ com\pms\model\Patient.class
 com\pms\dao\UserDAO.class
 com\pms\util\PasswordUtil.class
 com\pms\dao\DoctorDAO.class
+com\pms\controller\SignupServlet.class
 com\pms\dao\DiagnosisDAO.class

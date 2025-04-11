@@ -73,8 +73,10 @@
     <div class="container-fluid mt-4">
         <div class="row">
             <div class="col-md-12 mb-4">
-                <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
-                <hr>
+                <div class="alert alert-success">
+                    <h4><i class="fas fa-user-check me-2"></i>Welcome, ${user.username}!</h4>
+                    <p>You are logged in as an administrator. You can manage users, view reports, and more.</p>
+                </div>
             </div>
         </div>
 
@@ -139,50 +141,124 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-uppercase">System Logs</h6>
-                                <h2 class="mb-0">18</h2>
+                                <h6 class="text-uppercase">System Users</h6>
+                                <h2 class="mb-0">${userCount}</h2>
                             </div>
-                            <i class="fas fa-file-alt fa-3x opacity-50"></i>
+                            <i class="fas fa-users fa-3x opacity-50"></i>
                         </div>
                     </div>
                     <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a href="${pageContext.request.contextPath}/admin/logs" class="text-white text-decoration-none">View Details</a>
+                        <a href="${pageContext.request.contextPath}/admin/users" class="text-white text-decoration-none">View Details</a>
                         <i class="fas fa-angle-right text-white"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activity -->
+        <!-- Doctors List -->
         <div class="row mt-4">
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
-                        <i class="fas fa-list me-1"></i>Recent System Activity
+                        <i class="fas fa-user-md me-1"></i>Registered Doctors
                     </div>
                     <div class="card-body">
                         <c:choose>
-                            <c:when test="${empty recentActivities}">
-                                <p class="text-center text-muted">No recent activities to display</p>
+                            <c:when test="${empty doctors}">
+                                <p class="text-center text-muted">No doctors registered yet</p>
                             </c:when>
                             <c:otherwise>
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Timestamp</th>
-                                                <th>User</th>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Specialization</th>
+                                                <th>Contact</th>
+                                                <th>Email</th>
                                                 <th>Action</th>
-                                                <th>Details</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <c:forEach items="${recentActivities}" var="activity">
+                                            <c:forEach items="${doctors}" var="doctor">
                                                 <tr>
-                                                    <td>${activity.timestamp}</td>
-                                                    <td>${activity.user}</td>
-                                                    <td>${activity.action}</td>
-                                                    <td>${activity.details}</td>
+                                                    <td>${doctor.doctorID}</td>
+                                                    <td>${doctor.firstName} ${doctor.lastName}</td>
+                                                    <td>${doctor.specialization}</td>
+                                                    <td>${doctor.contactNumber}</td>
+                                                    <td>${doctor.email}</td>
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <a href="${pageContext.request.contextPath}/admin/doctor/view?id=${doctor.doctorID}" class="btn btn-info">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            <a href="${pageContext.request.contextPath}/admin/doctor/edit?id=${doctor.doctorID}" class="btn btn-warning">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a href="${pageContext.request.contextPath}/admin/doctor/delete?id=${doctor.doctorID}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nurses List -->
+        <div class="row mt-4">
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-user-nurse me-1"></i>Registered Nurses
+                    </div>
+                    <div class="card-body">
+                        <c:choose>
+                            <c:when test="${empty nurses}">
+                                <p class="text-center text-muted">No nurses registered yet</p>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Department</th>
+                                                <th>Contact</th>
+                                                <th>Email</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${nurses}" var="nurse">
+                                                <tr>
+                                                    <td>${nurse.nurseID}</td>
+                                                    <td>${nurse.firstName} ${nurse.lastName}</td>
+                                                    <td>${nurse.department}</td>
+                                                    <td>${nurse.contactNumber}</td>
+                                                    <td>${nurse.email}</td>
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <a href="${pageContext.request.contextPath}/admin/nurse/view?id=${nurse.nurseID}" class="btn btn-info">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            <a href="${pageContext.request.contextPath}/admin/nurse/edit?id=${nurse.nurseID}" class="btn btn-warning">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a href="${pageContext.request.contextPath}/admin/nurse/delete?id=${nurse.nurseID}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this nurse?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
