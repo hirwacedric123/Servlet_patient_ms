@@ -27,10 +27,11 @@ public class DoctorDAO {
                 doctor.setDoctorID(rs.getInt("DoctorID"));
                 doctor.setFirstName(rs.getString("FirstName"));
                 doctor.setLastName(rs.getString("LastName"));
-                doctor.setTelephone(rs.getString("Telephone"));
+                doctor.setContactNumber(rs.getString("ContactNumber"));
                 doctor.setEmail(rs.getString("Email"));
                 doctor.setAddress(rs.getString("Address"));
                 doctor.setHospitalName(rs.getString("HospitalName"));
+                doctor.setSpecialization(rs.getString("Specialization"));
                 doctor.setUserID(rs.getInt("UserID"));
             }
         } catch (SQLException e) {
@@ -74,10 +75,11 @@ public class DoctorDAO {
                 doctor.setDoctorID(rs.getInt("DoctorID"));
                 doctor.setFirstName(rs.getString("FirstName"));
                 doctor.setLastName(rs.getString("LastName"));
-                doctor.setTelephone(rs.getString("Telephone"));
+                doctor.setContactNumber(rs.getString("ContactNumber"));
                 doctor.setEmail(rs.getString("Email"));
                 doctor.setAddress(rs.getString("Address"));
                 doctor.setHospitalName(rs.getString("HospitalName"));
+                doctor.setSpecialization(rs.getString("Specialization"));
                 doctor.setUserID(rs.getInt("UserID"));
             }
         } catch (SQLException e) {
@@ -120,10 +122,11 @@ public class DoctorDAO {
                 doctor.setDoctorID(rs.getInt("DoctorID"));
                 doctor.setFirstName(rs.getString("FirstName"));
                 doctor.setLastName(rs.getString("LastName"));
-                doctor.setTelephone(rs.getString("Telephone"));
+                doctor.setContactNumber(rs.getString("ContactNumber"));
                 doctor.setEmail(rs.getString("Email"));
                 doctor.setAddress(rs.getString("Address"));
                 doctor.setHospitalName(rs.getString("HospitalName"));
+                doctor.setSpecialization(rs.getString("Specialization"));
                 doctor.setUserID(rs.getInt("UserID"));
                 doctors.add(doctor);
             }
@@ -151,7 +154,7 @@ public class DoctorDAO {
     }
     
     public boolean addDoctor(Doctor doctor) {
-        String sql = "INSERT INTO Doctors (FirstName, LastName, Telephone, Email, Address, HospitalName, UserID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Doctors (FirstName, LastName, ContactNumber, Email, Address, HospitalName, Specialization, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -161,11 +164,12 @@ public class DoctorDAO {
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, doctor.getFirstName());
             stmt.setString(2, doctor.getLastName());
-            stmt.setString(3, doctor.getTelephone());
+            stmt.setString(3, doctor.getContactNumber());
             stmt.setString(4, doctor.getEmail());
             stmt.setString(5, doctor.getAddress());
             stmt.setString(6, doctor.getHospitalName());
-            stmt.setInt(7, doctor.getUserID());
+            stmt.setString(7, doctor.getSpecialization());
+            stmt.setInt(8, doctor.getUserID());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -192,7 +196,7 @@ public class DoctorDAO {
     }
     
     public boolean updateDoctor(Doctor doctor) {
-        String sql = "UPDATE Doctors SET FirstName = ?, LastName = ?, Telephone = ?, Email = ?, Address = ?, HospitalName = ? WHERE DoctorID = ?";
+        String sql = "UPDATE Doctors SET FirstName = ?, LastName = ?, ContactNumber = ?, Email = ?, Address = ?, HospitalName = ?, Specialization = ? WHERE DoctorID = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -202,16 +206,15 @@ public class DoctorDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, doctor.getFirstName());
             stmt.setString(2, doctor.getLastName());
-            stmt.setString(3, doctor.getTelephone());
+            stmt.setString(3, doctor.getContactNumber());
             stmt.setString(4, doctor.getEmail());
             stmt.setString(5, doctor.getAddress());
             stmt.setString(6, doctor.getHospitalName());
-            stmt.setInt(7, doctor.getDoctorID());
+            stmt.setString(7, doctor.getSpecialization());
+            stmt.setInt(8, doctor.getDoctorID());
             
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
-            }
+            result = rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

@@ -50,7 +50,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                         <input type="password" class="form-control" id="password" name="password" required
-                                               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+                                               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$">
                                         <div class="invalid-feedback">
                                             Password must be at least 8 characters and include uppercase, lowercase, and numbers
                                         </div>
