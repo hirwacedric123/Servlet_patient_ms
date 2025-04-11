@@ -1,0 +1,106 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem;
+}
+
+.bg-primary {
+    background-color: #2c3e50 !important;
+}
+
+.btn-primary {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #1a252f;
+    border-color: #1a252f;
+}
+
+/* Dashboard Styles */
+.dashboard-card {
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.sidebar {
+    min-height: 100vh;
+    background-color: #2c3e50;
+    padding-top: 20px;
+}
+
+.sidebar-link {
+    color: white;
+    padding: 10px 15px;
+    display: block;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-link:hover {
+    background-color: #1a252f;
+    color: white;
+}
+
+.sidebar-link.active {
+    background-color: #1a252f;
+    border-left: 4px solid #3498db;
+}
+
+.content-area {
+    padding: 20px;
+}
+
+/* Table Styles */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+/* Patient Image Upload */
+.image-preview {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        min-height: auto;
+    }
+    
+    .content-area {
+        margin-top: 20px;
+    }
+} 
