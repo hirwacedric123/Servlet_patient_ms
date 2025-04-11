@@ -27,7 +27,7 @@ public class PatientDAO {
                 patient.setPatientID(rs.getInt("PatientID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
-                patient.setTelephone(rs.getString("Telephone"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
                 patient.setPImageLink(rs.getString("PImageLink"));
@@ -74,7 +74,7 @@ public class PatientDAO {
                 patient.setPatientID(rs.getInt("PatientID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
-                patient.setTelephone(rs.getString("Telephone"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
                 patient.setPImageLink(rs.getString("PImageLink"));
@@ -120,7 +120,7 @@ public class PatientDAO {
                 patient.setPatientID(rs.getInt("PatientID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
-                patient.setTelephone(rs.getString("Telephone"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
                 patient.setPImageLink(rs.getString("PImageLink"));
@@ -168,7 +168,7 @@ public class PatientDAO {
                 patient.setPatientID(rs.getInt("PatientID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
-                patient.setTelephone(rs.getString("Telephone"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
                 patient.setPImageLink(rs.getString("PImageLink"));
@@ -218,7 +218,7 @@ public class PatientDAO {
                 patient.setPatientID(rs.getInt("PatientID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
-                patient.setTelephone(rs.getString("Telephone"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
                 patient.setPImageLink(rs.getString("PImageLink"));
@@ -249,7 +249,7 @@ public class PatientDAO {
     }
     
     public boolean addPatient(Patient patient) {
-        String sql = "INSERT INTO Patients (FirstName, LastName, Telephone, Email, Address, PImageLink, CreatedBy) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Patients (FirstName, LastName, ContactNumber, Email, Address, PImageLink, CreatedBy) VALUES (?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -259,7 +259,7 @@ public class PatientDAO {
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, patient.getFirstName());
             stmt.setString(2, patient.getLastName());
-            stmt.setString(3, patient.getTelephone());
+            stmt.setString(3, patient.getContactNumber());
             stmt.setString(4, patient.getEmail());
             stmt.setString(5, patient.getAddress());
             stmt.setString(6, patient.getPImageLink());
@@ -290,7 +290,7 @@ public class PatientDAO {
     }
     
     public boolean updatePatient(Patient patient) {
-        String sql = "UPDATE Patients SET FirstName = ?, LastName = ?, Telephone = ?, Email = ?, Address = ?, PImageLink = ? WHERE PatientID = ?";
+        String sql = "UPDATE Patients SET FirstName = ?, LastName = ?, ContactNumber = ?, Email = ?, Address = ?, PImageLink = ? WHERE PatientID = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -300,7 +300,7 @@ public class PatientDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, patient.getFirstName());
             stmt.setString(2, patient.getLastName());
-            stmt.setString(3, patient.getTelephone());
+            stmt.setString(3, patient.getContactNumber());
             stmt.setString(4, patient.getEmail());
             stmt.setString(5, patient.getAddress());
             stmt.setString(6, patient.getPImageLink());

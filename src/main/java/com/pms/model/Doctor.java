@@ -4,33 +4,36 @@ public class Doctor {
     private int doctorID;
     private String firstName;
     private String lastName;
-    private String telephone;
+    private String contactNumber;
     private String email;
     private String address;
     private String hospitalName;
+    private String specialization;
     private int userID;
     
     public Doctor() {
     }
     
-    public Doctor(String firstName, String lastName, String telephone, String email, String address, String hospitalName, int userID) {
+    public Doctor(String firstName, String lastName, String contactNumber, String email, String address, String hospitalName, String specialization, int userID) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.telephone = telephone;
+        this.contactNumber = contactNumber;
         this.email = email;
         this.address = address;
         this.hospitalName = hospitalName;
+        this.specialization = specialization;
         this.userID = userID;
     }
     
-    public Doctor(int doctorID, String firstName, String lastName, String telephone, String email, String address, String hospitalName, int userID) {
+    public Doctor(int doctorID, String firstName, String lastName, String contactNumber, String email, String address, String hospitalName, String specialization, int userID) {
         this.doctorID = doctorID;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.telephone = telephone;
+        this.contactNumber = contactNumber;
         this.email = email;
         this.address = address;
         this.hospitalName = hospitalName;
+        this.specialization = specialization;
         this.userID = userID;
     }
     
@@ -58,12 +61,12 @@ public class Doctor {
         this.lastName = lastName;
     }
     
-    public String getTelephone() {
-        return telephone;
+    public String getContactNumber() {
+        return contactNumber;
     }
     
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
     
     public String getEmail() {
@@ -88,6 +91,14 @@ public class Doctor {
     
     public void setHospitalName(String hospitalName) {
         this.hospitalName = hospitalName;
+    }
+    
+    public String getSpecialization() {
+        return specialization;
+    }
+    
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
     
     public int getUserID() {

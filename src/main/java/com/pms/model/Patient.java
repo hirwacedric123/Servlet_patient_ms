@@ -4,34 +4,42 @@ public class Patient {
     private int patientID;
     private String firstName;
     private String lastName;
-    private String telephone;
+    private String contactNumber;
     private String email;
     private String address;
     private String pImageLink;
+    private String gender;
+    private String dateOfBirth;
     private int createdBy;
+    private int userID;
     
     public Patient() {
     }
     
-    public Patient(String firstName, String lastName, String telephone, String email, String address, String pImageLink, int createdBy) {
+    public Patient(String firstName, String lastName, String contactNumber, String email, String address, String pImageLink, String gender, String dateOfBirth, int createdBy) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.telephone = telephone;
+        this.contactNumber = contactNumber;
         this.email = email;
         this.address = address;
         this.pImageLink = pImageLink;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
         this.createdBy = createdBy;
     }
     
-    public Patient(int patientID, String firstName, String lastName, String telephone, String email, String address, String pImageLink, int createdBy) {
+    public Patient(int patientID, String firstName, String lastName, String contactNumber, String email, String address, String pImageLink, String gender, String dateOfBirth, int createdBy, int userID) {
         this.patientID = patientID;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.telephone = telephone;
+        this.contactNumber = contactNumber;
         this.email = email;
         this.address = address;
         this.pImageLink = pImageLink;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
         this.createdBy = createdBy;
+        this.userID = userID;
     }
     
     public int getPatientID() {
@@ -58,12 +66,12 @@ public class Patient {
         this.lastName = lastName;
     }
     
-    public String getTelephone() {
-        return telephone;
+    public String getContactNumber() {
+        return contactNumber;
     }
     
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
     
     public String getEmail() {
@@ -90,11 +98,35 @@ public class Patient {
         this.pImageLink = pImageLink;
     }
     
+    public String getGender() {
+        return gender;
+    }
+    
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+    
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+    
     public int getCreatedBy() {
         return createdBy;
     }
     
     public void setCreatedBy(int createdBy) {
         this.createdBy = createdBy;
+    }
+    
+    public int getUserID() {
+        return userID;
+    }
+    
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 } 
