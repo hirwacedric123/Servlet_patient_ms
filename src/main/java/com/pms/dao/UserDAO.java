@@ -2,6 +2,7 @@ package com.pms.dao;
 
 import com.pms.model.User;
 import com.pms.util.DBConnection;
+import com.pms.util.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 public class UserDAO {
     
     public User authenticate(String username, String password) {
-        String sql = "SELECT * FROM users WHERE Username = ? AND Password = ?";
+        String sql = "SELECT * FROM users WHERE Username = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -21,18 +22,22 @@ public class UserDAO {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
-            stmt.setString(2, password);
             
-            System.out.println("Executing SQL: " + sql.replace("?", "'" + username + "', '" + password + "'"));
             rs = stmt.executeQuery();
             
             if (rs.next()) {
-                user = new User();
-                user.setUserID(rs.getInt("UserID"));
-                user.setUsername(rs.getString("Username"));
-                user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getString("UserType"));
-                System.out.println("Authentication successful for: " + username);
+                String hashedPassword = rs.getString("Password");
+                // Verify password using BCrypt
+                if (PasswordUtil.verifyPassword(password, hashedPassword)) {
+                    user = new User();
+                    user.setUserID(rs.getInt("UserID"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(hashedPassword);
+                    user.setUserType(rs.getString("UserType"));
+                    System.out.println("Authentication successful for: " + username);
+                } else {
+                    System.out.println("Authentication failed: Password mismatch");
+                }
             } else {
                 System.out.println("Authentication failed: No matching user found");
             }
@@ -198,19 +203,17 @@ public class UserDAO {
         
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
+            
+            // Hash the password before storing
+            String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
+            stmt.setString(2, hashedPassword);
+            
             stmt.setString(3, user.getUserType());
             
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    user.setUserID(generatedKeys.getInt(1));
-                }
-            }
+            result = rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
