@@ -10,17 +10,20 @@ import java.util.List;
 public class UserDAO {
     
     public User authenticate(String username, String password) {
-        String sql = "SELECT * FROM Users WHERE Username = ? AND Password = ?";
+        String sql = "SELECT * FROM users WHERE Username = ? AND Password = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         User user = null;
         
         try {
+            System.out.println("Attempting to authenticate: " + username);
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             stmt.setString(2, password);
+            
+            System.out.println("Executing SQL: " + sql.replace("?", "'" + username + "', '" + password + "'"));
             rs = stmt.executeQuery();
             
             if (rs.next()) {
@@ -29,8 +32,12 @@ public class UserDAO {
                 user.setUsername(rs.getString("Username"));
                 user.setPassword(rs.getString("Password"));
                 user.setUserType(rs.getString("UserType"));
+                System.out.println("Authentication successful for: " + username);
+            } else {
+                System.out.println("Authentication failed: No matching user found");
             }
         } catch (SQLException e) {
+            System.out.println("SQL Error during authentication: " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (rs != null) {
