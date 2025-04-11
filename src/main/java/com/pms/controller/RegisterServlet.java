@@ -76,6 +76,17 @@ public class RegisterServlet extends HttpServlet {
             String specialization = request.getParameter("specialization");
             String contactNumber = request.getParameter("contactNumber");
             String email = request.getParameter("email");
+            String address = request.getParameter("address");
+            
+            // Debug information
+            System.out.println("Doctor Registration Data:");
+            System.out.println("- FirstName: " + firstName);
+            System.out.println("- LastName: " + lastName);
+            System.out.println("- Specialization: " + specialization);
+            System.out.println("- ContactNumber: " + contactNumber);
+            System.out.println("- Email: " + email);
+            System.out.println("- Address: " + address);
+            System.out.println("- UserID: " + user.getUserID());
             
             Doctor doctor = new Doctor();
             doctor.setFirstName(firstName);
@@ -83,10 +94,16 @@ public class RegisterServlet extends HttpServlet {
             doctor.setSpecialization(specialization);
             doctor.setContactNumber(contactNumber);
             doctor.setEmail(email);
+            // Set default address if not provided
+            doctor.setAddress(address != null && !address.trim().isEmpty() ? address : "Not specified");
+            // Set default hospital name
+            doctor.setHospitalName("General Hospital"); // Default hospital name
             doctor.setUserID(user.getUserID());
             
             boolean doctorCreated = doctorDAO.addDoctor(doctor);
             if (!doctorCreated) {
+                // Log the error to help with debugging
+                System.out.println("Failed to create doctor profile for user ID: " + user.getUserID());
                 userDAO.deleteUser(user.getUserID());
                 request.setAttribute("errorMessage", "Failed to create doctor profile");
                 request.setAttribute("userType", userType);

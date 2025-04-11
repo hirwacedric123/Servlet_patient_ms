@@ -109,6 +109,11 @@
                                         <div class="invalid-feedback">Please select a specialization</div>
                                     </div>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address*</label>
+                                    <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                                    <div class="invalid-feedback">Address is required</div>
+                                </div>
                             </c:if>
                             
                             <!-- Patient-specific fields -->
