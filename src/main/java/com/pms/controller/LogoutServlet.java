@@ -16,9 +16,19 @@ public class LogoutServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         
         if (session != null) {
+            // Log the logout action
+            System.out.println("User logged out: " + 
+                (session.getAttribute("user") != null ? ((com.pms.model.User)session.getAttribute("user")).getUsername() : "Unknown"));
+            
+            // Invalidate the session
             session.invalidate();
         }
         
+        // Redirect to login page
         response.sendRedirect(request.getContextPath() + "/login");
+    }
+    
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
     }
 } 
