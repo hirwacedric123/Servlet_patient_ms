@@ -145,16 +145,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${pendingCases}" var="case">
+                                    <c:forEach items="${pendingCases}" var="patientCase">
                                         <tr>
-                                            <td>${case.patientID}</td>
-                                            <td>${case.patientName}</td>
-                                            <td>${case.patientAge}</td>
-                                            <td>${case.patientGender}</td>
-                                            <td>${case.symptoms}</td>
-                                            <td>${case.registeredByNurse}</td>
+                                            <td>${patientCase.patientID}</td>
+                                            <td>${patientCase.patientName}</td>
+                                            <td>${patientCase.patientAge}</td>
+                                            <td>${patientCase.patientGender}</td>
+                                            <td>${patientCase.symptoms}</td>
+                                            <td>${patientCase.registeredByNurse}</td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/doctor/diagnose?id=${case.patientID}" class="btn btn-sm btn-warning">
+                                                <a href="${pageContext.request.contextPath}/doctor/diagnose?id=${patientCase.patientID}" class="btn btn-sm btn-warning">
                                                     <i class="fas fa-stethoscope"></i> Diagnose
                                                 </a>
                                             </td>
@@ -193,19 +193,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${confirmedCases}" var="case">
+                                    <c:forEach items="${confirmedCases}" var="patientCase">
                                         <tr>
-                                            <td>${case.patientID}</td>
-                                            <td>${case.patientName}</td>
-                                            <td>${case.patientAge}</td>
-                                            <td>${case.diagnosis}</td>
-                                            <td>${case.treatment}</td>
-                                            <td>${case.diagnosisDate}</td>
+                                            <td>${patientCase.patientID}</td>
+                                            <td>${patientCase.patientName}</td>
+                                            <td>${patientCase.patientAge}</td>
+                                            <td>${patientCase.diagnosis}</td>
+                                            <td>${patientCase.treatment}</td>
+                                            <td>${patientCase.diagnosisDate}</td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/doctor/view-case?id=${case.patientID}" class="btn btn-sm btn-info">
+                                                <a href="${pageContext.request.contextPath}/doctor/view-case?id=${patientCase.patientID}" class="btn btn-sm btn-info">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
-                                                <a href="${pageContext.request.contextPath}/doctor/update-case?id=${case.patientID}" class="btn btn-sm btn-primary">
+                                                <a href="${pageContext.request.contextPath}/doctor/update-case?id=${patientCase.patientID}" class="btn btn-sm btn-primary">
                                                     <i class="fas fa-edit"></i> Update
                                                 </a>
                                             </td>
