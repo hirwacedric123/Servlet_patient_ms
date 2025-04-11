@@ -481,4 +481,64 @@ public class PatientDAO {
         
         return nurseName;
     }
+    
+    /**
+     * Get patients registered by a specific nurse
+     * 
+     * @param nurseID the ID of the nurse
+     * @return a list of patients registered by the nurse
+     */
+    public List<Patient> getPatientsByNurseID(int nurseID) {
+        String sql = "SELECT * FROM patients WHERE NurseID = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Patient> patients = new ArrayList<>();
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, nurseID);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Patient patient = new Patient();
+                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setUserID(rs.getInt("UserID"));
+                patient.setFirstName(rs.getString("FirstName"));
+                patient.setLastName(rs.getString("LastName"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                patient.setContactNumber(rs.getString("ContactNumber"));
+                patient.setAddress(rs.getString("Address"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                patient.setNurseID(rs.getInt("NurseID"));
+                patient.setSymptoms(rs.getString("Symptoms"));
+                patient.setReferrable(rs.getBoolean("IsReferrable"));
+                
+                patients.add(patient);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return patients;
+    }
 } 
