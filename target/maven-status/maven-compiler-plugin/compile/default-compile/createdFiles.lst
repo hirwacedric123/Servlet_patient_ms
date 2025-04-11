@@ -15,4 +15,5 @@ com\pms\dao\UserDAO.class
 com\pms\util\PasswordUtil.class
 com\pms\dao\DoctorDAO.class
 com\pms\controller\SignupServlet.class
+com\pms\controller\AdminPasswordUpdateServlet.class
 com\pms\dao\DiagnosisDAO.class
