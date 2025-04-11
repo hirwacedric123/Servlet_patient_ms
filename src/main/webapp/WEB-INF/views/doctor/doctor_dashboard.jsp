@@ -35,6 +35,14 @@
         .confirmed { color: #2980b9; }
         .badge-pending { background-color: #f39c12; }
         .badge-confirmed { background-color: #2980b9; }
+        .alert-warning {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -73,10 +81,21 @@
 
     <!-- Main content -->
     <div class="container mt-4">
+        <!-- Error message if present -->
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
+            </div>
+        </c:if>
+        
         <!-- Welcome message -->
         <div class="welcome-banner">
             <h2><i class="fas fa-user-md me-2"></i>Welcome, Dr. ${doctor.firstName} ${doctor.lastName}!</h2>
-            <p>You are logged in as a doctor specializing in ${doctor.specialization}.</p>
+            <p>You are logged in as a doctor
+                <c:if test="${not empty doctor.specialization}">
+                    specializing in ${doctor.specialization}
+                </c:if>
+            </p>
         </div>
 
         <!-- Statistics Cards -->
