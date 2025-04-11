@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             User user = (User) session.getAttribute("user");
-            redirectBasedOnUserType(user, response);
+            redirectBasedOnUserType(user, response, request);
         } else {
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
@@ -63,14 +63,14 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("patient", patient);
             }
             
-            redirectBasedOnUserType(user, response);
+            redirectBasedOnUserType(user, response, request);
         } else {
             request.setAttribute("errorMessage", "Invalid username or password");
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
     }
     
-    private void redirectBasedOnUserType(User user, HttpServletResponse response) throws IOException {
+    private void redirectBasedOnUserType(User user, HttpServletResponse response, HttpServletRequest request) throws IOException {
         String userType = user.getUserType();
         
         switch (userType) {

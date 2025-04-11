@@ -56,6 +56,53 @@ public class PatientDAO {
         return patient;
     }
     
+    public Patient getPatientByUserID(int userID) {
+        String sql = "SELECT * FROM Patients WHERE CreatedBy = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Patient patient = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userID);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                patient = new Patient();
+                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setFirstName(rs.getString("FirstName"));
+                patient.setLastName(rs.getString("LastName"));
+                patient.setTelephone(rs.getString("Telephone"));
+                patient.setEmail(rs.getString("Email"));
+                patient.setAddress(rs.getString("Address"));
+                patient.setPImageLink(rs.getString("PImageLink"));
+                patient.setCreatedBy(rs.getInt("CreatedBy"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return patient;
+    }
+    
     public List<Patient> getAllPatients() {
         String sql = "SELECT * FROM Patients";
         Connection conn = null;
