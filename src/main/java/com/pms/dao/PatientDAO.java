@@ -33,7 +33,7 @@ public class PatientDAO {
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
                 patient.setDateOfBirth(rs.getDate("DateOfBirth"));
                 patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));
@@ -94,7 +94,7 @@ public class PatientDAO {
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
                 patient.setDateOfBirth(rs.getDate("DateOfBirth"));
                 patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));
@@ -155,7 +155,7 @@ public class PatientDAO {
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
                 patient.setDateOfBirth(rs.getDate("DateOfBirth"));
                 patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));
@@ -215,7 +215,7 @@ public class PatientDAO {
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
                 patient.setDateOfBirth(rs.getDate("DateOfBirth"));
                 patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));
@@ -270,7 +270,7 @@ public class PatientDAO {
             updateStmt.setString(3, patient.getEmail());
             updateStmt.setString(4, patient.getContactNumber());
             updateStmt.setString(5, patient.getAddress());
-            updateStmt.setString(6, patient.getPImageLink());
+            updateStmt.setString(6, patient.getProfileImage());
             updateStmt.setInt(7, patient.getUserID());
             
             int rowsAffected = updateStmt.executeUpdate();
@@ -357,7 +357,7 @@ public class PatientDAO {
             userStmt.setString(3, patient.getEmail());
             userStmt.setString(4, patient.getContactNumber());
             userStmt.setString(5, patient.getAddress());
-            userStmt.setString(6, patient.getPImageLink());
+            userStmt.setString(6, patient.getProfileImage());
             userStmt.setInt(7, patient.getPatientID());
             
             int userRowsAffected = userStmt.executeUpdate();
@@ -497,7 +497,7 @@ public class PatientDAO {
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
                 patient.setDateOfBirth(rs.getDate("DateOfBirth"));
                 patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));

@@ -5,6 +5,8 @@ public class User {
     private String username;
     private String password;
     private String userType;
+    private String firstName;
+    private String lastName;
     
     public User() {
     }
@@ -20,6 +22,14 @@ public class User {
         this.username = username;
         this.password = password;
         this.userType = userType;
+    }
+    
+    public User(String username, String password, String userType, String firstName, String lastName) {
+        this.username = username;
+        this.password = password;
+        this.userType = userType;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
     
     public int getUserID() {
@@ -52,5 +62,26 @@ public class User {
     
     public void setUserType(String userType) {
         this.userType = userType;
+    }
+    
+    // Helper method to support database schema which uses Role instead of UserType
+    public String getRole() {
+        return userType;
+    }
+    
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    
+    public String getLastName() {
+        return lastName;
+    }
+    
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 } 

@@ -42,6 +42,8 @@ public class RegisterServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String userType = request.getParameter("userType");
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
         
         // Only allow Doctor and Patient registration
         if (!"Doctor".equals(userType) && !"Patient".equals(userType)) {
@@ -58,8 +60,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
         
-        // Create the user account
-        User user = new User(username, password, userType);
+        // Create the user account with firstName and lastName
+        User user = new User(username, password, userType, firstName, lastName);
         boolean userCreated = userDAO.addUser(user);
         
         if (!userCreated) {
@@ -71,8 +73,6 @@ public class RegisterServlet extends HttpServlet {
         
         // Handle Doctor specific registration
         if ("Doctor".equals(userType)) {
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
             String specialization = request.getParameter("specialization");
             String contactNumber = request.getParameter("contactNumber");
             String email = request.getParameter("email");
@@ -114,8 +114,6 @@ public class RegisterServlet extends HttpServlet {
         
         // Handle Patient specific registration
         if ("Patient".equals(userType)) {
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
             String gender = request.getParameter("gender");
             String dateOfBirth = request.getParameter("dateOfBirth");
             String address = request.getParameter("address");

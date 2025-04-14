@@ -33,7 +33,7 @@ public class UserDAO {
                     user.setUserID(rs.getInt("UserID"));
                     user.setUsername(rs.getString("Username"));
                     user.setPassword(hashedPassword);
-                    user.setUserType(rs.getString("UserType"));
+                    user.setUserType(rs.getString("Role"));
                     System.out.println("Authentication successful for: " + username);
                 } else {
                     System.out.println("Authentication failed: Password mismatch");
@@ -83,7 +83,7 @@ public class UserDAO {
                 user.setUserID(rs.getInt("UserID"));
                 user.setUsername(rs.getString("Username"));
                 user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getString("UserType"));
+                user.setUserType(rs.getString("Role"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -125,7 +125,7 @@ public class UserDAO {
                 user.setUserID(rs.getInt("UserID"));
                 user.setUsername(rs.getString("Username"));
                 user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getString("UserType"));
+                user.setUserType(rs.getString("Role"));
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -152,7 +152,7 @@ public class UserDAO {
     }
     
     public List<User> getUsersByType(String userType) {
-        String sql = "SELECT * FROM Users WHERE UserType = ?";
+        String sql = "SELECT * FROM Users WHERE Role = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -169,7 +169,7 @@ public class UserDAO {
                 user.setUserID(rs.getInt("UserID"));
                 user.setUsername(rs.getString("Username"));
                 user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getString("UserType"));
+                user.setUserType(rs.getString("Role"));
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -196,24 +196,37 @@ public class UserDAO {
     }
     
     public boolean addUser(User user) {
-        String sql = "INSERT INTO Users (Username, Password, UserType) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Users (Username, Password, Role, FirstName, LastName) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, user.getUsername());
             
             // Hash the password before storing
             String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
             stmt.setString(2, hashedPassword);
             
-            stmt.setString(3, user.getUserType());
+            // Use getRole() which maps to userType internally
+            stmt.setString(3, user.getRole());
+            
+            // Set default values for required fields
+            stmt.setString(4, user.getFirstName() != null ? user.getFirstName() : "New");
+            stmt.setString(5, user.getLastName() != null ? user.getLastName() : "User");
             
             int rowsAffected = stmt.executeUpdate();
-            result = rowsAffected > 0;
+            
+            if (rowsAffected > 0) {
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    user.setUserID(rs.getInt(1));
+                }
+                rs.close();
+                result = true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -231,7 +244,7 @@ public class UserDAO {
     }
     
     public boolean updateUser(User user) {
-        String sql = "UPDATE Users SET Username = ?, Password = ?, UserType = ? WHERE UserID = ?";
+        String sql = "UPDATE Users SET Username = ?, Password = ?, Role = ? WHERE UserID = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -241,7 +254,7 @@ public class UserDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
-            stmt.setString(3, user.getUserType());
+            stmt.setString(3, user.getRole());
             stmt.setInt(4, user.getUserID());
             
             int rowsAffected = stmt.executeUpdate();

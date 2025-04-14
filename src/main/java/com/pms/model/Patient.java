@@ -184,6 +184,15 @@ public class Patient {
         this.pImageLink = pImageLink;
     }
     
+    // Added for compatibility with the new schema column name
+    public String getProfileImage() {
+        return pImageLink;
+    }
+    
+    public void setProfileImage(String profileImage) {
+        this.pImageLink = profileImage;
+    }
+    
     public String getSymptoms() {
         return symptoms;
     }
