@@ -17,6 +17,11 @@ public class Patient {
     private String bloodGroup;
     private String emergencyContact;
     private String pImageLink; // Profile image from Users table (was PImageLink)
+    // New fields to match the schema
+    private int userID; // Same as patientID, for compatibility 
+    private String symptoms; // From Diagnosis table
+    private boolean referrable; // Based on DiagnoStatus from Diagnosis
+    private int createdBy; // NurseID who created the patient
     
     public Patient() {
         // Default constructor
@@ -49,6 +54,7 @@ public class Patient {
         this.gender = gender;
         this.dateOfBirth = convertStringToDate(dateOfBirth);
         this.bloodGroup = bloodGroup;
+        this.userID = patientID;
     }
     
     // Helper method to convert String to java.sql.Date
@@ -73,6 +79,16 @@ public class Patient {
     
     public void setPatientID(int patientID) {
         this.patientID = patientID;
+        this.userID = patientID;
+    }
+    
+    public int getUserID() {
+        return userID;
+    }
+    
+    public void setUserID(int userID) {
+        this.userID = userID;
+        this.patientID = userID;
     }
     
     public String getFirstName() {
@@ -166,6 +182,30 @@ public class Patient {
 
     public void setPImageLink(String pImageLink) {
         this.pImageLink = pImageLink;
+    }
+    
+    public String getSymptoms() {
+        return symptoms;
+    }
+    
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
+    }
+    
+    public boolean isReferrable() {
+        return referrable;
+    }
+    
+    public void setReferrable(boolean referrable) {
+        this.referrable = referrable;
+    }
+    
+    public int getCreatedBy() {
+        return createdBy;
+    }
+    
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
     }
     
     public String getFullName() {

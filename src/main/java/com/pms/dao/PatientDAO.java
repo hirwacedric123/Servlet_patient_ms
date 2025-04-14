@@ -254,48 +254,45 @@ public class PatientDAO {
         Connection conn = null;
         PreparedStatement stmt = null;
         PreparedStatement detailStmt = null;
+        PreparedStatement updateStmt = null;
         boolean result = false;
         
         try {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
             
-            // Insert into Users table
-            String userSql = "INSERT INTO Users (FirstName, LastName, Email, ContactNumber, Address, ProfileImage, Role) " +
-                           "VALUES (?, ?, ?, ?, ?, ?, 'Patient')";
-            stmt = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, patient.getFirstName());
-            stmt.setString(2, patient.getLastName());
-            stmt.setString(3, patient.getEmail());
-            stmt.setString(4, patient.getContactNumber());
-            stmt.setString(5, patient.getAddress());
-            stmt.setString(6, patient.getPImageLink());
+            // First, update the existing user with patient details
+            String updateSql = "UPDATE Users SET FirstName = ?, LastName = ?, Email = ?, ContactNumber = ?, Address = ?, ProfileImage = ? " +
+                           "WHERE UserID = ?";
+            updateStmt = conn.prepareStatement(updateSql);
+            updateStmt.setString(1, patient.getFirstName());
+            updateStmt.setString(2, patient.getLastName());
+            updateStmt.setString(3, patient.getEmail());
+            updateStmt.setString(4, patient.getContactNumber());
+            updateStmt.setString(5, patient.getAddress());
+            updateStmt.setString(6, patient.getPImageLink());
+            updateStmt.setInt(7, patient.getUserID());
             
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = updateStmt.executeUpdate();
+            
             if (rowsAffected > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int userID = generatedKeys.getInt(1);
-                    patient.setPatientID(userID);
-                    
-                    // Insert into UserDetails table
-                    String detailSql = "INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup) VALUES (?, ?, ?, ?)";
-                    detailStmt = conn.prepareStatement(detailSql);
-                    detailStmt.setInt(1, userID);
-                    
-                    if (patient.getDateOfBirth() != null) {
-                        detailStmt.setDate(2, new java.sql.Date(patient.getDateOfBirth().getTime()));
-                    } else {
-                        detailStmt.setNull(2, Types.DATE);
-                    }
-                    
-                    detailStmt.setString(3, patient.getGender());
-                    detailStmt.setString(4, patient.getBloodGroup());
-                    detailStmt.executeUpdate();
-                    
-                    conn.commit();
-                    result = true;
+                // Insert into UserDetails table
+                String detailSql = "INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup) VALUES (?, ?, ?, ?)";
+                detailStmt = conn.prepareStatement(detailSql);
+                detailStmt.setInt(1, patient.getUserID());
+                
+                if (patient.getDateOfBirth() != null) {
+                    detailStmt.setDate(2, new java.sql.Date(patient.getDateOfBirth().getTime()));
+                } else {
+                    detailStmt.setNull(2, Types.DATE);
                 }
+                
+                detailStmt.setString(3, patient.getGender());
+                detailStmt.setString(4, patient.getBloodGroup());
+                detailStmt.executeUpdate();
+                
+                conn.commit();
+                result = true;
             }
         } catch (SQLException e) {
             try {
@@ -317,6 +314,13 @@ public class PatientDAO {
             if (detailStmt != null) {
                 try {
                     detailStmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (updateStmt != null) {
+                try {
+                    updateStmt.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
