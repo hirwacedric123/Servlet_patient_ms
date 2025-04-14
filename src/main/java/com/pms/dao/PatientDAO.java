@@ -9,8 +9,11 @@ import java.util.List;
 
 public class PatientDAO {
     
-    public Patient getPatientByID(int patientID) {
-        String sql = "SELECT * FROM Patients WHERE PatientID = ?";
+    public Patient getPatientByID(int userID) {
+        String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "WHERE u.UserID = ? AND u.Role = 'Patient'";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -19,19 +22,26 @@ public class PatientDAO {
         try {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, patientID);
+            stmt.setInt(1, userID);
             rs = stmt.executeQuery();
             
             if (rs.next()) {
                 patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setPatientID(rs.getInt("UserID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("PImageLink"));
-                patient.setCreatedBy(rs.getInt("CreatedBy"));
+                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -57,54 +67,15 @@ public class PatientDAO {
     }
     
     public Patient getPatientByUserID(int userID) {
-        String sql = "SELECT * FROM Patients WHERE CreatedBy = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Patient patient = null;
-        
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, userID);
-            rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
-                patient.setFirstName(rs.getString("FirstName"));
-                patient.setLastName(rs.getString("LastName"));
-                patient.setContactNumber(rs.getString("ContactNumber"));
-                patient.setEmail(rs.getString("Email"));
-                patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("PImageLink"));
-                patient.setCreatedBy(rs.getInt("CreatedBy"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
-        }
-        
-        return patient;
+        // In the new schema, this is the same as getPatientByID since UserID is the primary key
+        return getPatientByID(userID);
     }
     
     public List<Patient> getAllPatients() {
-        String sql = "SELECT * FROM Patients";
+        String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "WHERE u.Role = 'Patient'";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -117,14 +88,22 @@ public class PatientDAO {
             
             while (rs.next()) {
                 Patient patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setPatientID(rs.getInt("UserID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("PImageLink"));
-                patient.setCreatedBy(rs.getInt("CreatedBy"));
+                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
+                
                 patients.add(patient);
             }
         } catch (SQLException e) {
@@ -151,7 +130,12 @@ public class PatientDAO {
     }
     
     public List<Patient> getPatientsByNurse(int nurseUserID) {
-        String sql = "SELECT p.* FROM Patients p WHERE p.CreatedBy = ?";
+        // Get all patients who have a diagnosis record with this nurse
+        String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "INNER JOIN Diagnosis d ON u.UserID = d.PatientID " +
+                     "WHERE d.NurseID = ? AND u.Role = 'Patient'";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -165,14 +149,22 @@ public class PatientDAO {
             
             while (rs.next()) {
                 Patient patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setPatientID(rs.getInt("UserID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("PImageLink"));
-                patient.setCreatedBy(rs.getInt("CreatedBy"));
+                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
+                
                 patients.add(patient);
             }
         } catch (SQLException e) {
@@ -199,9 +191,11 @@ public class PatientDAO {
     }
     
     public List<Patient> getPatientsByDoctor(int doctorID) {
-        String sql = "SELECT p.* FROM Patients p " +
-                    "JOIN Diagnosis d ON p.PatientID = d.PatientID " +
-                    "WHERE d.DoctorID = ?";
+        String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "INNER JOIN Diagnosis d ON u.UserID = d.PatientID " +
+                     "WHERE d.DoctorID = ? AND u.Role = 'Patient'";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -215,14 +209,22 @@ public class PatientDAO {
             
             while (rs.next()) {
                 Patient patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
+                patient.setPatientID(rs.getInt("UserID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
                 patient.setContactNumber(rs.getString("ContactNumber"));
                 patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
-                patient.setPImageLink(rs.getString("PImageLink"));
-                patient.setCreatedBy(rs.getInt("CreatedBy"));
+                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
+                
                 patients.add(patient);
             }
         } catch (SQLException e) {
@@ -249,33 +251,76 @@ public class PatientDAO {
     }
     
     public boolean addPatient(Patient patient) {
-        String sql = "INSERT INTO Patients (FirstName, LastName, ContactNumber, Email, Address, PImageLink, CreatedBy) VALUES (?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
+        PreparedStatement detailStmt = null;
         boolean result = false;
         
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            conn.setAutoCommit(false);
+            
+            // Insert into Users table
+            String userSql = "INSERT INTO Users (FirstName, LastName, Email, ContactNumber, Address, ProfileImage, Role) " +
+                           "VALUES (?, ?, ?, ?, ?, ?, 'Patient')";
+            stmt = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, patient.getFirstName());
             stmt.setString(2, patient.getLastName());
-            stmt.setString(3, patient.getContactNumber());
-            stmt.setString(4, patient.getEmail());
+            stmt.setString(3, patient.getEmail());
+            stmt.setString(4, patient.getContactNumber());
             stmt.setString(5, patient.getAddress());
             stmt.setString(6, patient.getPImageLink());
-            stmt.setInt(7, patient.getCreatedBy());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
-                result = true;
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    patient.setPatientID(generatedKeys.getInt(1));
+                    int userID = generatedKeys.getInt(1);
+                    patient.setPatientID(userID);
+                    
+                    // Insert into UserDetails table
+                    String detailSql = "INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup) VALUES (?, ?, ?, ?)";
+                    detailStmt = conn.prepareStatement(detailSql);
+                    detailStmt.setInt(1, userID);
+                    
+                    if (patient.getDateOfBirth() != null) {
+                        detailStmt.setDate(2, new java.sql.Date(patient.getDateOfBirth().getTime()));
+                    } else {
+                        detailStmt.setNull(2, Types.DATE);
+                    }
+                    
+                    detailStmt.setString(3, patient.getGender());
+                    detailStmt.setString(4, patient.getBloodGroup());
+                    detailStmt.executeUpdate();
+                    
+                    conn.commit();
+                    result = true;
                 }
             }
         } catch (SQLException e) {
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (detailStmt != null) {
+                try {
+                    detailStmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             if (stmt != null) {
                 try {
                     stmt.close();
@@ -290,32 +335,93 @@ public class PatientDAO {
     }
     
     public boolean updatePatient(Patient patient) {
-        String sql = "UPDATE Patients SET FirstName = ?, LastName = ?, ContactNumber = ?, Email = ?, Address = ?, PImageLink = ? WHERE PatientID = ?";
         Connection conn = null;
-        PreparedStatement stmt = null;
+        PreparedStatement userStmt = null;
+        PreparedStatement detailStmt = null;
         boolean result = false;
         
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, patient.getFirstName());
-            stmt.setString(2, patient.getLastName());
-            stmt.setString(3, patient.getContactNumber());
-            stmt.setString(4, patient.getEmail());
-            stmt.setString(5, patient.getAddress());
-            stmt.setString(6, patient.getPImageLink());
-            stmt.setInt(7, patient.getPatientID());
+            conn.setAutoCommit(false);
             
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
+            // Update Users table
+            String userSql = "UPDATE Users SET FirstName = ?, LastName = ?, Email = ?, ContactNumber = ?, Address = ?, ProfileImage = ? " +
+                           "WHERE UserID = ? AND Role = 'Patient'";
+            userStmt = conn.prepareStatement(userSql);
+            userStmt.setString(1, patient.getFirstName());
+            userStmt.setString(2, patient.getLastName());
+            userStmt.setString(3, patient.getEmail());
+            userStmt.setString(4, patient.getContactNumber());
+            userStmt.setString(5, patient.getAddress());
+            userStmt.setString(6, patient.getPImageLink());
+            userStmt.setInt(7, patient.getPatientID());
+            
+            int userRowsAffected = userStmt.executeUpdate();
+            
+            // Check if user details already exist
+            String checkSql = "SELECT COUNT(*) FROM UserDetails WHERE UserID = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setInt(1, patient.getPatientID());
+            ResultSet rs = checkStmt.executeQuery();
+            boolean detailsExist = false;
+            if (rs.next()) {
+                detailsExist = rs.getInt(1) > 0;
             }
+            rs.close();
+            checkStmt.close();
+            
+            // Update or insert into UserDetails
+            String detailSql;
+            if (detailsExist) {
+                detailSql = "UPDATE UserDetails SET DateOfBirth = ?, Gender = ?, BloodGroup = ? WHERE UserID = ?";
+            } else {
+                detailSql = "INSERT INTO UserDetails (DateOfBirth, Gender, BloodGroup, UserID) VALUES (?, ?, ?, ?)";
+            }
+            
+            detailStmt = conn.prepareStatement(detailSql);
+            
+            if (patient.getDateOfBirth() != null) {
+                detailStmt.setDate(1, new java.sql.Date(patient.getDateOfBirth().getTime()));
+            } else {
+                detailStmt.setNull(1, Types.DATE);
+            }
+            
+            detailStmt.setString(2, patient.getGender());
+            detailStmt.setString(3, patient.getBloodGroup());
+            detailStmt.setInt(4, patient.getPatientID());
+            
+            int detailRowsAffected = detailStmt.executeUpdate();
+            
+            conn.commit();
+            result = (userRowsAffected > 0 || detailRowsAffected > 0);
+            
         } catch (SQLException e) {
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         } finally {
-            if (stmt != null) {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (detailStmt != null) {
                 try {
-                    stmt.close();
+                    detailStmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (userStmt != null) {
+                try {
+                    userStmt.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -327,7 +433,8 @@ public class PatientDAO {
     }
     
     public boolean deletePatient(int patientID) {
-        String sql = "DELETE FROM Patients WHERE PatientID = ?";
+        // With foreign key constraints using ON DELETE CASCADE, deleting from Users will also delete from UserDetails
+        String sql = "DELETE FROM Users WHERE UserID = ? AND Role = 'Patient'";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -363,8 +470,11 @@ public class PatientDAO {
      * @return list of patients without diagnosis
      */
     public List<Patient> getPatientsWithoutDiagnosis() {
-        // Query to get patients that don't have an entry in the diagnosis table
-        String sql = "SELECT p.* FROM patients p LEFT JOIN diagnosis d ON p.PatientID = d.PatientID WHERE d.DiagnosisID IS NULL";
+        String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "LEFT JOIN Diagnosis d ON u.UserID = d.PatientID " +
+                     "WHERE u.Role = 'Patient' AND d.DiagnosisID IS NULL";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -377,19 +487,21 @@ public class PatientDAO {
             
             while (rs.next()) {
                 Patient patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
-                patient.setUserID(rs.getInt("UserID"));
+                patient.setPatientID(rs.getInt("UserID"));
                 patient.setFirstName(rs.getString("FirstName"));
                 patient.setLastName(rs.getString("LastName"));
-                patient.setGender(rs.getString("Gender"));
-                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
-                patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
                 patient.setContactNumber(rs.getString("ContactNumber"));
+                patient.setEmail(rs.getString("Email"));
                 patient.setAddress(rs.getString("Address"));
+                patient.setPImageLink(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));
-                patient.setNurseID(rs.getInt("NurseID"));
-                patient.setSymptoms(rs.getString("Symptoms"));
-                patient.setReferrable(rs.getBoolean("IsReferrable"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
                 
                 patients.add(patient);
             }
@@ -444,7 +556,11 @@ public class PatientDAO {
      * @return nurse's name (first + last)
      */
     public String getRegisteringNurseName(int patientID) {
-        String sql = "SELECT n.FirstName, n.LastName FROM patients p JOIN nurses n ON p.NurseID = n.NurseID WHERE p.PatientID = ?";
+        String sql = "SELECT n.FirstName, n.LastName " +
+                     "FROM Diagnosis d " +
+                     "JOIN Users n ON d.NurseID = n.UserID " +
+                     "WHERE d.PatientID = ? " +
+                     "ORDER BY d.CreatedDate ASC LIMIT 1";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -489,57 +605,8 @@ public class PatientDAO {
      * @return a list of patients registered by the nurse
      */
     public List<Patient> getPatientsByNurseID(int nurseID) {
-        String sql = "SELECT * FROM patients WHERE NurseID = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Patient> patients = new ArrayList<>();
-        
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, nurseID);
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Patient patient = new Patient();
-                patient.setPatientID(rs.getInt("PatientID"));
-                patient.setUserID(rs.getInt("UserID"));
-                patient.setFirstName(rs.getString("FirstName"));
-                patient.setLastName(rs.getString("LastName"));
-                patient.setGender(rs.getString("Gender"));
-                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
-                patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
-                patient.setContactNumber(rs.getString("ContactNumber"));
-                patient.setAddress(rs.getString("Address"));
-                patient.setBloodGroup(rs.getString("BloodGroup"));
-                patient.setNurseID(rs.getInt("NurseID"));
-                patient.setSymptoms(rs.getString("Symptoms"));
-                patient.setReferrable(rs.getBoolean("IsReferrable"));
-                
-                patients.add(patient);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
-        }
-        
-        return patients;
+        // Same as getPatientsByNurse(int nurseUserID) in the new schema
+        return getPatientsByNurse(nurseID);
     }
     
     /**
@@ -549,7 +616,7 @@ public class PatientDAO {
      * @return the full name of the nurse
      */
     public String getNurseNameByID(int nurseID) {
-        String sql = "SELECT FirstName, LastName FROM Nurses WHERE NurseID = ?";
+        String sql = "SELECT FirstName, LastName FROM Users WHERE UserID = ? AND Role = 'Nurse'";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -594,7 +661,7 @@ public class PatientDAO {
      * @return the full name of the doctor
      */
     public String getDoctorNameByID(int doctorID) {
-        String sql = "SELECT FirstName, LastName FROM Doctors WHERE DoctorID = ?";
+        String sql = "SELECT FirstName, LastName FROM Users WHERE UserID = ? AND Role = 'Doctor'";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;

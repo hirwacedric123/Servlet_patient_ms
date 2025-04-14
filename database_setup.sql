@@ -1,52 +1,48 @@
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS diagnosis;
+DROP TABLE IF EXISTS patients;
+DROP TABLE IF EXISTS doctors;
+DROP TABLE IF EXISTS nurses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS hospitals;
+
 -- Create database
 CREATE DATABASE IF NOT EXISTS PMS;
 USE PMS;
 
--- Users table
+-- Users table - consolidated table for all user types
 CREATE TABLE IF NOT EXISTS Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     Username VARCHAR(50) NOT NULL UNIQUE,
     Password VARCHAR(255) NOT NULL,
-    UserType ENUM('Admin', 'Nurse', 'Doctor', 'Patient') NOT NULL
-);
-
--- Patients table
-CREATE TABLE IF NOT EXISTS Patients (
-    PatientID INT AUTO_INCREMENT PRIMARY KEY,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
-    Telephone VARCHAR(20),
     Email VARCHAR(100),
+    ContactNumber VARCHAR(20),
     Address VARCHAR(255),
-    PImageLink VARCHAR(255),
-    CreatedBy INT,
-    FOREIGN KEY (CreatedBy) REFERENCES Users(UserID)
+    ProfileImage VARCHAR(255),
+    Role ENUM('Admin', 'Nurse', 'Doctor', 'Patient') NOT NULL,
+    CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    LastLogin TIMESTAMP NULL
 );
 
--- Nurses table
-CREATE TABLE IF NOT EXISTS Nurses (
-    NurseID INT AUTO_INCREMENT PRIMARY KEY,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    Telephone VARCHAR(20),
-    Email VARCHAR(100),
-    Address VARCHAR(255),
-    HealthCenter VARCHAR(100),
-    UserID INT UNIQUE,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
--- Doctors table
-CREATE TABLE IF NOT EXISTS Doctors (
-    DoctorID INT AUTO_INCREMENT PRIMARY KEY,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    Telephone VARCHAR(20),
-    Email VARCHAR(100),
-    Address VARCHAR(255),
-    HospitalName VARCHAR(100),
-    UserID INT UNIQUE,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+-- User details table - for role-specific information
+CREATE TABLE IF NOT EXISTS UserDetails (
+    DetailID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    -- Patient specific fields
+    DateOfBirth DATE NULL,
+    Gender VARCHAR(10) NULL,
+    BloodGroup VARCHAR(5) NULL,
+    EmergencyContact VARCHAR(100) NULL,
+    -- Healthcare provider specific fields
+    Institution VARCHAR(100) NULL,
+    Department VARCHAR(100) NULL,
+    Specialization VARCHAR(100) NULL,
+    LicenseNumber VARCHAR(50) NULL,
+    -- Common fields
+    Notes TEXT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
 -- Diagnosis table
@@ -54,20 +50,28 @@ CREATE TABLE IF NOT EXISTS Diagnosis (
     DiagnosisID INT AUTO_INCREMENT PRIMARY KEY,
     PatientID INT NOT NULL,
     NurseID INT NOT NULL,
-    DoctorID INT,
+    DoctorID INT NULL,
+    Symptoms TEXT NULL,
     DiagnoStatus ENUM('Referrable', 'Not Referrable') NOT NULL,
     Result VARCHAR(1000) DEFAULT 'Pending',
     CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
-    FOREIGN KEY (NurseID) REFERENCES Nurses(NurseID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+    FOREIGN KEY (PatientID) REFERENCES Users(UserID),
+    FOREIGN KEY (NurseID) REFERENCES Users(UserID),
+    FOREIGN KEY (DoctorID) REFERENCES Users(UserID)
 );
 
 -- Insert admin user
-INSERT INTO Users (Username, Password, UserType) VALUES ('admin', '$2a$12$FxzZCJcfdyZ6gr0127IL.7mJFk0SVeYZ5Va9NqHLrK4uqzLZVTsy', 'Admin');
+INSERT INTO Users (Username, Password, FirstName, LastName, Role) 
+VALUES ('admin', '$2a$12$FxzZCJcfdyZ6gr0127IL.7mJFk0SVeYZ5Va9NqHLrK4uqzLZVTsy', 'System', 'Administrator', 'Admin');
 
--- Update the admin user password to use the bcrypt hash for 'admin123'
-UPDATE users 
-SET Password = '$2a$12$FxzZCJcfdyZ6gr0127IL.7mJFk0SVeYZ5Va9NqHLrK4uqzLZVTsy' 
-WHERE Username = 'admin'; 
+-- Migrate existing user
+INSERT INTO Users (Username, Password, FirstName, LastName, Role)
+VALUES ('cedric', '$2a$12$b3etmFKYb4DwvtPdwKAr5eQCdJiyUKkPwtC9IrMCHA64JM1cs/312', 'Cedric', 'Patient', 'Patient');
+
+-- Create indexes for performance
+CREATE INDEX idx_user_role ON Users(Role);
+CREATE INDEX idx_diagnosis_patient ON Diagnosis(PatientID);
+CREATE INDEX idx_diagnosis_nurse ON Diagnosis(NurseID);
+CREATE INDEX idx_diagnosis_doctor ON Diagnosis(DoctorID);
+CREATE INDEX idx_diagnosis_status ON Diagnosis(DiagnoStatus); 
