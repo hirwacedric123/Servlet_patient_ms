@@ -4,8 +4,11 @@ echo Using Maven from C:\Program Files\Apache Software Foundation\Maven\apache-m
 set MAVEN_HOME=C:\Program Files\Apache Software Foundation\Maven\apache-maven-3.9.9
 set PATH=%MAVEN_HOME%\bin;%PATH%
 
+rem Set Tomcat path directly instead of asking
+set TOMCAT_PATH=C:\Program Files\Apache Software Foundation\Tomcat 9.0
+
 echo Building project with UI improvements...
-"%MAVEN_HOME%\bin\mvn" clean package
+call "%MAVEN_HOME%\bin\mvn.cmd" clean package
 
 if %ERRORLEVEL% NEQ 0 (
     echo Build failed. See errors above.
@@ -15,10 +18,8 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo Build successful! UI improvements have been applied.
 
-set /p TOMCAT_PATH=Enter your Tomcat installation path (e.g. C:\Program Files\Apache Software Foundation\Tomcat): 
-
 if not exist "%TOMCAT_PATH%\webapps" (
-    echo Invalid Tomcat directory. Webapps folder not found.
+    echo Invalid Tomcat directory. Webapps folder not found at %TOMCAT_PATH%\webapps
     pause
     exit /b 1
 )

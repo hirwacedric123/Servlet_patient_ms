@@ -8,11 +8,12 @@ import java.sql.Timestamp;
 public class Diagnosis {
     private int diagnosisID;
     private int patientID;
+    private int nurseID;
     private int doctorID;
-    private String diagnosis;
-    private String treatment;
-    private Timestamp diagnosisDate;
-    private String notes;
+    private String diagnoStatus; // 'Referrable' or 'Not Referrable'
+    private String result; // 'Pending' or text result provided by doctor
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
     
     /**
      * Default constructor
@@ -25,21 +26,23 @@ public class Diagnosis {
      * 
      * @param diagnosisID the diagnosis ID
      * @param patientID the patient ID
-     * @param doctorID the doctor ID
-     * @param diagnosis the diagnosis text
-     * @param treatment the treatment plan
-     * @param diagnosisDate the date of diagnosis
-     * @param notes additional notes
+     * @param nurseID the nurse ID who registered the patient
+     * @param doctorID the doctor ID who provided diagnosis
+     * @param diagnoStatus the diagnosis status (Referrable or Not Referrable)
+     * @param result the diagnosis result
+     * @param createdDate the date diagnosis was created
+     * @param updatedDate the date diagnosis was updated
      */
-    public Diagnosis(int diagnosisID, int patientID, int doctorID, String diagnosis, String treatment, 
-                     Timestamp diagnosisDate, String notes) {
+    public Diagnosis(int diagnosisID, int patientID, int nurseID, int doctorID, String diagnoStatus,
+                     String result, Timestamp createdDate, Timestamp updatedDate) {
         this.diagnosisID = diagnosisID;
         this.patientID = patientID;
+        this.nurseID = nurseID;
         this.doctorID = doctorID;
-        this.diagnosis = diagnosis;
-        this.treatment = treatment;
-        this.diagnosisDate = diagnosisDate;
-        this.notes = notes;
+        this.diagnoStatus = diagnoStatus;
+        this.result = result;
+        this.createdDate = createdDate;
+        this.updatedDate = updatedDate;
     }
     
     /**
@@ -71,6 +74,20 @@ public class Diagnosis {
     }
     
     /**
+     * @return the nurseID
+     */
+    public int getNurseID() {
+        return nurseID;
+    }
+    
+    /**
+     * @param nurseID the nurseID to set
+     */
+    public void setNurseID(int nurseID) {
+        this.nurseID = nurseID;
+    }
+    
+    /**
      * @return the doctorID
      */
     public int getDoctorID() {
@@ -85,58 +102,80 @@ public class Diagnosis {
     }
     
     /**
-     * @return the diagnosis
+     * @return the diagnoStatus
      */
-    public String getDiagnosis() {
-        return diagnosis;
+    public String getDiagnoStatus() {
+        return diagnoStatus;
     }
     
     /**
-     * @param diagnosis the diagnosis to set
+     * @param diagnoStatus the diagnoStatus to set (Referrable or Not Referrable)
      */
-    public void setDiagnosis(String diagnosis) {
-        this.diagnosis = diagnosis;
+    public void setDiagnoStatus(String diagnoStatus) {
+        this.diagnoStatus = diagnoStatus;
+        // Set default result based on diagnoStatus
+        if (this.result == null || this.result.isEmpty()) {
+            if ("Referrable".equalsIgnoreCase(diagnoStatus)) {
+                this.result = "Pending";
+            } else if ("Not Referrable".equalsIgnoreCase(diagnoStatus)) {
+                this.result = "Negative";
+            }
+        }
     }
     
     /**
-     * @return the treatment
+     * @return the result
      */
-    public String getTreatment() {
-        return treatment;
+    public String getResult() {
+        return result;
     }
     
     /**
-     * @param treatment the treatment to set
+     * @param result the result to set
      */
-    public void setTreatment(String treatment) {
-        this.treatment = treatment;
+    public void setResult(String result) {
+        this.result = result;
     }
     
     /**
-     * @return the diagnosisDate
+     * @return whether the diagnosis is referrable
      */
-    public Timestamp getDiagnosisDate() {
-        return diagnosisDate;
+    public boolean isReferrable() {
+        return "Referrable".equalsIgnoreCase(diagnoStatus);
     }
     
     /**
-     * @param diagnosisDate the diagnosisDate to set
+     * @return whether the diagnosis result is pending
      */
-    public void setDiagnosisDate(Timestamp diagnosisDate) {
-        this.diagnosisDate = diagnosisDate;
+    public boolean isPending() {
+        return "Pending".equalsIgnoreCase(result);
     }
     
     /**
-     * @return the notes
+     * @return the createdDate
      */
-    public String getNotes() {
-        return notes;
+    public Timestamp getCreatedDate() {
+        return createdDate;
     }
     
     /**
-     * @param notes the notes to set
+     * @param createdDate the createdDate to set
      */
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
+    
+    /**
+     * @return the updatedDate
+     */
+    public Timestamp getUpdatedDate() {
+        return updatedDate;
+    }
+    
+    /**
+     * @param updatedDate the updatedDate to set
+     */
+    public void setUpdatedDate(Timestamp updatedDate) {
+        this.updatedDate = updatedDate;
     }
 } 

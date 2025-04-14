@@ -20,3 +20,4 @@ com\pms\model\Patient.class
 com\pms\controller\NurseDashboardServlet.class
 com\pms\controller\SignupServlet.class
 com\pms\controller\AdminPasswordUpdateServlet.class
+com\pms\controller\nurse\PatientRegistrationServlet.class

@@ -112,9 +112,9 @@ public class DoctorDashboardServlet extends HttpServlet {
                         caseDetails.put("patientID", patient.getPatientID());
                         caseDetails.put("patientName", patient.getFirstName() + " " + patient.getLastName());
                         caseDetails.put("patientAge", patient.getAge());
-                        caseDetails.put("diagnosis", diagnosis.getDiagnosis());
-                        caseDetails.put("treatment", diagnosis.getTreatment());
-                        caseDetails.put("diagnosisDate", diagnosis.getDiagnosisDate());
+                        caseDetails.put("diagnosis", diagnosis.getDiagnoStatus());
+                        caseDetails.put("treatment", diagnosis.getResult());
+                        caseDetails.put("diagnosisDate", diagnosis.getCreatedDate());
                         
                         confirmedCases.add(caseDetails);
                     }
