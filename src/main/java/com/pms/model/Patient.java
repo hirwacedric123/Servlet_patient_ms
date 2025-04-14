@@ -5,8 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Patient {
-    private int patientID;
-    private int userID;
+    private int patientID; // This is now the UserID from the Users table
     private String firstName;
     private String lastName;
     private String gender;
@@ -16,17 +15,16 @@ public class Patient {
     private String email;
     private String address;
     private String bloodGroup;
-    private int nurseID;
-    private String symptoms;
-    private boolean referrable;
-    private String pImageLink;
-    private int createdBy;
+    private String emergencyContact;
+    private String pImageLink; // Profile image from Users table (was PImageLink)
     
     public Patient() {
         // Default constructor
     }
     
-    public Patient(String firstName, String lastName, String contactNumber, String email, String address, String pImageLink, String gender, String dateOfBirth, int createdBy) {
+    public Patient(String firstName, String lastName, String contactNumber, String email, 
+                  String address, String pImageLink, String gender, String dateOfBirth, 
+                  String bloodGroup) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.contactNumber = contactNumber;
@@ -35,10 +33,12 @@ public class Patient {
         this.pImageLink = pImageLink;
         this.gender = gender;
         this.dateOfBirth = convertStringToDate(dateOfBirth);
-        this.createdBy = createdBy;
+        this.bloodGroup = bloodGroup;
     }
     
-    public Patient(int patientID, String firstName, String lastName, String contactNumber, String email, String address, String pImageLink, String gender, String dateOfBirth, int createdBy, int userID) {
+    public Patient(int patientID, String firstName, String lastName, String contactNumber, 
+                  String email, String address, String pImageLink, String gender, 
+                  String dateOfBirth, String bloodGroup) {
         this.patientID = patientID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,8 +48,7 @@ public class Patient {
         this.pImageLink = pImageLink;
         this.gender = gender;
         this.dateOfBirth = convertStringToDate(dateOfBirth);
-        this.createdBy = createdBy;
-        this.userID = userID;
+        this.bloodGroup = bloodGroup;
     }
     
     // Helper method to convert String to java.sql.Date
@@ -74,14 +73,6 @@ public class Patient {
     
     public void setPatientID(int patientID) {
         this.patientID = patientID;
-    }
-    
-    public int getUserID() {
-        return userID;
-    }
-    
-    public void setUserID(int userID) {
-        this.userID = userID;
     }
     
     public String getFirstName() {
@@ -161,28 +152,12 @@ public class Patient {
         this.bloodGroup = bloodGroup;
     }
     
-    public int getNurseID() {
-        return nurseID;
+    public String getEmergencyContact() {
+        return emergencyContact;
     }
     
-    public void setNurseID(int nurseID) {
-        this.nurseID = nurseID;
-    }
-    
-    public String getSymptoms() {
-        return symptoms;
-    }
-    
-    public void setSymptoms(String symptoms) {
-        this.symptoms = symptoms;
-    }
-    
-    public boolean isReferrable() {
-        return referrable;
-    }
-    
-    public void setReferrable(boolean referrable) {
-        this.referrable = referrable;
+    public void setEmergencyContact(String emergencyContact) {
+        this.emergencyContact = emergencyContact;
     }
 
     public String getPImageLink() {
@@ -192,12 +167,8 @@ public class Patient {
     public void setPImageLink(String pImageLink) {
         this.pImageLink = pImageLink;
     }
-
-    public int getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(int createdBy) {
-        this.createdBy = createdBy;
+    
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 } 
