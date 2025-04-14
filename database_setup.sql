@@ -65,4 +65,9 @@ CREATE TABLE IF NOT EXISTS Diagnosis (
 );
 
 -- Insert admin user
-INSERT INTO Users (Username, Password, UserType) VALUES ('admin', 'admin123', 'Admin'); 
+INSERT INTO Users (Username, Password, UserType) VALUES ('admin', '$2a$12$FxzZCJcfdyZ6gr0127IL.7mJFk0SVeYZ5Va9NqHLrK4uqzLZVTsy', 'Admin');
+
+-- Update the admin user password to use the bcrypt hash for 'admin123'
+UPDATE users 
+SET Password = '$2a$12$FxzZCJcfdyZ6gr0127IL.7mJFk0SVeYZ5Va9NqHLrK4uqzLZVTsy' 
+WHERE Username = 'admin'; 

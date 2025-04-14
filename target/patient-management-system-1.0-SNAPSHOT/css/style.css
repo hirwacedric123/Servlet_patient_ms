@@ -1,15 +1,25 @@
 /* Global Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
 }
 
 .card {
     border-radius: 10px;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
     padding: 1.5rem;
+    font-weight: 600;
 }
 
 .bg-primary {
@@ -19,17 +29,22 @@ body {
 .btn-primary {
     background-color: #2c3e50;
     border-color: #2c3e50;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: #1a252f;
     border-color: #1a252f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Dashboard Styles */
 .dashboard-card {
     transition: transform 0.3s ease;
     margin-bottom: 20px;
+    height: 100%;
 }
 
 .dashboard-card:hover {
@@ -39,39 +54,82 @@ body {
 .dashboard-icon {
     font-size: 3rem;
     margin-bottom: 15px;
+    opacity: 0.8;
 }
 
 .sidebar {
     min-height: 100vh;
     background-color: #2c3e50;
     padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-link {
-    color: white;
-    padding: 10px 15px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 18px;
     display: block;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    margin-bottom: 5px;
 }
 
 .sidebar-link:hover {
-    background-color: #1a252f;
+    background-color: rgba(26, 37, 47, 0.7);
     color: white;
+    border-left: 4px solid #3498db;
 }
 
 .sidebar-link.active {
     background-color: #1a252f;
     border-left: 4px solid #3498db;
+    color: white;
+    font-weight: 600;
 }
 
 .content-area {
-    padding: 20px;
+    padding: 30px;
+}
+
+/* Navbar Styling */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(44, 62, 80, 0.1);
 }
 
 /* Table Styles */
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.table {
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .pagination .page-item.active .page-link {
@@ -80,6 +138,13 @@ body {
 }
 
 /* Form Styles */
+.form-control {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
 .form-control:focus {
     border-color: #3498db;
     box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
@@ -90,8 +155,33 @@ body {
     width: 150px;
     height: 150px;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 10px;
     border: 1px solid #dee2e6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Welcome Banner */
+.welcome-banner {
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Stats Cards */
+.stats-card {
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.stats-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.8;
 }
 
 /* Responsive Adjustments */
@@ -102,5 +192,14 @@ body {
     
     .content-area {
         margin-top: 20px;
+        padding: 15px;
+    }
+    
+    .welcome-banner {
+        padding: 15px;
+    }
+    
+    .card-header {
+        padding: 1rem;
     }
 } 
