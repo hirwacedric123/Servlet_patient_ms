@@ -541,4 +541,94 @@ public class PatientDAO {
         
         return patients;
     }
+    
+    /**
+     * Get nurse name by nurse ID
+     * 
+     * @param nurseID the ID of the nurse
+     * @return the full name of the nurse
+     */
+    public String getNurseNameByID(int nurseID) {
+        String sql = "SELECT FirstName, LastName FROM Nurses WHERE NurseID = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String nurseName = "Unknown";
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, nurseID);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                nurseName = rs.getString("FirstName") + " " + rs.getString("LastName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return nurseName;
+    }
+    
+    /**
+     * Get doctor name by doctor ID
+     * 
+     * @param doctorID the ID of the doctor
+     * @return the full name of the doctor
+     */
+    public String getDoctorNameByID(int doctorID) {
+        String sql = "SELECT FirstName, LastName FROM Doctors WHERE DoctorID = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String doctorName = "Unknown";
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, doctorID);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                doctorName = rs.getString("FirstName") + " " + rs.getString("LastName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return doctorName;
+    }
 } 

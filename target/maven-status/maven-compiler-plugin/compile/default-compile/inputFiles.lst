@@ -6,6 +6,7 @@ C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\Doctor.j
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\User.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\Diagnosis.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\NurseDashboardServlet.java
+C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\PatientDashboardServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\util\PasswordUtil.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\util\DBConnection.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\LogoutServlet.java
