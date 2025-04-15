@@ -133,20 +133,25 @@ public class DoctorDAO {
     public Doctor getDoctorByUserID(int userId) {
         Doctor doctor = null;
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM doctors WHERE user_id=?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM doctors WHERE UserID=?");
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 doctor = new Doctor();
-                doctor.setId(rs.getInt("id"));
-                doctor.setName(rs.getString("name"));
-                doctor.setSpecialization(rs.getString("specialization"));
-                doctor.setEmail(rs.getString("email"));
-                doctor.setPhone(rs.getString("phone"));
-                doctor.setAddress(rs.getString("address"));
-                doctor.setActive(rs.getBoolean("active"));
-                doctor.setUserId(rs.getInt("user_id"));
-                doctor.setHospitalName(rs.getString("hospital_name"));
+                doctor.setId(rs.getInt("DoctorID"));
+                doctor.setUserId(rs.getInt("UserID"));
+                
+                // Combine first and last name
+                String firstName = rs.getString("FirstName");
+                String lastName = rs.getString("LastName");
+                doctor.setName(firstName + " " + lastName);
+                
+                doctor.setSpecialization(rs.getString("Specialization"));
+                doctor.setEmail(rs.getString("Email"));
+                doctor.setPhone(rs.getString("ContactNumber"));
+                doctor.setAddress(rs.getString("Address"));
+                doctor.setHospitalName(rs.getString("HospitalName"));
+                doctor.setActive(true); // Default to active
             }
         } catch (SQLException e) {
             e.printStackTrace();
