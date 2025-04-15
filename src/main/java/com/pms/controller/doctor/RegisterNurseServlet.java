@@ -121,12 +121,20 @@ public class RegisterNurseServlet extends HttpServlet {
                 // Save the doctor ID who registered this nurse
                 Doctor registeringDoctor = doctorDAO.getDoctorByUserID(user.getUserID());
                 if (registeringDoctor != null) {
-                    // We'll need to add a field to the Nurse model and database to track this
+                    System.out.println("Setting registered by doctor ID: " + registeringDoctor.getId());
                     nurse.setRegisteredByDoctorID(registeringDoctor.getId());
+                } else {
+                    System.err.println("Warning: Could not find doctor record for user ID: " + user.getUserID());
                 }
                 
-                nurseDAO.addNurse(nurse);
-                request.setAttribute("successMessage", "Nurse registered successfully!");
+                boolean nurseAdded = nurseDAO.addNurse(nurse);
+                if (nurseAdded) {
+                    request.setAttribute("successMessage", "Nurse registered successfully!");
+                    System.out.println("Nurse added successfully with ID: " + nurse.getNurseID());
+                } else {
+                    request.setAttribute("errorMessage", "Error adding nurse record. User account was created but nurse record failed.");
+                    System.err.println("Failed to add nurse record for user ID: " + newUser.getUserID());
+                }
             } else {
                 request.setAttribute("errorMessage", "Error creating user account. Please try again.");
             }

@@ -8,17 +8,73 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NurseDAO {
+    private Connection connection;
+    
+    public NurseDAO() {
+        try {
+            connection = DBConnection.getConnection();
+            // Ensure the Nurses table exists
+            ensureNursesTableExists();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to establish database connection", e);
+        }
+    }
+    
+    /**
+     * Creates the Nurses table if it doesn't exist
+     */
+    private void ensureNursesTableExists() {
+        try {
+            DatabaseMetaData meta = connection.getMetaData();
+            ResultSet tables = meta.getTables(null, null, "Nurses", null);
+            
+            if (!tables.next()) {
+                // Table doesn't exist, create it
+                Statement stmt = connection.createStatement();
+                String createTableSQL = 
+                    "CREATE TABLE Nurses (" +
+                    "NurseID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "FirstName VARCHAR(50) NOT NULL, " +
+                    "LastName VARCHAR(50) NOT NULL, " +
+                    "Telephone VARCHAR(20), " +
+                    "Email VARCHAR(100), " +
+                    "Address VARCHAR(255), " +
+                    "HealthCenter VARCHAR(100), " +
+                    "UserID INT NOT NULL, " +
+                    "RegisteredByDoctorID INT, " +
+                    "FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE" +
+                    ")";
+                
+                stmt.executeUpdate(createTableSQL);
+                System.out.println("Created Nurses table");
+                stmt.close();
+            } else {
+                // Table exists, check if RegisteredByDoctorID column exists
+                ResultSet columns = meta.getColumns(null, null, "Nurses", "RegisteredByDoctorID");
+                if (!columns.next()) {
+                    // Add the missing column
+                    Statement stmt = connection.createStatement();
+                    String addColumnSQL = "ALTER TABLE Nurses ADD COLUMN RegisteredByDoctorID INT DEFAULT NULL";
+                    stmt.executeUpdate(addColumnSQL);
+                    System.out.println("Added RegisteredByDoctorID column to Nurses table");
+                    stmt.close();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error ensuring Nurses table: " + e.getMessage());
+        }
+    }
     
     public Nurse getNurseByID(int nurseID) {
         String sql = "SELECT * FROM Nurses WHERE NurseID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Nurse nurse = null;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, nurseID);
             rs = stmt.executeQuery();
             
@@ -32,6 +88,13 @@ public class NurseDAO {
                 nurse.setAddress(rs.getString("Address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
+                
+                try {
+                    nurse.setRegisteredByDoctorID(rs.getInt("RegisteredByDoctorID"));
+                } catch (SQLException e) {
+                    // RegisteredByDoctorID might not exist in older records
+                    nurse.setRegisteredByDoctorID(0);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,7 +113,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return nurse;
@@ -58,14 +120,12 @@ public class NurseDAO {
     
     public Nurse getNurseByUserID(int userID) {
         String sql = "SELECT * FROM Nurses WHERE UserID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Nurse nurse = null;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, userID);
             rs = stmt.executeQuery();
             
@@ -79,6 +139,13 @@ public class NurseDAO {
                 nurse.setAddress(rs.getString("Address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
+                
+                try {
+                    nurse.setRegisteredByDoctorID(rs.getInt("RegisteredByDoctorID"));
+                } catch (SQLException e) {
+                    // RegisteredByDoctorID might not exist in older records
+                    nurse.setRegisteredByDoctorID(0);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,7 +164,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return nurse;
@@ -105,14 +171,12 @@ public class NurseDAO {
     
     public List<Nurse> getAllNurses() {
         String sql = "SELECT * FROM Nurses";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Nurse> nurses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -125,6 +189,14 @@ public class NurseDAO {
                 nurse.setAddress(rs.getString("Address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
+                
+                try {
+                    nurse.setRegisteredByDoctorID(rs.getInt("RegisteredByDoctorID"));
+                } catch (SQLException e) {
+                    // RegisteredByDoctorID might not exist in older records
+                    nurse.setRegisteredByDoctorID(0);
+                }
+                
                 nurses.add(nurse);
             }
         } catch (SQLException e) {
@@ -144,7 +216,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return nurses;
@@ -152,13 +223,11 @@ public class NurseDAO {
     
     public boolean addNurse(Nurse nurse) {
         String sql = "INSERT INTO Nurses (FirstName, LastName, Telephone, Email, Address, HealthCenter, UserID, RegisteredByDoctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, nurse.getFirstName());
             stmt.setString(2, nurse.getLastName());
             stmt.setString(3, nurse.getTelephone());
@@ -166,7 +235,13 @@ public class NurseDAO {
             stmt.setString(5, nurse.getAddress());
             stmt.setString(6, nurse.getHealthCenter());
             stmt.setInt(7, nurse.getUserID());
-            stmt.setInt(8, nurse.getRegisteredByDoctorID());
+            
+            // Handle RegisteredByDoctorID, which could be 0 if not set
+            if (nurse.getRegisteredByDoctorID() > 0) {
+                stmt.setInt(8, nurse.getRegisteredByDoctorID());
+            } else {
+                stmt.setNull(8, java.sql.Types.INTEGER);
+            }
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -174,10 +249,46 @@ public class NurseDAO {
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     nurse.setNurseID(generatedKeys.getInt(1));
+                    System.out.println("Successfully added nurse with ID: " + nurse.getNurseID());
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            System.err.println("Error adding nurse: " + e.getMessage());
+            // Check if the Nurses table exists and try to create it if needed
+            ensureNursesTableExists();
+            // Try one more time if the table was created
+            if (stmt == null) {
+                try {
+                    stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    stmt.setString(1, nurse.getFirstName());
+                    stmt.setString(2, nurse.getLastName());
+                    stmt.setString(3, nurse.getTelephone());
+                    stmt.setString(4, nurse.getEmail());
+                    stmt.setString(5, nurse.getAddress());
+                    stmt.setString(6, nurse.getHealthCenter());
+                    stmt.setInt(7, nurse.getUserID());
+                    
+                    if (nurse.getRegisteredByDoctorID() > 0) {
+                        stmt.setInt(8, nurse.getRegisteredByDoctorID());
+                    } else {
+                        stmt.setNull(8, java.sql.Types.INTEGER);
+                    }
+                    
+                    int rowsAffected = stmt.executeUpdate();
+                    if (rowsAffected > 0) {
+                        result = true;
+                        ResultSet generatedKeys = stmt.getGeneratedKeys();
+                        if (generatedKeys.next()) {
+                            nurse.setNurseID(generatedKeys.getInt(1));
+                            System.out.println("Successfully added nurse on retry with ID: " + nurse.getNurseID());
+                        }
+                    }
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                    System.err.println("Failed to add nurse on retry: " + e2.getMessage());
+                }
+            }
         } finally {
             if (stmt != null) {
                 try {
@@ -186,7 +297,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return result;
@@ -194,13 +304,11 @@ public class NurseDAO {
     
     public boolean updateNurse(Nurse nurse) {
         String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, Telephone = ?, Email = ?, Address = ?, HealthCenter = ? WHERE NurseID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setString(1, nurse.getFirstName());
             stmt.setString(2, nurse.getLastName());
             stmt.setString(3, nurse.getTelephone());
@@ -223,7 +331,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return result;
@@ -231,13 +338,11 @@ public class NurseDAO {
     
     public boolean deleteNurse(int nurseID) {
         String sql = "DELETE FROM Nurses WHERE NurseID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, nurseID);
             
             int rowsAffected = stmt.executeUpdate();
@@ -254,7 +359,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return result;
@@ -268,14 +372,12 @@ public class NurseDAO {
      */
     public List<Nurse> getNursesByDoctor(int doctorID) {
         String sql = "SELECT * FROM Nurses WHERE RegisteredByDoctorID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Nurse> nurses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, doctorID);
             rs = stmt.executeQuery();
             
@@ -309,7 +411,6 @@ public class NurseDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return nurses;
