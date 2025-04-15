@@ -59,11 +59,10 @@ public class DoctorDashboardServlet extends HttpServlet {
             if (doctor == null) {
                 // Either create a temporary doctor object with minimal info
                 doctor = new Doctor();
-                doctor.setDoctorID(0); // Use a default ID that won't affect queries
-                doctor.setFirstName(user.getUsername()); // Use username as a fallback
-                doctor.setLastName("");
+                doctor.setId(0); // Use setId with a default ID
+                doctor.setName(user.getUsername()); // Use setName
                 doctor.setSpecialization("General");
-                doctor.setUserID(user.getUserID());
+                doctor.setUserId(user.getUserID()); // Use setUserId
                 
                 // Add a message to the request about the missing doctor record
                 request.setAttribute("errorMessage", "Doctor profile is incomplete. Please contact an administrator.");
@@ -100,9 +99,9 @@ public class DoctorDashboardServlet extends HttpServlet {
             }
             
             // Only retrieve confirmed cases if we have a valid doctor ID
-            if (doctor.getDoctorID() > 0) {
+            if (doctor.getId() > 0) {
                 // Retrieve confirmed cases (patients with diagnosis)
-                List<Diagnosis> diagnoses = diagnosisDAO.getDiagnosesByDoctorID(doctor.getDoctorID());
+                List<Diagnosis> diagnoses = diagnosisDAO.getDiagnosesByDoctorID(doctor.getId());
                 
                 for (Diagnosis diagnosis : diagnoses) {
                     Map<String, Object> caseDetails = new HashMap<>();

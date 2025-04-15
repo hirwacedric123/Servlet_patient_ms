@@ -18,6 +18,7 @@ com\pms\util\DBConnection.class
 com\pms\controller\DatabaseTestServlet.class
 com\pms\model\Patient.class
 com\pms\controller\NurseDashboardServlet.class
+com\pms\controller\admin\DoctorManagementServlet.class
 com\pms\controller\PatientDashboardServlet.class
 com\pms\controller\SignupServlet.class
 com\pms\dao\AdminDAO.class

@@ -90,7 +90,7 @@
         
         <!-- Welcome message -->
         <div class="welcome-banner">
-            <h2><i class="fas fa-user-md me-2"></i>Welcome, Dr. ${doctor.firstName} ${doctor.lastName}!</h2>
+            <h2><i class="fas fa-user-md me-2"></i>Welcome, Dr. ${doctor.name}!</h2>
             <p>You are logged in as a doctor
                 <c:if test="${not empty doctor.specialization}">
                     specializing in ${doctor.specialization}

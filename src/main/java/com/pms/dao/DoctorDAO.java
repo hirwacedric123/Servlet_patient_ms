@@ -107,4 +107,28 @@ public class DoctorDAO {
         }
         return doctor;
     }
+
+    public Doctor getDoctorByUserID(int userId) {
+        Doctor doctor = null;
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM doctors WHERE user_id=?");
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                doctor = new Doctor();
+                doctor.setId(rs.getInt("id"));
+                doctor.setName(rs.getString("name"));
+                doctor.setSpecialization(rs.getString("specialization"));
+                doctor.setEmail(rs.getString("email"));
+                doctor.setPhone(rs.getString("phone"));
+                doctor.setAddress(rs.getString("address"));
+                doctor.setActive(rs.getBoolean("active"));
+                doctor.setUserId(rs.getInt("user_id"));
+                doctor.setHospitalName(rs.getString("hospital_name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctor;
+    }
 } 

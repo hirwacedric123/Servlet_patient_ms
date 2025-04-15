@@ -120,23 +120,15 @@ public class RegisterServlet extends HttpServlet {
                 }
                 
                 Doctor doctor = new Doctor();
-                doctor.setFirstName(firstName);
-                doctor.setLastName(lastName);
+                doctor.setName(firstName + " " + lastName);
                 doctor.setSpecialization(specialization);
-                doctor.setContactNumber(contactNumber);
+                doctor.setPhone(contactNumber);
                 doctor.setEmail(email);
                 doctor.setAddress(address);
-                doctor.setHospitalName("General Hospital"); // Default hospital name
-                doctor.setUserID(user.getUserID());
+                doctor.setHospitalName("General Hospital");
+                doctor.setUserId(user.getUserID());
                 
-                boolean doctorCreated = doctorDAO.addDoctor(doctor);
-                if (!doctorCreated) {
-                    userDAO.deleteUser(user.getUserID());
-                    request.setAttribute("errorMessage", "Failed to create doctor profile. Please try again.");
-                    request.setAttribute("userType", userType.toLowerCase());
-                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-                    return;
-                }
+                doctorDAO.addDoctor(doctor);
                 
                 // Set user and doctor in session for automatic login
                 request.getSession().setAttribute("user", user);
@@ -178,14 +170,7 @@ public class RegisterServlet extends HttpServlet {
                 patient.setEmail(email);
                 patient.setUserID(user.getUserID());
                 
-                boolean patientCreated = patientDAO.addPatient(patient);
-                if (!patientCreated) {
-                    userDAO.deleteUser(user.getUserID());
-                    request.setAttribute("errorMessage", "Failed to create patient profile");
-                    request.setAttribute("userType", userType.toLowerCase());
-                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-                    return;
-                }
+                patientDAO.addPatient(patient);
                 
                 // Set user and patient in session for automatic login
                 request.getSession().setAttribute("user", user);
