@@ -67,6 +67,11 @@
                             <i class="fas fa-stethoscope me-1"></i>Diagnose Patients
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/doctor/register-nurse">
+                            <i class="fas fa-user-nurse me-1"></i>Register Nurse
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
