@@ -258,4 +258,58 @@ public class NurseDAO {
         
         return result;
     }
+    
+    /**
+     * Get all nurses registered by a specific doctor
+     * 
+     * @param doctorID the ID of the doctor who registered the nurses
+     * @return a list of nurses registered by the doctor
+     */
+    public List<Nurse> getNursesByDoctor(int doctorID) {
+        String sql = "SELECT n.* FROM Nurses n WHERE n.RegisteredByDoctorID = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Nurse> nurses = new ArrayList<>();
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, doctorID);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Nurse nurse = new Nurse();
+                nurse.setNurseID(rs.getInt("NurseID"));
+                nurse.setFirstName(rs.getString("FirstName"));
+                nurse.setLastName(rs.getString("LastName"));
+                nurse.setTelephone(rs.getString("Telephone"));
+                nurse.setEmail(rs.getString("Email"));
+                nurse.setAddress(rs.getString("Address"));
+                nurse.setHealthCenter(rs.getString("HealthCenter"));
+                nurse.setUserID(rs.getInt("UserID"));
+                nurses.add(nurse);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return nurses;
+    }
 } 

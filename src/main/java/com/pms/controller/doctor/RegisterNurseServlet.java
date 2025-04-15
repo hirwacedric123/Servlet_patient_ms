@@ -118,6 +118,13 @@ public class RegisterNurseServlet extends HttpServlet {
                 nurse.setHealthCenter(healthCenter);
                 nurse.setUserID(newUser.getUserID());
                 
+                // Save the doctor ID who registered this nurse
+                Doctor registeringDoctor = doctorDAO.getDoctorByUserID(user.getUserID());
+                if (registeringDoctor != null) {
+                    // We'll need to add a field to the Nurse model and database to track this
+                    nurse.setRegisteredByDoctorID(registeringDoctor.getId());
+                }
+                
                 nurseDAO.addNurse(nurse);
                 request.setAttribute("successMessage", "Nurse registered successfully!");
             } else {
