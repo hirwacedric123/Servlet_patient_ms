@@ -40,7 +40,7 @@ public class NurseDAO {
                     "telephone VARCHAR(20), " +
                     "Email VARCHAR(100), " +
                     "address VARCHAR(255), " +
-                    "HealthCenter VARCHAR(100), " +
+                    "healthcenter VARCHAR(100), " +
                     "UserID INT NOT NULL, " +
                     "RegisteredByDoctorID INT, " +
                     "FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE" +
@@ -94,6 +94,28 @@ public class NurseDAO {
                     stmt.close();
                 }
                 
+                // Check for healthcenter column (both cases)
+                boolean hasHealthCenterColumn = false;
+                ResultSet healthCenterColumns = meta.getColumns(null, null, "Nurses", "healthcenter");
+                if (healthCenterColumns.next()) {
+                    hasHealthCenterColumn = true;
+                }
+
+                // Check capitalized version too
+                healthCenterColumns = meta.getColumns(null, null, "Nurses", "HealthCenter");
+                if (healthCenterColumns.next()) {
+                    hasHealthCenterColumn = true;
+                }
+                
+                if (!hasHealthCenterColumn) {
+                    // Add the missing column
+                    Statement stmt = connection.createStatement();
+                    String addColumnSQL = "ALTER TABLE Nurses ADD COLUMN healthcenter VARCHAR(100)";
+                    stmt.executeUpdate(addColumnSQL);
+                    System.out.println("Added healthcenter column to Nurses table");
+                    stmt.close();
+                }
+                
                 // Check for RegisteredByDoctorID column
                 ResultSet doctorIdColumn = meta.getColumns(null, null, "Nurses", "RegisteredByDoctorID");
                 if (!doctorIdColumn.next()) {
@@ -130,7 +152,7 @@ public class NurseDAO {
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
                 nurse.setAddress(rs.getString("address"));
-                nurse.setHealthCenter(rs.getString("HealthCenter"));
+                nurse.setHealthCenter(rs.getString("healthcenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 
                 try {
@@ -181,7 +203,7 @@ public class NurseDAO {
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
                 nurse.setAddress(rs.getString("address"));
-                nurse.setHealthCenter(rs.getString("HealthCenter"));
+                nurse.setHealthCenter(rs.getString("healthcenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 
                 try {
@@ -231,7 +253,7 @@ public class NurseDAO {
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
                 nurse.setAddress(rs.getString("address"));
-                nurse.setHealthCenter(rs.getString("HealthCenter"));
+                nurse.setHealthCenter(rs.getString("healthcenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 
                 try {
@@ -266,7 +288,7 @@ public class NurseDAO {
     }
     
     public boolean addNurse(Nurse nurse) {
-        String sql = "INSERT INTO Nurses (FirstName, LastName, telephone, Email, address, HealthCenter, UserID, RegisteredByDoctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Nurses (FirstName, LastName, telephone, Email, address, healthcenter, UserID, RegisteredByDoctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement stmt = null;
         boolean result = false;
         
@@ -347,7 +369,7 @@ public class NurseDAO {
     }
     
     public boolean updateNurse(Nurse nurse) {
-        String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, telephone = ?, Email = ?, address = ?, HealthCenter = ? WHERE NurseID = ?";
+        String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, telephone = ?, Email = ?, address = ?, healthcenter = ? WHERE NurseID = ?";
         PreparedStatement stmt = null;
         boolean result = false;
         
@@ -433,7 +455,7 @@ public class NurseDAO {
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
                 nurse.setAddress(rs.getString("address"));
-                nurse.setHealthCenter(rs.getString("HealthCenter"));
+                nurse.setHealthCenter(rs.getString("healthcenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 nurse.setRegisteredByDoctorID(rs.getInt("RegisteredByDoctorID"));
                 nurses.add(nurse);
