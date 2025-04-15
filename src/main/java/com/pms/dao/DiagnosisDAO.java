@@ -1,7 +1,9 @@
 package com.pms.dao;
 
 import com.pms.model.Diagnosis;
+import com.pms.model.DiagnosisStats;
 import com.pms.util.DBConnection;
+import com.pms.util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -756,5 +758,80 @@ public class DiagnosisDAO {
         }
         
         return count;
+    }
+    
+    /**
+     * Get diagnosis cases statistics grouped by doctor
+     * @return List of diagnosis statistics by doctor
+     */
+    public List<DiagnosisStats> getDiagnosisStatsByDoctor() {
+        List<DiagnosisStats> doctorStats = new ArrayList<>();
+        
+        String sql = "SELECT d.DoctorID, CONCAT(d.FirstName, ' ', d.LastName) AS DoctorName, " +
+                     "d.HospitalName, COUNT(diag.DiagnosisID) AS TotalCases " +
+                     "FROM Doctors d " +
+                     "LEFT JOIN Diagnosis diag ON d.DoctorID = diag.DoctorID " +
+                     "GROUP BY d.DoctorID, DoctorName, d.HospitalName " +
+                     "ORDER BY TotalCases DESC";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                int doctorId = rs.getInt("DoctorID");
+                String doctorName = rs.getString("DoctorName");
+                String hospitalName = rs.getString("HospitalName");
+                int totalCases = rs.getInt("TotalCases");
+                
+                DiagnosisStats stats = new DiagnosisStats(doctorId, doctorName, hospitalName, totalCases);
+                doctorStats.add(stats);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return doctorStats;
+    }
+    
+    /**
+     * Get diagnosis cases statistics grouped by nurse
+     * @return List of diagnosis statistics by nurse
+     */
+    public List<DiagnosisStats> getDiagnosisStatsByNurse() {
+        List<DiagnosisStats> nurseStats = new ArrayList<>();
+        
+        String sql = "SELECT n.NurseID, CONCAT(n.FirstName, ' ', n.LastName) AS NurseName, " +
+                     "n.HealthCenter, COUNT(diag.DiagnosisID) AS TotalCases, " +
+                     "SUM(CASE WHEN diag.DiagnoStatus = 'Referrable' THEN 1 ELSE 0 END) AS ReferrableCases, " +
+                     "SUM(CASE WHEN diag.DiagnoStatus = 'Not Referrable' THEN 1 ELSE 0 END) AS NonReferrableCases " +
+                     "FROM Nurses n " +
+                     "LEFT JOIN Diagnosis diag ON n.NurseID = diag.NurseID " +
+                     "GROUP BY n.NurseID, NurseName, n.HealthCenter " +
+                     "ORDER BY TotalCases DESC";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                int nurseId = rs.getInt("NurseID");
+                String nurseName = rs.getString("NurseName");
+                String healthCenter = rs.getString("HealthCenter");
+                int totalCases = rs.getInt("TotalCases");
+                int referrableCases = rs.getInt("ReferrableCases");
+                int nonReferrableCases = rs.getInt("NonReferrableCases");
+                
+                DiagnosisStats stats = new DiagnosisStats(nurseId, nurseName, healthCenter, 
+                                                         totalCases, referrableCases, nonReferrableCases);
+                nurseStats.add(stats);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return nurseStats;
     }
 } 
