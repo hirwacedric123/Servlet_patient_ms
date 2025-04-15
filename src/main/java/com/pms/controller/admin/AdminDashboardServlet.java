@@ -4,9 +4,11 @@ import com.pms.dao.DoctorDAO;
 import com.pms.dao.NurseDAO;
 import com.pms.dao.PatientDAO;
 import com.pms.dao.UserDAO;
+import com.pms.dao.DiagnosisDAO;
 import com.pms.model.Doctor;
 import com.pms.model.Nurse;
 import com.pms.model.User;
+import com.pms.model.DiagnosisStats;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,12 +26,14 @@ public class AdminDashboardServlet extends HttpServlet {
     private NurseDAO nurseDAO;
     private PatientDAO patientDAO;
     private UserDAO userDAO;
+    private DiagnosisDAO diagnosisDAO;
     
     public void init() {
         doctorDAO = new DoctorDAO();
         nurseDAO = new NurseDAO();
         patientDAO = new PatientDAO();
         userDAO = new UserDAO();
+        diagnosisDAO = new DiagnosisDAO();
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -57,6 +61,10 @@ public class AdminDashboardServlet extends HttpServlet {
         List<Doctor> doctors = doctorDAO.getAllDoctors();
         List<Nurse> nurses = nurseDAO.getAllNurses();
         
+        // Get diagnosis statistics by doctor and nurse
+        List<DiagnosisStats> doctorCasesStats = diagnosisDAO.getDiagnosisStatsByDoctor();
+        List<DiagnosisStats> nurseCasesStats = diagnosisDAO.getDiagnosisStatsByNurse();
+        
         // Set attributes for the dashboard
         request.setAttribute("doctorCount", doctorCount);
         request.setAttribute("nurseCount", nurseCount);
@@ -64,9 +72,11 @@ public class AdminDashboardServlet extends HttpServlet {
         request.setAttribute("userCount", userCount);
         request.setAttribute("doctors", doctors);
         request.setAttribute("nurses", nurses);
+        request.setAttribute("doctorCasesStats", doctorCasesStats);
+        request.setAttribute("nurseCasesStats", nurseCasesStats);
         
         // Forward to the dashboard JSP
-        request.getRequestDispatcher("/WEB-INF/views/admin/dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/admin/admin_dashboard.jsp").forward(request, response);
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
