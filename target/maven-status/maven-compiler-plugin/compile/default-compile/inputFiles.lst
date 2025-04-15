@@ -26,5 +26,6 @@ C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\util\PasswordU
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\LogoutServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\admin\DoctorManagementServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\admin\RegisterDoctorServlet.java
+C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\doctor\RegisterNurseServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\dao\DoctorDAO.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\nurse\PatientRegistrationServlet.java

@@ -113,12 +113,10 @@ public class RegisterNurseServlet extends HttpServlet {
                 nurse.setFirstName(firstName);
                 nurse.setLastName(lastName);
                 nurse.setEmail(email);
-                nurse.setContactNumber(telephone);
+                nurse.setTelephone(telephone);
                 nurse.setAddress(address);
                 nurse.setHealthCenter(healthCenter);
-                nurse.setDepartment(department);
-                nurse.setUserId(newUser.getUserID());
-                nurse.setActive(true);
+                nurse.setUserID(newUser.getUserID());
                 
                 nurseDAO.addNurse(nurse);
                 request.setAttribute("successMessage", "Nurse registered successfully!");
