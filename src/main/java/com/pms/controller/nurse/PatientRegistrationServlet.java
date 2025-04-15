@@ -1,190 +1,197 @@
 package com.pms.controller.nurse;
 
-import com.pms.dao.DiagnosisDAO;
-import com.pms.dao.NurseDAO;
-import com.pms.dao.PatientDAO;
-import com.pms.model.Diagnosis;
-import com.pms.model.Nurse;
-import com.pms.model.Patient;
-import com.pms.model.User;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.Timestamp;
-import java.util.UUID;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+
+import com.pms.dao.DiagnosisDAO;
+import com.pms.dao.PatientDAO;
+import com.pms.model.Diagnosis;
+import com.pms.model.Patient;
+import com.pms.model.User;
+import com.pms.util.FormValidator;
 
 @WebServlet("/nurse/register-patient")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,     // 1 MB
-    maxFileSize = 1024 * 1024 * 10,      // 10 MB
-    maxRequestSize = 1024 * 1024 * 50    // 50 MB
+    fileSizeThreshold = 1024 * 1024, // 1 MB
+    maxFileSize = 5 * 1024 * 1024,   // 5 MB
+    maxRequestSize = 10 * 1024 * 1024 // 10 MB
 )
 public class PatientRegistrationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private PatientDAO patientDAO;
-    private NurseDAO nurseDAO;
-    private DiagnosisDAO diagnosisDAO;
-    private String imagesPath;
+    private static final Logger LOGGER = Logger.getLogger(PatientRegistrationServlet.class.getName());
+    private static final String UPLOAD_DIRECTORY = "patient_images";
     
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        patientDAO = new PatientDAO();
-        nurseDAO = new NurseDAO();
-        diagnosisDAO = new DiagnosisDAO();
-        
-        // Set up the images directory path
-        String contextPath = getServletContext().getRealPath("/");
-        imagesPath = contextPath + "images";
-        
-        // Create the directory if it doesn't exist
-        File imagesDir = new File(imagesPath);
-        if (!imagesDir.exists()) {
-            imagesDir.mkdirs();
-        }
-    }
-    
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if the user is logged in and is a nurse
-        HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("user");
-        
-        if (currentUser == null || !"Nurse".equals(currentUser.getUserType())) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         
-        Nurse nurse = nurseDAO.getNurseByUserID(currentUser.getUserID());
-        request.setAttribute("nurse", nurse);
+        User user = (User) session.getAttribute("user");
+        if (!"nurse".equalsIgnoreCase(user.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/access-denied");
+            return;
+        }
         
-        // Forward to the registration form
-        request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp");
+        dispatcher.forward(request, response);
     }
-    
-    @Override
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if the user is logged in and is a nurse
-        HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("user");
-        
-        if (currentUser == null || !"Nurse".equals(currentUser.getUserType())) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         
-        // Get the nurse information
-        Nurse nurse = nurseDAO.getNurseByUserID(currentUser.getUserID());
-        
-        // Get form parameters
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String contactNumber = request.getParameter("contactNumber");
-        String email = request.getParameter("email");
-        String address = request.getParameter("address");
-        String gender = request.getParameter("gender");
-        String dateOfBirth = request.getParameter("dateOfBirth");
-        String diagnoStatus = request.getParameter("diagnoStatus");
-        String symptoms = request.getParameter("symptoms");
-        String bloodGroup = request.getParameter("bloodGroup");
-        String emergencyContact = request.getParameter("emergencyContact");
-        
-        // Validate required fields
-        if (firstName == null || firstName.trim().isEmpty() ||
-            lastName == null || lastName.trim().isEmpty() ||
-            contactNumber == null || contactNumber.trim().isEmpty() ||
-            gender == null || gender.trim().isEmpty() ||
-            diagnoStatus == null || diagnoStatus.trim().isEmpty()) {
-            
-            request.setAttribute("errorMessage", "Please fill in all required fields");
-            request.setAttribute("nurse", nurse);
-            request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
+        User user = (User) session.getAttribute("user");
+        if (!"nurse".equalsIgnoreCase(user.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/access-denied");
             return;
         }
         
-        // Handle file upload
-        Part filePart = request.getPart("patientImage");
-        String fileName = "";
-        String pImageLink = "";
-        
-        if (filePart != null && filePart.getSize() > 0) {
-            // Generate a unique file name to prevent collisions
-            String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            String fileExtension = "";
-            int i = originalFileName.lastIndexOf('.');
-            if (i > 0) {
-                fileExtension = originalFileName.substring(i);
-            }
-            fileName = UUID.randomUUID().toString() + fileExtension;
+        try {
+            // Validation for required fields
+            String firstName = request.getParameter("firstName");
+            String lastName = request.getParameter("lastName");
+            String gender = request.getParameter("gender");
+            String contactNumber = request.getParameter("contactNumber");
+            String diagnoStatus = request.getParameter("diagnoStatus");
             
-            // Save the file to the images directory
-            try (InputStream fileContent = filePart.getInputStream()) {
-                Path filePath = Paths.get(imagesPath, fileName);
-                Files.copy(fileContent, filePath, StandardCopyOption.REPLACE_EXISTING);
-                pImageLink = "images/" + fileName;
-            } catch (IOException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "Error uploading image: " + e.getMessage());
-                request.setAttribute("nurse", nurse);
+            if (FormValidator.isNullOrEmpty(firstName) || 
+                FormValidator.isNullOrEmpty(lastName) || 
+                FormValidator.isNullOrEmpty(gender) || 
+                FormValidator.isNullOrEmpty(contactNumber) ||
+                FormValidator.isNullOrEmpty(diagnoStatus)) {
+                
+                request.setAttribute("errorMessage", "Required fields cannot be empty");
                 request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
                 return;
             }
-        }
-        
-        // If successful, create the patient
-        Patient patient = new Patient();
-        patient.setFirstName(firstName);
-        patient.setLastName(lastName);
-        patient.setGender(gender);
-        patient.setDateOfBirth(dateOfBirth);
-        patient.setContactNumber(contactNumber);
-        patient.setEmail(email);
-        patient.setAddress(address);
-        patient.setBloodGroup(bloodGroup);
-        patient.setEmergencyContact(emergencyContact);
-        patient.setProfileImage(pImageLink);
-        patient.setCreatedBy(nurse.getNurseID());
-        
-        // Save the patient to the database
-        boolean patientAdded = patientDAO.addPatient(patient);
-        
-        if (!patientAdded) {
-            request.setAttribute("errorMessage", "Failed to register patient");
-            request.setAttribute("nurse", nurse);
+            
+            // Optional fields
+            String dateOfBirthStr = request.getParameter("dateOfBirth");
+            Date dateOfBirth = null;
+            if (!FormValidator.isNullOrEmpty(dateOfBirthStr)) {
+                try {
+                    dateOfBirth = Date.valueOf(dateOfBirthStr);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.log(Level.WARNING, "Invalid date format: " + dateOfBirthStr, e);
+                }
+            }
+            
+            String email = request.getParameter("email");
+            String address = request.getParameter("address");
+            String emergencyContact = request.getParameter("emergencyContact");
+            String bloodGroup = request.getParameter("bloodGroup");
+            String symptoms = request.getParameter("symptoms");
+            
+            // Process file upload
+            String imagePath = null;
+            Part filePart = request.getPart("patientImage");
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = getSubmittedFileName(filePart);
+                if (fileName != null && !fileName.isEmpty()) {
+                    // Generate unique file name to avoid collisions
+                    String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+                    
+                    // Get upload directory path
+                    String applicationPath = request.getServletContext().getRealPath("");
+                    String uploadPath = applicationPath + UPLOAD_DIRECTORY;
+                    
+                    // Create directory if it doesn't exist
+                    Path uploadDir = Paths.get(uploadPath);
+                    if (!Files.exists(uploadDir)) {
+                        Files.createDirectories(uploadDir);
+                    }
+                    
+                    // Save file
+                    Path filePath = uploadDir.resolve(uniqueFileName);
+                    Files.copy(filePart.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    
+                    // Set relative path for database
+                    imagePath = UPLOAD_DIRECTORY + "/" + uniqueFileName;
+                    LOGGER.log(Level.INFO, "File uploaded successfully: {0}", filePath);
+                }
+            }
+            
+            // Create patient object
+            Patient patient = new Patient();
+            patient.setFirstName(firstName);
+            patient.setLastName(lastName);
+            patient.setGender(gender);
+            patient.setContactNumber(contactNumber);
+            patient.setEmail(email);
+            patient.setAddress(address);
+            patient.setDateOfBirth(dateOfBirth);
+            patient.setEmergencyContact(emergencyContact);
+            patient.setBloodGroup(bloodGroup);
+            patient.setImagePath(imagePath);
+            patient.setRegisterDate(new java.sql.Date(System.currentTimeMillis()));
+            patient.setRegisteredByNurseId(user.getId()); // Set the nurse ID who registered this patient
+            
+            // Save patient to database
+            PatientDAO patientDAO = new PatientDAO();
+            int patientId = patientDAO.addPatient(patient);
+            
+            if (patientId > 0) {
+                LOGGER.log(Level.INFO, "Patient registered successfully with ID: {0}", patientId);
+                
+                // Create diagnosis entry for the patient
+                Diagnosis diagnosis = new Diagnosis();
+                diagnosis.setPatientId(patientId);
+                diagnosis.setDiagnosisStatus(diagnoStatus);
+                diagnosis.setSymptoms(symptoms);
+                diagnosis.setDiagnosisDate(new java.sql.Date(System.currentTimeMillis()));
+                diagnosis.setNurseId(user.getId());
+                
+                DiagnosisDAO diagnosisDAO = new DiagnosisDAO();
+                int diagnosisId = diagnosisDAO.addDiagnosis(diagnosis);
+                
+                if (diagnosisId > 0) {
+                    LOGGER.log(Level.INFO, "Diagnosis record created with ID: {0}", diagnosisId);
+                    response.sendRedirect(request.getContextPath() + "/nurse/patients?success=Patient registered successfully");
+                } else {
+                    LOGGER.log(Level.WARNING, "Failed to create diagnosis record for patient ID: {0}", patientId);
+                    response.sendRedirect(request.getContextPath() + "/nurse/patients?warning=Patient registered but diagnosis record creation failed");
+                }
+            } else {
+                LOGGER.log(Level.SEVERE, "Failed to register patient");
+                request.setAttribute("errorMessage", "Failed to register patient. Please try again.");
+                request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
+            }
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error registering patient", e);
+            request.setAttribute("errorMessage", "An error occurred while registering the patient: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
-            return;
         }
-        
-        // Create a diagnosis entry
-        Diagnosis diagnosis = new Diagnosis();
-        diagnosis.setPatientID(patient.getPatientID());
-        diagnosis.setNurseID(nurse.getNurseID());
-        diagnosis.setDiagnoStatus(diagnoStatus);
-        // Result will be automatically set based on DiagnoStatus
-        diagnosis.setCreatedDate(new Timestamp(System.currentTimeMillis()));
-        diagnosis.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-        
-        // Save the diagnosis
-        boolean diagnosisAdded = diagnosisDAO.addDiagnosis(diagnosis);
-        
-        if (!diagnosisAdded) {
-            request.setAttribute("errorMessage", "Patient registered but failed to create diagnosis entry");
-            request.setAttribute("nurse", nurse);
-            request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
-            return;
+    }
+    
+    private String getSubmittedFileName(Part part) {
+        for (String content : part.getHeader("content-disposition").split(";")) {
+            if (content.trim().startsWith("filename")) {
+                return content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
+            }
         }
-        
-        // Success - redirect to the patients list
-        session.setAttribute("successMessage", "Patient successfully registered");
-        response.sendRedirect(request.getContextPath() + "/nurse/patients");
+        return null;
     }
 } 
