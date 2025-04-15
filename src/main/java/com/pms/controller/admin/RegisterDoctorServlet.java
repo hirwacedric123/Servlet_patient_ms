@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/admin/register-doctor")
 public class RegisterDoctorServlet extends HttpServlet {
@@ -74,8 +75,17 @@ public class RegisterDoctorServlet extends HttpServlet {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             
-            // Check if username already exists
-            if (userDAO.getUserByUsername(username) != null) {
+            // Check if username already exists by retrieving all users and checking
+            List<User> allUsers = userDAO.getAllUsers();
+            boolean usernameExists = false;
+            for (User existingUser : allUsers) {
+                if (existingUser.getUsername().equals(username)) {
+                    usernameExists = true;
+                    break;
+                }
+            }
+            
+            if (usernameExists) {
                 request.setAttribute("errorMessage", "Username already exists. Please choose a different username.");
                 request.getRequestDispatcher("/WEB-INF/views/admin/register-doctor.jsp").forward(request, response);
                 return;
@@ -86,30 +96,25 @@ public class RegisterDoctorServlet extends HttpServlet {
             newUser.setUsername(username);
             newUser.setPassword(password);
             newUser.setUserType("Doctor");
-            int userId = userDAO.addUser(newUser);
+            newUser.setFirstName(firstName);
+            newUser.setLastName(lastName);
             
-            if (userId > 0) {
+            boolean userCreated = userDAO.addUser(newUser);
+            
+            if (userCreated) {
                 // Create doctor record
                 Doctor doctor = new Doctor();
-                doctor.setUserID(userId);
-                doctor.setFirstName(firstName);
-                doctor.setLastName(lastName);
+                doctor.setName(firstName + " " + lastName);
                 doctor.setEmail(email);
-                doctor.setTelephone(telephone);
+                doctor.setPhone(telephone);
                 doctor.setAddress(address);
                 doctor.setHospitalName(hospitalName);
                 doctor.setSpecialization(specialization);
-                doctor.setLicenseNumber(licenseNumber);
+                doctor.setUserId(newUser.getUserID());
+                doctor.setActive(true);
                 
-                boolean doctorAdded = doctorDAO.addDoctor(doctor);
-                
-                if (doctorAdded) {
-                    request.setAttribute("successMessage", "Doctor registered successfully!");
-                } else {
-                    // If doctor record fails, remove the user record
-                    userDAO.deleteUser(userId);
-                    request.setAttribute("errorMessage", "Error registering doctor. Please try again.");
-                }
+                doctorDAO.addDoctor(doctor);
+                request.setAttribute("successMessage", "Doctor registered successfully!");
             } else {
                 request.setAttribute("errorMessage", "Error creating user account. Please try again.");
             }
