@@ -258,8 +258,8 @@ public class PatientDAO {
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO patients (UserID, FirstName, LastName, Gender, DateOfBirth, ContactNumber, " +
-                          "Address, BloodGroup, NurseID, Symptoms, IsReferrable, PImageLink) " +
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          "Email, Address, BloodGroup, EmergencyContact) " +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, patient.getUserID());
@@ -268,17 +268,23 @@ public class PatientDAO {
             stmt.setString(4, patient.getGender());
             stmt.setDate(5, patient.getDateOfBirth());
             stmt.setString(6, patient.getContactNumber());
-            stmt.setString(7, patient.getAddress());
-            stmt.setString(8, patient.getBloodGroup());
-            stmt.setInt(9, patient.getCreatedBy()); // NurseID who registered the patient
-            stmt.setString(10, patient.getSymptoms());
-            stmt.setBoolean(11, patient.isReferrable());
-            stmt.setString(12, patient.getPImageLink()); // Set the image link
+            stmt.setString(7, patient.getEmail());
+            stmt.setString(8, patient.getAddress());
+            stmt.setString(9, patient.getBloodGroup());
+            stmt.setString(10, patient.getEmergencyContact());
             
             int rowsAffected = stmt.executeUpdate();
             success = rowsAffected > 0;
             
+            // Log the patient creation for debugging
+            if (success) {
+                System.out.println("Successfully added patient with ID: " + patient.getUserID());
+            } else {
+                System.out.println("Failed to add patient with ID: " + patient.getUserID());
+            }
+            
         } catch (SQLException e) {
+            System.err.println("SQL Error when adding patient: " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (stmt != null) {
@@ -302,7 +308,7 @@ public class PatientDAO {
         try {
             conn = DBConnection.getConnection();
             String sql = "UPDATE patients SET FirstName=?, LastName=?, Gender=?, DateOfBirth=?, " +
-                         "ContactNumber=?, Address=?, BloodGroup=?, Symptoms=?, IsReferrable=?, PImageLink=? " +
+                         "ContactNumber=?, Email=?, Address=?, BloodGroup=?, EmergencyContact=? " +
                          "WHERE PatientID=?";
             
             stmt = conn.prepareStatement(sql);
@@ -311,12 +317,11 @@ public class PatientDAO {
             stmt.setString(3, patient.getGender());
             stmt.setDate(4, patient.getDateOfBirth());
             stmt.setString(5, patient.getContactNumber());
-            stmt.setString(6, patient.getAddress());
-            stmt.setString(7, patient.getBloodGroup());
-            stmt.setString(8, patient.getSymptoms());
-            stmt.setBoolean(9, patient.isReferrable());
-            stmt.setString(10, patient.getPImageLink()); // Update the image link
-            stmt.setInt(11, patient.getPatientID());
+            stmt.setString(6, patient.getEmail());
+            stmt.setString(7, patient.getAddress());
+            stmt.setString(8, patient.getBloodGroup());
+            stmt.setString(9, patient.getEmergencyContact());
+            stmt.setInt(10, patient.getPatientID());
             
             int rowsAffected = stmt.executeUpdate();
             success = rowsAffected > 0;

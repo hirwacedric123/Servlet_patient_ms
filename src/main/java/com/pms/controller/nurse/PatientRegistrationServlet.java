@@ -178,15 +178,6 @@ public class PatientRegistrationServlet extends HttpServlet {
             patient.setDateOfBirth(dateOfBirth);
             patient.setEmergencyContact(emergencyContact);
             patient.setBloodGroup(bloodGroup);
-            patient.setPImageLink(imagePath);
-            patient.setSymptoms(symptoms);
-            
-            // Determine if patient is referrable based on diagnosis status
-            boolean isReferrable = "Critical".equals(diagnoStatus) || "Serious".equals(diagnoStatus);
-            patient.setReferrable(isReferrable);
-            
-            // Set nurse who created the patient
-            patient.setCreatedBy(user.getUserID());
             
             // Save patient to database
             boolean patientAdded = patientDAO.addPatient(patient);
@@ -194,18 +185,36 @@ public class PatientRegistrationServlet extends HttpServlet {
             if (!patientAdded) {
                 // If patient creation fails, delete the user account
                 userDAO.deleteUser(patientUser.getUserID());
-                request.setAttribute("errorMessage", "Failed to register patient");
+                request.setAttribute("errorMessage", "Failed to register patient in the database");
                 request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
                 return;
             }
             
             LOGGER.log(Level.INFO, "Patient registered successfully with ID: {0}", patient.getPatientID());
             
-            // Create diagnosis entry
+            // Store additional details in the diagnosis entry
             Diagnosis diagnosis = new Diagnosis();
             diagnosis.setPatientID(patient.getPatientID());
             diagnosis.setNurseID(user.getUserID());
             diagnosis.setDiagnoStatus(diagnoStatus);
+            
+            // Combine symptoms and image information if available
+            StringBuilder notes = new StringBuilder();
+            if (symptoms != null && !symptoms.isEmpty()) {
+                notes.append("Symptoms: ").append(symptoms);
+            }
+            
+            if (imagePath != null && !imagePath.isEmpty()) {
+                if (notes.length() > 0) {
+                    notes.append("\n");
+                }
+                notes.append("Patient Image: ").append(imagePath);
+            }
+            
+            if (notes.length() > 0) {
+                diagnosis.setResult(notes.toString());
+            }
+            
             diagnosis.setCreatedDate(new Timestamp(System.currentTimeMillis()));
             diagnosis.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
             
