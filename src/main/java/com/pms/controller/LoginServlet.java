@@ -27,7 +27,7 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             User user = (User) session.getAttribute("user");
-            redirectToUserDashboard(user, response);
+            redirectToUserDashboard(user, response, request);
         } else {
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
@@ -51,14 +51,14 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            redirectToUserDashboard(user, response);
+            redirectToUserDashboard(user, response, request);
         } else {
             request.setAttribute("errorMessage", "Invalid username or password");
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
     }
     
-    private void redirectToUserDashboard(User user, HttpServletResponse response) throws IOException {
+    private void redirectToUserDashboard(User user, HttpServletResponse response, HttpServletRequest request) throws IOException {
         String userType = user.getUserType();
         String contextPath = request.getContextPath();
         
