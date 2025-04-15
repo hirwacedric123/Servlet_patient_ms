@@ -3,7 +3,6 @@ package com.pms.dao;
 import com.pms.model.Diagnosis;
 import com.pms.model.DiagnosisStats;
 import com.pms.util.DBConnection;
-import com.pms.util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -774,9 +773,14 @@ public class DiagnosisDAO {
                      "GROUP BY d.DoctorID, DoctorName, d.HospitalName " +
                      "ORDER BY TotalCases DESC";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
             
             while (rs.next()) {
                 int doctorId = rs.getInt("DoctorID");
@@ -790,6 +794,22 @@ public class DiagnosisDAO {
             
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
         }
         
         return doctorStats;
@@ -811,9 +831,14 @@ public class DiagnosisDAO {
                      "GROUP BY n.NurseID, NurseName, n.HealthCenter " +
                      "ORDER BY TotalCases DESC";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
             
             while (rs.next()) {
                 int nurseId = rs.getInt("NurseID");
@@ -830,6 +855,22 @@ public class DiagnosisDAO {
             
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
         }
         
         return nurseStats;
