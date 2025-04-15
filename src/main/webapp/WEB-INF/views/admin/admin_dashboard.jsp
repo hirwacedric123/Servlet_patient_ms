@@ -199,7 +199,7 @@
                                     <c:forEach items="${doctors}" var="doctor">
                                         <tr>
                                             <td>${doctor.doctorID}</td>
-                                            <td>${doctor.firstName} ${doctor.lastName}</td>
+                                            <td>${doctor.name}</td>
                                             <td>${doctor.specialization}</td>
                                             <td>${doctor.contactNumber}</td>
                                             <td>${doctor.email}</td>
