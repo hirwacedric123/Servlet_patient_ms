@@ -223,6 +223,51 @@
                 </c:choose>
             </div>
         </div>
+
+        <!-- Registered Nurses -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-user-nurse me-1"></i>Nurses Registered by You
+            </div>
+            <div class="card-body">
+                <div class="mb-3 text-end">
+                    <a href="${pageContext.request.contextPath}/doctor/register-nurse" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Register New Nurse
+                    </a>
+                </div>
+                <c:choose>
+                    <c:when test="${empty nursesRegistered}">
+                        <p class="text-center text-muted">You haven't registered any nurses yet</p>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Health Center</th>
+                                        <th>Contact</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${nursesRegistered}" var="nurse">
+                                        <tr>
+                                            <td>${nurse.nurseID}</td>
+                                            <td>${nurse.firstName} ${nurse.lastName}</td>
+                                            <td>${nurse.healthCenter}</td>
+                                            <td>${nurse.telephone}</td>
+                                            <td>${nurse.email}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
