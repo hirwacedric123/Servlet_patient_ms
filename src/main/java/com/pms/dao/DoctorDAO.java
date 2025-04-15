@@ -8,257 +8,103 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorDAO {
-    
-    public Doctor getDoctorByID(int doctorID) {
-        String sql = "SELECT * FROM Doctors WHERE DoctorID = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Doctor doctor = null;
-        
+    private Connection connection;
+
+    public DoctorDAO() {
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, doctorID);
-            rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                doctor = new Doctor();
-                doctor.setDoctorID(rs.getInt("DoctorID"));
-                doctor.setFirstName(rs.getString("FirstName"));
-                doctor.setLastName(rs.getString("LastName"));
-                doctor.setContactNumber(rs.getString("ContactNumber"));
-                doctor.setEmail(rs.getString("Email"));
-                doctor.setAddress(rs.getString("Address"));
-                doctor.setHospitalName(rs.getString("HospitalName"));
-                doctor.setSpecialization(rs.getString("Specialization"));
-                doctor.setUserID(rs.getInt("UserID"));
-            }
+            connection = DBConnection.getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            throw new RuntimeException("Failed to establish database connection", e);
         }
-        
-        return doctor;
     }
-    
-    public Doctor getDoctorByUserID(int userID) {
-        String sql = "SELECT * FROM Doctors WHERE UserID = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Doctor doctor = null;
-        
+
+    public void addDoctor(Doctor doctor) {
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, userID);
-            rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                doctor = new Doctor();
-                doctor.setDoctorID(rs.getInt("DoctorID"));
-                doctor.setFirstName(rs.getString("FirstName"));
-                doctor.setLastName(rs.getString("LastName"));
-                doctor.setContactNumber(rs.getString("ContactNumber"));
-                doctor.setEmail(rs.getString("Email"));
-                doctor.setAddress(rs.getString("Address"));
-                doctor.setHospitalName(rs.getString("HospitalName"));
-                doctor.setSpecialization(rs.getString("Specialization"));
-                doctor.setUserID(rs.getInt("UserID"));
-            }
+            PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO doctors (name, specialization, email, phone, address, active) VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            ps.setString(1, doctor.getName());
+            ps.setString(2, doctor.getSpecialization());
+            ps.setString(3, doctor.getEmail());
+            ps.setString(4, doctor.getPhone());
+            ps.setString(5, doctor.getAddress());
+            ps.setBoolean(6, doctor.isActive());
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
         }
-        
-        return doctor;
     }
-    
+
+    public void updateDoctor(Doctor doctor) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(
+                "UPDATE doctors SET name=?, specialization=?, email=?, phone=?, address=?, active=? WHERE id=?"
+            );
+            ps.setString(1, doctor.getName());
+            ps.setString(2, doctor.getSpecialization());
+            ps.setString(3, doctor.getEmail());
+            ps.setString(4, doctor.getPhone());
+            ps.setString(5, doctor.getAddress());
+            ps.setBoolean(6, doctor.isActive());
+            ps.setInt(7, doctor.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteDoctor(int id) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM doctors WHERE id=?");
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Doctor> getAllDoctors() {
-        String sql = "SELECT * FROM Doctors";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         List<Doctor> doctors = new ArrayList<>();
-        
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-            
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM doctors ORDER BY name");
             while (rs.next()) {
                 Doctor doctor = new Doctor();
-                doctor.setDoctorID(rs.getInt("DoctorID"));
-                doctor.setFirstName(rs.getString("FirstName"));
-                doctor.setLastName(rs.getString("LastName"));
-                doctor.setContactNumber(rs.getString("ContactNumber"));
-                doctor.setEmail(rs.getString("Email"));
-                doctor.setAddress(rs.getString("Address"));
-                doctor.setHospitalName(rs.getString("HospitalName"));
-                doctor.setSpecialization(rs.getString("Specialization"));
-                doctor.setUserID(rs.getInt("UserID"));
+                doctor.setId(rs.getInt("id"));
+                doctor.setName(rs.getString("name"));
+                doctor.setSpecialization(rs.getString("specialization"));
+                doctor.setEmail(rs.getString("email"));
+                doctor.setPhone(rs.getString("phone"));
+                doctor.setAddress(rs.getString("address"));
+                doctor.setActive(rs.getBoolean("active"));
                 doctors.add(doctor);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
         }
-        
         return doctors;
     }
-    
-    public boolean addDoctor(Doctor doctor) {
-        String sql = "INSERT INTO Doctors (FirstName, LastName, ContactNumber, Email, Address, HospitalName, Specialization, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        boolean result = false;
-        
+
+    public Doctor getDoctorById(int id) {
+        Doctor doctor = null;
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, doctor.getFirstName());
-            stmt.setString(2, doctor.getLastName());
-            stmt.setString(3, doctor.getContactNumber());
-            stmt.setString(4, doctor.getEmail());
-            stmt.setString(5, doctor.getAddress());
-            stmt.setString(6, doctor.getHospitalName());
-            stmt.setString(7, doctor.getSpecialization());
-            stmt.setInt(8, doctor.getUserID());
-            
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    doctor.setDoctorID(generatedKeys.getInt(1));
-                }
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM doctors WHERE id=?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                doctor = new Doctor();
+                doctor.setId(rs.getInt("id"));
+                doctor.setName(rs.getString("name"));
+                doctor.setSpecialization(rs.getString("specialization"));
+                doctor.setEmail(rs.getString("email"));
+                doctor.setPhone(rs.getString("phone"));
+                doctor.setAddress(rs.getString("address"));
+                doctor.setActive(rs.getBoolean("active"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
         }
-        
-        return result;
-    }
-    
-    public boolean updateDoctor(Doctor doctor) {
-        String sql = "UPDATE Doctors SET FirstName = ?, LastName = ?, ContactNumber = ?, Email = ?, Address = ?, HospitalName = ?, Specialization = ? WHERE DoctorID = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        boolean result = false;
-        
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, doctor.getFirstName());
-            stmt.setString(2, doctor.getLastName());
-            stmt.setString(3, doctor.getContactNumber());
-            stmt.setString(4, doctor.getEmail());
-            stmt.setString(5, doctor.getAddress());
-            stmt.setString(6, doctor.getHospitalName());
-            stmt.setString(7, doctor.getSpecialization());
-            stmt.setInt(8, doctor.getDoctorID());
-            
-            int rowsAffected = stmt.executeUpdate();
-            result = rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
-        }
-        
-        return result;
-    }
-    
-    public boolean deleteDoctor(int doctorID) {
-        String sql = "DELETE FROM Doctors WHERE DoctorID = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        boolean result = false;
-        
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, doctorID);
-            
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
-        }
-        
-        return result;
+        return doctor;
     }
 } 

@@ -1,111 +1,81 @@
 package com.pms.model;
 
 public class Doctor {
-    private int doctorID;
-    private String firstName;
-    private String lastName;
-    private String contactNumber;
-    private String email;
-    private String address;
-    private String hospitalName;
+    private int id;
+    private String name;
     private String specialization;
-    private int userID;
-    
+    private String email;
+    private String phone;
+    private String address;
+    private boolean active;
+
     public Doctor() {
     }
-    
-    public Doctor(String firstName, String lastName, String contactNumber, String email, String address, String hospitalName, String specialization, int userID) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.contactNumber = contactNumber;
-        this.email = email;
-        this.address = address;
-        this.hospitalName = hospitalName;
+
+    public Doctor(int id, String name, String specialization, String email, String phone, String address) {
+        this.id = id;
+        this.name = name;
         this.specialization = specialization;
-        this.userID = userID;
-    }
-    
-    public Doctor(int doctorID, String firstName, String lastName, String contactNumber, String email, String address, String hospitalName, String specialization, int userID) {
-        this.doctorID = doctorID;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.contactNumber = contactNumber;
         this.email = email;
+        this.phone = phone;
         this.address = address;
-        this.hospitalName = hospitalName;
-        this.specialization = specialization;
-        this.userID = userID;
+        this.active = true;
     }
-    
-    public int getDoctorID() {
-        return doctorID;
+
+    // Getters and Setters
+    public int getId() {
+        return id;
     }
-    
-    public void setDoctorID(int doctorID) {
-        this.doctorID = doctorID;
+
+    public void setId(int id) {
+        this.id = id;
     }
-    
-    public String getFirstName() {
-        return firstName;
+
+    public String getName() {
+        return name;
     }
-    
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    
-    public String getLastName() {
-        return lastName;
-    }
-    
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    
-    public String getContactNumber() {
-        return contactNumber;
-    }
-    
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getAddress() {
-        return address;
-    }
-    
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    
-    public String getHospitalName() {
-        return hospitalName;
-    }
-    
-    public void setHospitalName(String hospitalName) {
-        this.hospitalName = hospitalName;
-    }
-    
+
     public String getSpecialization() {
         return specialization;
     }
-    
+
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
-    
-    public int getUserID() {
-        return userID;
+
+    public String getEmail() {
+        return email;
     }
-    
-    public void setUserID(int userID) {
-        this.userID = userID;
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 } 
