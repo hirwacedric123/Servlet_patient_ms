@@ -95,6 +95,8 @@ public class PatientRegistrationServlet extends HttpServlet {
         String dateOfBirth = request.getParameter("dateOfBirth");
         String diagnoStatus = request.getParameter("diagnoStatus");
         String symptoms = request.getParameter("symptoms");
+        String bloodGroup = request.getParameter("bloodGroup");
+        String emergencyContact = request.getParameter("emergencyContact");
         
         // Validate required fields
         if (firstName == null || firstName.trim().isEmpty() ||
@@ -138,16 +140,18 @@ public class PatientRegistrationServlet extends HttpServlet {
             }
         }
         
-        // Create a new patient
+        // If successful, create the patient
         Patient patient = new Patient();
         patient.setFirstName(firstName);
         patient.setLastName(lastName);
+        patient.setGender(gender);
+        patient.setDateOfBirth(dateOfBirth);
         patient.setContactNumber(contactNumber);
         patient.setEmail(email);
         patient.setAddress(address);
-        patient.setGender(gender);
-        patient.setDateOfBirth(dateOfBirth);
-        patient.setPImageLink(pImageLink);
+        patient.setBloodGroup(bloodGroup);
+        patient.setEmergencyContact(emergencyContact);
+        patient.setProfileImage(pImageLink);
         patient.setCreatedBy(nurse.getNurseID());
         
         // Save the patient to the database

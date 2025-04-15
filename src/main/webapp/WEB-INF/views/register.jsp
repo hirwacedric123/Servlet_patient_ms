@@ -159,21 +159,40 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Bootstrap form validation
+        // Form validation
         (function () {
             'use strict'
+            
+            // Fetch all forms that need validation
             var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
+            
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+                
+                // Reset validation on input change
+                form.querySelectorAll('input, select, textarea').forEach(function(input) {
+                    input.addEventListener('change', function() {
+                        if (this.checkValidity()) {
+                            this.classList.remove('is-invalid')
+                            this.classList.add('is-valid')
+                        } else {
+                            this.classList.remove('is-valid')
+                            this.classList.add('is-invalid')
                         }
-                        form.classList.add('was-validated')
-                    }, false)
+                    })
                 })
-        })()
-    </script>
-</body>
-</html> 
+            })
+            
+            // Password validation
+            var passwordInput = document.getElementById('password')
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    var

@@ -184,12 +184,12 @@
                             <p class="mb-0">Here's your health information at a glance.</p>
                         </div>
                         <div class="col-md-4 text-md-end">
-                            <c:if test="${not empty patient.pImageLink}">
-                                <img src="${pageContext.request.contextPath}/${patient.pImageLink}" 
+                            <c:if test="${not empty patient.profileImage}">
+                                <img src="${pageContext.request.contextPath}/${patient.profileImage}" 
                                      alt="Patient Photo" class="img-thumbnail rounded-circle" 
                                      style="width: 100px; height: 100px; object-fit: cover;">
                             </c:if>
-                            <c:if test="${empty patient.pImageLink}">
+                            <c:if test="${empty patient.profileImage}">
                                 <div class="text-center">
                                     <i class="fas fa-user-circle text-secondary" style="font-size: 5rem;"></i>
                                 </div>

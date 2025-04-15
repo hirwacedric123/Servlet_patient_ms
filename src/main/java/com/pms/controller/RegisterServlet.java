@@ -45,6 +45,25 @@ public class RegisterServlet extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         
+        // Validate required fields
+        if (username == null || username.trim().isEmpty() ||
+            password == null || password.trim().isEmpty() ||
+            firstName == null || firstName.trim().isEmpty() ||
+            lastName == null || lastName.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "All required fields must be filled out");
+            request.setAttribute("userType", userType.toLowerCase());
+            request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+            return;
+        }
+        
+        // Validate password strength
+        if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+            request.setAttribute("errorMessage", "Password must be at least 8 characters and include uppercase, lowercase, and numbers");
+            request.setAttribute("userType", userType.toLowerCase());
+            request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+            return;
+        }
+        
         // Only allow Doctor and Patient registration
         if (!"Doctor".equals(userType) && !"Patient".equals(userType)) {
             request.setAttribute("errorMessage", "Invalid user type for registration");
@@ -55,94 +74,80 @@ public class RegisterServlet extends HttpServlet {
         // Check if username already exists
         if (userExists(username)) {
             request.setAttribute("errorMessage", "Username already exists");
-            request.setAttribute("userType", userType);
+            request.setAttribute("userType", userType.toLowerCase());
             request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
             return;
         }
         
-        // Create the user account with firstName and lastName
-        User user = new User(username, password, userType, firstName, lastName);
-        boolean userCreated = userDAO.addUser(user);
-        
-        if (!userCreated) {
-            request.setAttribute("errorMessage", "Failed to create user account");
-            request.setAttribute("userType", userType);
+        try {
+            // Create the user account with firstName and lastName
+            User user = new User(username, password, userType, firstName, lastName);
+            boolean userCreated = userDAO.addUser(user);
+            
+            if (!userCreated) {
+                request.setAttribute("errorMessage", "Failed to create user account");
+                request.setAttribute("userType", userType.toLowerCase());
+                request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+                return;
+            }
+            
+            // Handle Doctor specific registration
+            if ("Doctor".equals(userType)) {
+                String specialization = request.getParameter("specialization");
+                String contactNumber = request.getParameter("contactNumber");
+                String email = request.getParameter("email");
+                String address = request.getParameter("address");
+                
+                // Validate doctor-specific fields
+                if (specialization == null || specialization.trim().isEmpty() ||
+                    contactNumber == null || contactNumber.trim().isEmpty() ||
+                    email == null || email.trim().isEmpty() ||
+                    address == null || address.trim().isEmpty()) {
+                    userDAO.deleteUser(user.getUserID());
+                    request.setAttribute("errorMessage", "All doctor fields are required");
+                    request.setAttribute("userType", userType.toLowerCase());
+                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+                    return;
+                }
+                
+                // Validate email format
+                if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                    userDAO.deleteUser(user.getUserID());
+                    request.setAttribute("errorMessage", "Invalid email format");
+                    request.setAttribute("userType", userType.toLowerCase());
+                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+                    return;
+                }
+                
+                Doctor doctor = new Doctor();
+                doctor.setFirstName(firstName);
+                doctor.setLastName(lastName);
+                doctor.setSpecialization(specialization);
+                doctor.setContactNumber(contactNumber);
+                doctor.setEmail(email);
+                doctor.setAddress(address);
+                doctor.setHospitalName("General Hospital"); // Default hospital name
+                doctor.setUserID(user.getUserID());
+                
+                boolean doctorCreated = doctorDAO.addDoctor(doctor);
+                if (!doctorCreated) {
+                    userDAO.deleteUser(user.getUserID());
+                    request.setAttribute("errorMessage", "Failed to create doctor profile. Please try again.");
+                    request.setAttribute("userType", userType.toLowerCase());
+                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+                    return;
+                }
+            }
+            
+            // Registration successful, redirect to login page
+            response.sendRedirect(request.getContextPath() + "/login?registered=true");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "An error occurred during registration. Please try again.");
+            request.setAttribute("userType", userType.toLowerCase());
             request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-            return;
         }
-        
-        // Handle Doctor specific registration
-        if ("Doctor".equals(userType)) {
-            String specialization = request.getParameter("specialization");
-            String contactNumber = request.getParameter("contactNumber");
-            String email = request.getParameter("email");
-            String address = request.getParameter("address");
-            
-            // Debug information
-            System.out.println("Doctor Registration Data:");
-            System.out.println("- FirstName: " + firstName);
-            System.out.println("- LastName: " + lastName);
-            System.out.println("- Specialization: " + specialization);
-            System.out.println("- ContactNumber: " + contactNumber);
-            System.out.println("- Email: " + email);
-            System.out.println("- Address: " + address);
-            System.out.println("- UserID: " + user.getUserID());
-            
-            Doctor doctor = new Doctor();
-            doctor.setFirstName(firstName);
-            doctor.setLastName(lastName);
-            doctor.setSpecialization(specialization);
-            doctor.setContactNumber(contactNumber);
-            doctor.setEmail(email);
-            // Set default address if not provided
-            doctor.setAddress(address != null && !address.trim().isEmpty() ? address : "Not specified");
-            // Set default hospital name
-            doctor.setHospitalName("General Hospital"); // Default hospital name
-            doctor.setUserID(user.getUserID());
-            
-            boolean doctorCreated = doctorDAO.addDoctor(doctor);
-            if (!doctorCreated) {
-                // Log the error to help with debugging
-                System.out.println("Failed to create doctor profile for user ID: " + user.getUserID());
-                userDAO.deleteUser(user.getUserID());
-                request.setAttribute("errorMessage", "Failed to create doctor profile");
-                request.setAttribute("userType", userType);
-                request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-                return;
-            }
-        }
-        
-        // Handle Patient specific registration
-        if ("Patient".equals(userType)) {
-            String gender = request.getParameter("gender");
-            String dateOfBirth = request.getParameter("dateOfBirth");
-            String address = request.getParameter("address");
-            String contactNumber = request.getParameter("contactNumber");
-            String email = request.getParameter("email");
-            
-            Patient patient = new Patient();
-            patient.setFirstName(firstName);
-            patient.setLastName(lastName);
-            patient.setGender(gender);
-            patient.setDateOfBirth(dateOfBirth);
-            patient.setAddress(address);
-            patient.setContactNumber(contactNumber);
-            patient.setEmail(email);
-            patient.setUserID(user.getUserID());
-            
-            boolean patientCreated = patientDAO.addPatient(patient);
-            if (!patientCreated) {
-                userDAO.deleteUser(user.getUserID());
-                request.setAttribute("errorMessage", "Failed to create patient profile");
-                request.setAttribute("userType", userType);
-                request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-                return;
-            }
-        }
-        
-        // Registration successful, redirect to login page
-        request.getSession().setAttribute("message", "Registration successful! Please login.");
-        response.sendRedirect(request.getContextPath() + "/login");
     }
     
     private boolean userExists(String username) {
