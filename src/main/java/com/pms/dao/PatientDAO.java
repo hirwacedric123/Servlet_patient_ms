@@ -253,78 +253,34 @@ public class PatientDAO {
     public boolean addPatient(Patient patient) {
         Connection conn = null;
         PreparedStatement stmt = null;
-        PreparedStatement detailStmt = null;
-        PreparedStatement updateStmt = null;
-        boolean result = false;
+        boolean success = false;
         
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
+            String sql = "INSERT INTO patients (UserID, FirstName, LastName, Gender, DateOfBirth, ContactNumber, " +
+                          "Address, BloodGroup, NurseID, Symptoms, IsReferrable, PImageLink) " +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
-            // First, update the existing user with patient details
-            String updateSql = "UPDATE Users SET FirstName = ?, LastName = ?, Email = ?, ContactNumber = ?, Address = ?, ProfileImage = ? " +
-                           "WHERE UserID = ?";
-            updateStmt = conn.prepareStatement(updateSql);
-            updateStmt.setString(1, patient.getFirstName());
-            updateStmt.setString(2, patient.getLastName());
-            updateStmt.setString(3, patient.getEmail());
-            updateStmt.setString(4, patient.getContactNumber());
-            updateStmt.setString(5, patient.getAddress());
-            updateStmt.setString(6, patient.getProfileImage());
-            updateStmt.setInt(7, patient.getUserID());
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, patient.getUserID());
+            stmt.setString(2, patient.getFirstName());
+            stmt.setString(3, patient.getLastName());
+            stmt.setString(4, patient.getGender());
+            stmt.setDate(5, patient.getDateOfBirth());
+            stmt.setString(6, patient.getContactNumber());
+            stmt.setString(7, patient.getAddress());
+            stmt.setString(8, patient.getBloodGroup());
+            stmt.setInt(9, patient.getCreatedBy()); // NurseID who registered the patient
+            stmt.setString(10, patient.getSymptoms());
+            stmt.setBoolean(11, patient.isReferrable());
+            stmt.setString(12, patient.getPImageLink()); // Set the image link
             
-            int rowsAffected = updateStmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            success = rowsAffected > 0;
             
-            if (rowsAffected > 0) {
-                // Insert into UserDetails table
-                String detailSql = "INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup) VALUES (?, ?, ?, ?)";
-                detailStmt = conn.prepareStatement(detailSql);
-                detailStmt.setInt(1, patient.getUserID());
-                
-                if (patient.getDateOfBirth() != null) {
-                    detailStmt.setDate(2, new java.sql.Date(patient.getDateOfBirth().getTime()));
-                } else {
-                    detailStmt.setNull(2, Types.DATE);
-                }
-                
-                detailStmt.setString(3, patient.getGender());
-                detailStmt.setString(4, patient.getBloodGroup());
-                detailStmt.executeUpdate();
-                
-                conn.commit();
-                result = true;
-            }
         } catch (SQLException e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             e.printStackTrace();
         } finally {
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (detailStmt != null) {
-                try {
-                    detailStmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (updateStmt != null) {
-                try {
-                    updateStmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
             if (stmt != null) {
                 try {
                     stmt.close();
@@ -335,97 +291,42 @@ public class PatientDAO {
             DBConnection.closeConnection(conn);
         }
         
-        return result;
+        return success;
     }
     
     public boolean updatePatient(Patient patient) {
         Connection conn = null;
-        PreparedStatement userStmt = null;
-        PreparedStatement detailStmt = null;
-        boolean result = false;
+        PreparedStatement stmt = null;
+        boolean success = false;
         
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
+            String sql = "UPDATE patients SET FirstName=?, LastName=?, Gender=?, DateOfBirth=?, " +
+                         "ContactNumber=?, Address=?, BloodGroup=?, Symptoms=?, IsReferrable=?, PImageLink=? " +
+                         "WHERE PatientID=?";
             
-            // Update Users table
-            String userSql = "UPDATE Users SET FirstName = ?, LastName = ?, Email = ?, ContactNumber = ?, Address = ?, ProfileImage = ? " +
-                           "WHERE UserID = ? AND Role = 'Patient'";
-            userStmt = conn.prepareStatement(userSql);
-            userStmt.setString(1, patient.getFirstName());
-            userStmt.setString(2, patient.getLastName());
-            userStmt.setString(3, patient.getEmail());
-            userStmt.setString(4, patient.getContactNumber());
-            userStmt.setString(5, patient.getAddress());
-            userStmt.setString(6, patient.getProfileImage());
-            userStmt.setInt(7, patient.getPatientID());
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, patient.getFirstName());
+            stmt.setString(2, patient.getLastName());
+            stmt.setString(3, patient.getGender());
+            stmt.setDate(4, patient.getDateOfBirth());
+            stmt.setString(5, patient.getContactNumber());
+            stmt.setString(6, patient.getAddress());
+            stmt.setString(7, patient.getBloodGroup());
+            stmt.setString(8, patient.getSymptoms());
+            stmt.setBoolean(9, patient.isReferrable());
+            stmt.setString(10, patient.getPImageLink()); // Update the image link
+            stmt.setInt(11, patient.getPatientID());
             
-            int userRowsAffected = userStmt.executeUpdate();
-            
-            // Check if user details already exist
-            String checkSql = "SELECT COUNT(*) FROM UserDetails WHERE UserID = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
-            checkStmt.setInt(1, patient.getPatientID());
-            ResultSet rs = checkStmt.executeQuery();
-            boolean detailsExist = false;
-            if (rs.next()) {
-                detailsExist = rs.getInt(1) > 0;
-            }
-            rs.close();
-            checkStmt.close();
-            
-            // Update or insert into UserDetails
-            String detailSql;
-            if (detailsExist) {
-                detailSql = "UPDATE UserDetails SET DateOfBirth = ?, Gender = ?, BloodGroup = ? WHERE UserID = ?";
-            } else {
-                detailSql = "INSERT INTO UserDetails (DateOfBirth, Gender, BloodGroup, UserID) VALUES (?, ?, ?, ?)";
-            }
-            
-            detailStmt = conn.prepareStatement(detailSql);
-            
-            if (patient.getDateOfBirth() != null) {
-                detailStmt.setDate(1, new java.sql.Date(patient.getDateOfBirth().getTime()));
-            } else {
-                detailStmt.setNull(1, Types.DATE);
-            }
-            
-            detailStmt.setString(2, patient.getGender());
-            detailStmt.setString(3, patient.getBloodGroup());
-            detailStmt.setInt(4, patient.getPatientID());
-            
-            int detailRowsAffected = detailStmt.executeUpdate();
-            
-            conn.commit();
-            result = (userRowsAffected > 0 || detailRowsAffected > 0);
+            int rowsAffected = stmt.executeUpdate();
+            success = rowsAffected > 0;
             
         } catch (SQLException e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             e.printStackTrace();
         } finally {
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (detailStmt != null) {
+            if (stmt != null) {
                 try {
-                    detailStmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (userStmt != null) {
-                try {
-                    userStmt.close();
+                    stmt.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -433,7 +334,7 @@ public class PatientDAO {
             DBConnection.closeConnection(conn);
         }
         
-        return result;
+        return success;
     }
     
     public boolean deletePatient(int patientID) {

@@ -1,6 +1,7 @@
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\dao\UserDAO.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\filter\AuthenticationFilter.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\DatabaseTestServlet.java
+C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\util\FileUploadUtil.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\dao\AdminDAO.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\util\DBConnection.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\Patient.java
@@ -15,11 +16,13 @@ C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\Sig
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\dao\PatientDAO.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\AdminPasswordUpdateServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\Doctor.java
+C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\PatientRegistrationServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\User.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\model\Diagnosis.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\NurseDashboardServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\PatientDashboardServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\util\PasswordUtil.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\LogoutServlet.java
+C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\admin\DoctorManagementServlet.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\dao\DoctorDAO.java
 C:\Users\Avellin\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\nurse\PatientRegistrationServlet.java

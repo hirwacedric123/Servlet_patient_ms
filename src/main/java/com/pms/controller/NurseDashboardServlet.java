@@ -13,19 +13,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/nurse/dashboard")
 public class NurseDashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private NurseDAO nurseDAO;
     private PatientDAO patientDAO;
+    private NurseDAO nurseDAO;
 
+    @Override
     public void init() {
-        nurseDAO = new NurseDAO();
         patientDAO = new PatientDAO();
+        nurseDAO = new NurseDAO();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         
@@ -47,34 +52,58 @@ public class NurseDashboardServlet extends HttpServlet {
         if (nurse == null) {
             // If nurse not in session, retrieve from database
             nurse = nurseDAO.getNurseByUserID(user.getUserID());
+            
+            // If nurse still null, handle the error case
+            if (nurse == null) {
+                request.setAttribute("errorMessage", "Nurse profile is incomplete. Please contact an administrator.");
+                request.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
+                return;
+            }
+            
             session.setAttribute("nurse", nurse);
         }
         
-        // Get patients registered by this nurse
-        List<Patient> patients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
+        // Get the success message from session if it exists and then remove it
+        String successMessage = (String) session.getAttribute("successMessage");
+        if (successMessage != null) {
+            request.setAttribute("successMessage", successMessage);
+            session.removeAttribute("successMessage");
+        }
         
-        // Count referrable and non-referrable patients
+        // Initialize dashboard data
+        List<Patient> registeredPatients = new ArrayList<>();
         int referrableCount = 0;
-        int notReferrableCount = 0;
+        int nonReferrableCount = 0;
         
-        for (Patient patient : patients) {
-            if (patient.isReferrable()) {
-                referrableCount++;
-            } else {
-                notReferrableCount++;
+        try {
+            // Get patients registered by this nurse
+            registeredPatients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
+            
+            // Count referrable and non-referrable cases
+            for (Patient patient : registeredPatients) {
+                if (patient.isReferrable()) {
+                    referrableCount++;
+                } else {
+                    nonReferrableCount++;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error retrieving patient data: " + e.getMessage());
         }
         
         // Set attributes for the JSP
         request.setAttribute("nurse", nurse);
-        request.setAttribute("registeredPatients", patients);
+        request.setAttribute("registeredPatients", registeredPatients);
+        request.setAttribute("patientCount", registeredPatients.size());
         request.setAttribute("referrableCount", referrableCount);
-        request.setAttribute("notReferrableCount", notReferrableCount);
+        request.setAttribute("nonReferrableCount", nonReferrableCount);
         
         // Forward to the dashboard JSP
-        request.getRequestDispatcher("/WEB-INF/views/nurse/nurse_dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/nurse/dashboard.jsp").forward(request, response);
     }
     
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }

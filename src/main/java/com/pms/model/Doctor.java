@@ -8,6 +8,8 @@ public class Doctor {
     private String phone;
     private String address;
     private boolean active;
+    private int userId;
+    private String hospitalName;
 
     public Doctor() {
     }
@@ -77,5 +79,21 @@ public class Doctor {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getHospitalName() {
+        return hospitalName;
+    }
+
+    public void setHospitalName(String hospitalName) {
+        this.hospitalName = hospitalName;
     }
 } 
