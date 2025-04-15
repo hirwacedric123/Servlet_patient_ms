@@ -151,7 +151,7 @@ public class NurseDAO {
     }
     
     public boolean addNurse(Nurse nurse) {
-        String sql = "INSERT INTO Nurses (FirstName, LastName, Telephone, Email, Address, HealthCenter, UserID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Nurses (FirstName, LastName, Telephone, Email, Address, HealthCenter, UserID, RegisteredByDoctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
@@ -166,6 +166,7 @@ public class NurseDAO {
             stmt.setString(5, nurse.getAddress());
             stmt.setString(6, nurse.getHealthCenter());
             stmt.setInt(7, nurse.getUserID());
+            stmt.setInt(8, nurse.getRegisteredByDoctorID());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -266,7 +267,7 @@ public class NurseDAO {
      * @return a list of nurses registered by the doctor
      */
     public List<Nurse> getNursesByDoctor(int doctorID) {
-        String sql = "SELECT n.* FROM Nurses n WHERE n.RegisteredByDoctorID = ?";
+        String sql = "SELECT * FROM Nurses WHERE RegisteredByDoctorID = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -288,6 +289,7 @@ public class NurseDAO {
                 nurse.setAddress(rs.getString("Address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
+                nurse.setRegisteredByDoctorID(rs.getInt("RegisteredByDoctorID"));
                 nurses.add(nurse);
             }
         } catch (SQLException e) {

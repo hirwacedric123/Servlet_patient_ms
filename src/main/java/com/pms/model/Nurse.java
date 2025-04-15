@@ -9,6 +9,7 @@ public class Nurse {
     private String address;
     private String healthCenter;
     private int userID;
+    private int registeredByDoctorID;
     
     public Nurse() {
     }
@@ -96,5 +97,13 @@ public class Nurse {
     
     public void setUserID(int userID) {
         this.userID = userID;
+    }
+    
+    public int getRegisteredByDoctorID() {
+        return registeredByDoctorID;
+    }
+    
+    public void setRegisteredByDoctorID(int registeredByDoctorID) {
+        this.registeredByDoctorID = registeredByDoctorID;
     }
 } 
