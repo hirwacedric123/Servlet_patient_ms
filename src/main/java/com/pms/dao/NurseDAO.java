@@ -39,7 +39,7 @@ public class NurseDAO {
                     "LastName VARCHAR(50) NOT NULL, " +
                     "telephone VARCHAR(20), " +
                     "Email VARCHAR(100), " +
-                    "Address VARCHAR(255), " +
+                    "address VARCHAR(255), " +
                     "HealthCenter VARCHAR(100), " +
                     "UserID INT NOT NULL, " +
                     "RegisteredByDoctorID INT, " +
@@ -69,6 +69,28 @@ public class NurseDAO {
                     String addColumnSQL = "ALTER TABLE Nurses ADD COLUMN telephone VARCHAR(20)";
                     stmt.executeUpdate(addColumnSQL);
                     System.out.println("Added telephone column to Nurses table");
+                    stmt.close();
+                }
+                
+                // Check for address column (both cases)
+                boolean hasAddressColumn = false;
+                ResultSet addressColumns = meta.getColumns(null, null, "Nurses", "address");
+                if (addressColumns.next()) {
+                    hasAddressColumn = true;
+                }
+
+                // Check capitalized version too
+                addressColumns = meta.getColumns(null, null, "Nurses", "Address");
+                if (addressColumns.next()) {
+                    hasAddressColumn = true;
+                }
+                
+                if (!hasAddressColumn) {
+                    // Add the missing column
+                    Statement stmt = connection.createStatement();
+                    String addColumnSQL = "ALTER TABLE Nurses ADD COLUMN address VARCHAR(255)";
+                    stmt.executeUpdate(addColumnSQL);
+                    System.out.println("Added address column to Nurses table");
                     stmt.close();
                 }
                 
@@ -107,7 +129,7 @@ public class NurseDAO {
                 nurse.setLastName(rs.getString("LastName"));
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
-                nurse.setAddress(rs.getString("Address"));
+                nurse.setAddress(rs.getString("address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 
@@ -158,7 +180,7 @@ public class NurseDAO {
                 nurse.setLastName(rs.getString("LastName"));
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
-                nurse.setAddress(rs.getString("Address"));
+                nurse.setAddress(rs.getString("address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 
@@ -208,7 +230,7 @@ public class NurseDAO {
                 nurse.setLastName(rs.getString("LastName"));
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
-                nurse.setAddress(rs.getString("Address"));
+                nurse.setAddress(rs.getString("address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 
@@ -244,7 +266,7 @@ public class NurseDAO {
     }
     
     public boolean addNurse(Nurse nurse) {
-        String sql = "INSERT INTO Nurses (FirstName, LastName, telephone, Email, Address, HealthCenter, UserID, RegisteredByDoctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Nurses (FirstName, LastName, telephone, Email, address, HealthCenter, UserID, RegisteredByDoctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement stmt = null;
         boolean result = false;
         
@@ -325,7 +347,7 @@ public class NurseDAO {
     }
     
     public boolean updateNurse(Nurse nurse) {
-        String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, telephone = ?, Email = ?, Address = ?, HealthCenter = ? WHERE NurseID = ?";
+        String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, telephone = ?, Email = ?, address = ?, HealthCenter = ? WHERE NurseID = ?";
         PreparedStatement stmt = null;
         boolean result = false;
         
@@ -410,7 +432,7 @@ public class NurseDAO {
                 nurse.setLastName(rs.getString("LastName"));
                 nurse.setTelephone(rs.getString("telephone"));
                 nurse.setEmail(rs.getString("Email"));
-                nurse.setAddress(rs.getString("Address"));
+                nurse.setAddress(rs.getString("address"));
                 nurse.setHealthCenter(rs.getString("HealthCenter"));
                 nurse.setUserID(rs.getInt("UserID"));
                 nurse.setRegisteredByDoctorID(rs.getInt("RegisteredByDoctorID"));
