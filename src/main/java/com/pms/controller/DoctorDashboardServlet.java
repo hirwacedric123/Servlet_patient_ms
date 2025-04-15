@@ -3,9 +3,11 @@ package com.pms.controller;
 import com.pms.dao.DoctorDAO;
 import com.pms.dao.PatientDAO;
 import com.pms.dao.DiagnosisDAO;
+import com.pms.dao.NurseDAO;
 import com.pms.model.Doctor;
 import com.pms.model.Patient;
 import com.pms.model.Diagnosis;
+import com.pms.model.Nurse;
 import com.pms.model.User;
 
 import javax.servlet.ServletException;
@@ -26,11 +28,13 @@ public class DoctorDashboardServlet extends HttpServlet {
     private DoctorDAO doctorDAO;
     private PatientDAO patientDAO;
     private DiagnosisDAO diagnosisDAO;
+    private NurseDAO nurseDAO;
 
     public void init() {
         doctorDAO = new DoctorDAO();
         patientDAO = new PatientDAO();
         diagnosisDAO = new DiagnosisDAO();
+        nurseDAO = new NurseDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -75,30 +79,29 @@ public class DoctorDashboardServlet extends HttpServlet {
             session.setAttribute("doctor", doctor);
         }
         
-        // Initialize empty lists in case there's an error with doctor ID
+        // Initialize empty lists
         List<Map<String, Object>> pendingCases = new ArrayList<>();
         List<Map<String, Object>> confirmedCases = new ArrayList<>();
         
         try {
-            // Retrieve pending cases (patients without diagnosis)
-            List<Patient> patientsWithoutDiagnosis = patientDAO.getPatientsWithoutDiagnosis();
+            // Get pending patient cases (patients without diagnosis by this doctor)
+            List<Patient> patients = patientDAO.getPatientsWithoutDiagnosis();
             
-            for (Patient patient : patientsWithoutDiagnosis) {
-                Map<String, Object> caseDetails = new HashMap<>();
-                caseDetails.put("patientID", patient.getPatientID());
-                caseDetails.put("patientName", patient.getFirstName() + " " + patient.getLastName());
-                caseDetails.put("patientAge", patient.getAge());
-                caseDetails.put("patientGender", patient.getGender());
-                caseDetails.put("symptoms", patient.getSymptoms());
+            for (Patient patient : patients) {
+                Map<String, Object> patientData = new HashMap<>();
+                patientData.put("patientID", patient.getPatientID());
+                patientData.put("patientName", patient.getFirstName() + " " + patient.getLastName());
+                patientData.put("patientAge", patient.getAge());
+                patientData.put("patientGender", patient.getGender());
+                patientData.put("symptoms", patient.getSymptoms());
                 
-                // Get nurse name who registered the patient
+                // Get the name of the nurse who registered this patient
                 String nurseName = patientDAO.getRegisteringNurseName(patient.getPatientID());
-                caseDetails.put("registeredByNurse", nurseName);
+                patientData.put("registeredByNurse", nurseName);
                 
-                pendingCases.add(caseDetails);
+                pendingCases.add(patientData);
             }
             
-            // Only retrieve confirmed cases if we have a valid doctor ID
             if (doctor.getId() > 0) {
                 // Retrieve confirmed cases (patients with diagnosis)
                 List<Diagnosis> diagnoses = diagnosisDAO.getDiagnosesByDoctorID(doctor.getId());
@@ -118,6 +121,11 @@ public class DoctorDashboardServlet extends HttpServlet {
                         confirmedCases.add(caseDetails);
                     }
                 }
+                
+                // Get nurses registered by this doctor
+                List<Nurse> nursesRegistered = nurseDAO.getNursesByDoctor(doctor.getId());
+                request.setAttribute("nursesRegistered", nursesRegistered);
+                request.setAttribute("nursesCount", nursesRegistered.size());
             }
         } catch (Exception e) {
             // Log the error and add an error message to the request
