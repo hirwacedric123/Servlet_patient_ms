@@ -15,6 +15,44 @@ public class FormValidator {
     }
     
     /**
+     * Static method to check if a string is null or empty
+     * 
+     * @param value The string to check
+     * @return true if the string is null or empty, false otherwise
+     */
+    public static boolean isNullOrEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+    
+    /**
+     * Static method to validate an email address format
+     * 
+     * @param email The email to validate
+     * @return true if the email is valid, false otherwise
+     */
+    public static boolean isValidEmail(String email) {
+        if (isNullOrEmpty(email)) {
+            return false;
+        }
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        return email.matches(emailPattern);
+    }
+    
+    /**
+     * Static method to validate a phone number format
+     * 
+     * @param phone The phone number to validate
+     * @return true if the phone number is valid, false otherwise
+     */
+    public static boolean isValidPhone(String phone) {
+        if (isNullOrEmpty(phone)) {
+            return false;
+        }
+        String phonePattern = "^\\d{10}$";  // Assuming 10-digit phone numbers
+        return phone.matches(phonePattern);
+    }
+    
+    /**
      * Validates that a required field is not null or empty.
      * 
      * @param fieldName The name of the field
@@ -23,7 +61,7 @@ public class FormValidator {
      * @return true if validation passes, false otherwise
      */
     public boolean validateRequired(String fieldName, String fieldValue, String errorMessage) {
-        if (fieldValue == null || fieldValue.trim().isEmpty()) {
+        if (isNullOrEmpty(fieldValue)) {
             errors.put(fieldName, errorMessage);
             return false;
         }

@@ -2,6 +2,7 @@ com\pms\model\User.class
 com\pms\controller\LogoutServlet.class
 com\pms\controller\PatientRegistrationServlet.class
 com\pms\util\FileUploadUtil.class
+com\pms\util\FormValidator.class
 com\pms\model\Doctor.class
 com\pms\controller\DoctorDashboardServlet.class
 com\pms\controller\LoginServlet.class

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +22,7 @@ import javax.servlet.http.Part;
 
 import com.pms.dao.DiagnosisDAO;
 import com.pms.dao.PatientDAO;
+import com.pms.dao.UserDAO;
 import com.pms.model.Diagnosis;
 import com.pms.model.Patient;
 import com.pms.model.User;
@@ -38,6 +39,18 @@ public class PatientRegistrationServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(PatientRegistrationServlet.class.getName());
     private static final String UPLOAD_DIRECTORY = "patient_images";
     
+    private PatientDAO patientDAO;
+    private DiagnosisDAO diagnosisDAO;
+    private UserDAO userDAO;
+    
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        patientDAO = new PatientDAO();
+        diagnosisDAO = new DiagnosisDAO();
+        userDAO = new UserDAO();
+    }
+    
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
@@ -46,7 +59,7 @@ public class PatientRegistrationServlet extends HttpServlet {
         }
         
         User user = (User) session.getAttribute("user");
-        if (!"nurse".equalsIgnoreCase(user.getRole())) {
+        if (!"Nurse".equals(user.getUserType())) {
             response.sendRedirect(request.getContextPath() + "/access-denied");
             return;
         }
@@ -63,7 +76,7 @@ public class PatientRegistrationServlet extends HttpServlet {
         }
         
         User user = (User) session.getAttribute("user");
-        if (!"nurse".equalsIgnoreCase(user.getRole())) {
+        if (!"Nurse".equals(user.getUserType())) {
             response.sendRedirect(request.getContextPath() + "/access-denied");
             return;
         }
@@ -104,6 +117,26 @@ public class PatientRegistrationServlet extends HttpServlet {
             String bloodGroup = request.getParameter("bloodGroup");
             String symptoms = request.getParameter("symptoms");
             
+            // Generate a username and create User account for the patient
+            String username = generateUsername(firstName, lastName);
+            String defaultPassword = "patient" + System.currentTimeMillis() % 10000;
+            
+            User patientUser = new User();
+            patientUser.setUsername(username);
+            patientUser.setPassword(defaultPassword);
+            patientUser.setUserType("Patient");
+            patientUser.setFirstName(firstName);
+            patientUser.setLastName(lastName);
+            
+            boolean userCreated = userDAO.addUser(patientUser);
+            if (!userCreated) {
+                request.setAttribute("errorMessage", "Failed to create patient user account");
+                request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
+                return;
+            }
+            
+            LOGGER.log(Level.INFO, "Created user account for patient with ID: {0}", patientUser.getUserID());
+            
             // Process file upload
             String imagePath = null;
             Part filePart = request.getPart("patientImage");
@@ -135,6 +168,7 @@ public class PatientRegistrationServlet extends HttpServlet {
             
             // Create patient object
             Patient patient = new Patient();
+            patient.setUserID(patientUser.getUserID());
             patient.setFirstName(firstName);
             patient.setLastName(lastName);
             patient.setGender(gender);
@@ -144,40 +178,48 @@ public class PatientRegistrationServlet extends HttpServlet {
             patient.setDateOfBirth(dateOfBirth);
             patient.setEmergencyContact(emergencyContact);
             patient.setBloodGroup(bloodGroup);
-            patient.setImagePath(imagePath);
-            patient.setRegisterDate(new java.sql.Date(System.currentTimeMillis()));
-            patient.setRegisteredByNurseId(user.getId()); // Set the nurse ID who registered this patient
+            patient.setPImageLink(imagePath);
+            patient.setSymptoms(symptoms);
+            
+            // Determine if patient is referrable based on diagnosis status
+            boolean isReferrable = "Critical".equals(diagnoStatus) || "Serious".equals(diagnoStatus);
+            patient.setReferrable(isReferrable);
+            
+            // Set nurse who created the patient
+            patient.setCreatedBy(user.getUserID());
             
             // Save patient to database
-            PatientDAO patientDAO = new PatientDAO();
-            int patientId = patientDAO.addPatient(patient);
+            boolean patientAdded = patientDAO.addPatient(patient);
             
-            if (patientId > 0) {
-                LOGGER.log(Level.INFO, "Patient registered successfully with ID: {0}", patientId);
-                
-                // Create diagnosis entry for the patient
-                Diagnosis diagnosis = new Diagnosis();
-                diagnosis.setPatientId(patientId);
-                diagnosis.setDiagnosisStatus(diagnoStatus);
-                diagnosis.setSymptoms(symptoms);
-                diagnosis.setDiagnosisDate(new java.sql.Date(System.currentTimeMillis()));
-                diagnosis.setNurseId(user.getId());
-                
-                DiagnosisDAO diagnosisDAO = new DiagnosisDAO();
-                int diagnosisId = diagnosisDAO.addDiagnosis(diagnosis);
-                
-                if (diagnosisId > 0) {
-                    LOGGER.log(Level.INFO, "Diagnosis record created with ID: {0}", diagnosisId);
-                    response.sendRedirect(request.getContextPath() + "/nurse/patients?success=Patient registered successfully");
-                } else {
-                    LOGGER.log(Level.WARNING, "Failed to create diagnosis record for patient ID: {0}", patientId);
-                    response.sendRedirect(request.getContextPath() + "/nurse/patients?warning=Patient registered but diagnosis record creation failed");
-                }
-            } else {
-                LOGGER.log(Level.SEVERE, "Failed to register patient");
-                request.setAttribute("errorMessage", "Failed to register patient. Please try again.");
+            if (!patientAdded) {
+                // If patient creation fails, delete the user account
+                userDAO.deleteUser(patientUser.getUserID());
+                request.setAttribute("errorMessage", "Failed to register patient");
                 request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
+                return;
             }
+            
+            LOGGER.log(Level.INFO, "Patient registered successfully with ID: {0}", patient.getPatientID());
+            
+            // Create diagnosis entry
+            Diagnosis diagnosis = new Diagnosis();
+            diagnosis.setPatientID(patient.getPatientID());
+            diagnosis.setNurseID(user.getUserID());
+            diagnosis.setDiagnoStatus(diagnoStatus);
+            diagnosis.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+            diagnosis.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+            
+            boolean diagnosisAdded = diagnosisDAO.addDiagnosis(diagnosis);
+            
+            if (!diagnosisAdded) {
+                LOGGER.log(Level.WARNING, "Failed to create diagnosis record for patient ID: {0}", patient.getPatientID());
+                session.setAttribute("warningMessage", "Patient registered but failed to create diagnosis entry");
+            } else {
+                LOGGER.log(Level.INFO, "Diagnosis record created with ID: {0}", diagnosis.getDiagnosisID());
+                session.setAttribute("successMessage", "Patient successfully registered");
+            }
+            
+            response.sendRedirect(request.getContextPath() + "/nurse/patients");
             
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error registering patient", e);
@@ -193,5 +235,13 @@ public class PatientRegistrationServlet extends HttpServlet {
             }
         }
         return null;
+    }
+    
+    private String generateUsername(String firstName, String lastName) {
+        // Convert to lowercase and remove spaces
+        String base = (firstName.substring(0, 1) + lastName).toLowerCase().replaceAll("\\s+", "");
+        
+        // Add a random number for uniqueness
+        return base + System.currentTimeMillis() % 10000;
     }
 } 
