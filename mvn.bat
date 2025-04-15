@@ -2,7 +2,7 @@
 echo Searching for Maven installation...
 
 set MAVEN_HOME=
-for /d %%i in (C:\apache-maven* C:\Program Files\apache-maven* C:\Program Files (x86)\apache-maven* C:\maven* C:\Users\%USERNAME%\Downloads\apache-maven* C:\Users\%USERNAME%\Desktop\apache-maven*) do (
+for /d %%i in (C:\Program Files\Apache Software Foundation\Maven\apache-maven* C:\Program Files\apache-maven* C:\Program Files (x86)\apache-maven* C:\maven* C:\Users\%USERNAME%\Downloads\apache-maven* C:\Users\%USERNAME%\Desktop\apache-maven*) do (
     if exist "%%i\bin\mvn.cmd" (
         set MAVEN_HOME=%%i
         echo Found Maven at %%i
