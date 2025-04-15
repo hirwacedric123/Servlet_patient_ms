@@ -2,10 +2,14 @@ package com.pms.model;
 
 public class Doctor {
     private int id;
+    private int doctorID;
     private String name;
+    private String firstName;
+    private String lastName;
     private String specialization;
     private String email;
     private String phone;
+    private String contactNumber;
     private String address;
     private boolean active;
     private int userId;
@@ -16,10 +20,15 @@ public class Doctor {
 
     public Doctor(int id, String name, String specialization, String email, String phone, String address) {
         this.id = id;
+        this.doctorID = id;
         this.name = name;
+        String[] parts = name.split(" ", 2);
+        this.firstName = parts[0];
+        this.lastName = parts.length > 1 ? parts[1] : "";
         this.specialization = specialization;
         this.email = email;
         this.phone = phone;
+        this.contactNumber = phone;
         this.address = address;
         this.active = true;
     }
@@ -31,6 +40,16 @@ public class Doctor {
 
     public void setId(int id) {
         this.id = id;
+        this.doctorID = id;
+    }
+
+    public int getDoctorID() {
+        return doctorID;
+    }
+
+    public void setDoctorID(int doctorID) {
+        this.doctorID = doctorID;
+        this.id = doctorID;
     }
 
     public String getName() {
@@ -39,6 +58,27 @@ public class Doctor {
 
     public void setName(String name) {
         this.name = name;
+        String[] parts = name.split(" ", 2);
+        this.firstName = parts[0];
+        this.lastName = parts.length > 1 ? parts[1] : "";
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+        this.name = firstName + (lastName != null ? " " + lastName : "");
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+        this.name = (firstName != null ? firstName + " " : "") + lastName;
     }
 
     public String getSpecialization() {
@@ -63,6 +103,16 @@ public class Doctor {
 
     public void setPhone(String phone) {
         this.phone = phone;
+        this.contactNumber = phone;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+        this.phone = contactNumber;
     }
 
     public String getAddress() {
