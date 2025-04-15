@@ -27,7 +27,7 @@
                     <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register New Patient</h5>
                 </div>
                 <div class="card-body">
-                    <form action="${pageContext.request.contextPath}/nurse/register-patient" method="post" enctype="multipart/form-data">
+                    <form action="${pageContext.request.contextPath}/nurse/patient-registration" method="post" enctype="multipart/form-data">
                         <h5 class="border-bottom pb-2 mb-3">Personal Information</h5>
                         
                         <div class="row">
@@ -93,6 +93,22 @@
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
                             <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                        </div>
+                        
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Account Information</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username *</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                                <div class="form-text">Choose a unique username that the patient can remember easily.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="initialPassword" class="form-label">Initial Password *</label>
+                                <input type="text" class="form-control" id="initialPassword" name="initialPassword" 
+                                       value="Patient123" required>
+                                <div class="form-text">Patient can change this password after first login.</div>
+                            </div>
                         </div>
                         
                         <h5 class="border-bottom pb-2 mb-3 mt-4">Medical Information</h5>
@@ -162,6 +178,26 @@
             reader.readAsDataURL(file);
         }
     });
+    
+    // Generate username suggestion based on first and last name
+    document.getElementById('firstName').addEventListener('change', updateUsernameSuggestion);
+    document.getElementById('lastName').addEventListener('change', updateUsernameSuggestion);
+    
+    function updateUsernameSuggestion() {
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        
+        if (firstName && lastName) {
+            // Generate username suggestion (first letter of first name + last name in lowercase)
+            const suggestion = (firstName.charAt(0) + lastName).toLowerCase().replace(/\s+/g, '');
+            
+            // Only update if the field is empty or contains a previously generated suggestion
+            const usernameField = document.getElementById('username');
+            if (!usernameField.value || usernameField.value.match(/^[a-z][a-z]*$/)) {
+                usernameField.value = suggestion;
+            }
+        }
+    }
 </script>
 
 <jsp:include page="../common/footer.jsp" /> 

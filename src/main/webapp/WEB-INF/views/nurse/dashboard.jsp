@@ -79,7 +79,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/register-patient">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
                             <i class="fas fa-user-plus me-1"></i>Register Patient
                         </a>
                     </li>
@@ -158,7 +158,7 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-users me-2"></i>Recently Registered Patients</h5>
-                    <a href="${pageContext.request.contextPath}/nurse/register-patient" class="btn btn-light btn-sm">
+                    <a href="${pageContext.request.contextPath}/nurse/patient-registration" class="btn btn-light btn-sm">
                         <i class="fas fa-plus me-1"></i>Register New Patient
                     </a>
                 </div>

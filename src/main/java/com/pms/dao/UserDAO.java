@@ -195,6 +195,51 @@ public class UserDAO {
         return users;
     }
     
+    /**
+     * Check if a username already exists in the database
+     * 
+     * @param username the username to check
+     * @return true if the username exists, false otherwise
+     */
+    public boolean usernameExists(String username) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Username = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean exists = false;
+        
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                exists = rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+        }
+        
+        return exists;
+    }
+    
     public boolean addUser(User user) {
         String sql = "INSERT INTO Users (Username, Password, Role, FirstName, LastName) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;

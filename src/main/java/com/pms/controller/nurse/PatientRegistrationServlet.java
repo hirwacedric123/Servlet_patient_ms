@@ -28,7 +28,7 @@ import com.pms.model.Patient;
 import com.pms.model.User;
 import com.pms.util.FormValidator;
 
-@WebServlet("/nurse/register-patient")
+@WebServlet("/nurse/patient-registration")
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024, // 1 MB
     maxFileSize = 5 * 1024 * 1024,   // 5 MB
@@ -88,14 +88,25 @@ public class PatientRegistrationServlet extends HttpServlet {
             String gender = request.getParameter("gender");
             String contactNumber = request.getParameter("contactNumber");
             String diagnoStatus = request.getParameter("diagnoStatus");
+            String username = request.getParameter("username");
+            String initialPassword = request.getParameter("initialPassword");
             
             if (FormValidator.isNullOrEmpty(firstName) || 
                 FormValidator.isNullOrEmpty(lastName) || 
                 FormValidator.isNullOrEmpty(gender) || 
                 FormValidator.isNullOrEmpty(contactNumber) ||
-                FormValidator.isNullOrEmpty(diagnoStatus)) {
+                FormValidator.isNullOrEmpty(diagnoStatus) ||
+                FormValidator.isNullOrEmpty(username) ||
+                FormValidator.isNullOrEmpty(initialPassword)) {
                 
                 request.setAttribute("errorMessage", "Required fields cannot be empty");
+                request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
+                return;
+            }
+            
+            // Check if username already exists
+            if (userDAO.usernameExists(username)) {
+                request.setAttribute("errorMessage", "Username '" + username + "' is already taken. Please choose another username.");
                 request.getRequestDispatcher("/WEB-INF/views/nurse/patient-register.jsp").forward(request, response);
                 return;
             }
@@ -117,13 +128,10 @@ public class PatientRegistrationServlet extends HttpServlet {
             String bloodGroup = request.getParameter("bloodGroup");
             String symptoms = request.getParameter("symptoms");
             
-            // Generate a username and create User account for the patient
-            String username = generateUsername(firstName, lastName);
-            String defaultPassword = "patient" + System.currentTimeMillis() % 10000;
-            
+            // Create User account for the patient using the provided username and password
             User patientUser = new User();
             patientUser.setUsername(username);
-            patientUser.setPassword(defaultPassword);
+            patientUser.setPassword(initialPassword);
             patientUser.setUserType("Patient");
             patientUser.setFirstName(firstName);
             patientUser.setLastName(lastName);
@@ -135,7 +143,8 @@ public class PatientRegistrationServlet extends HttpServlet {
                 return;
             }
             
-            LOGGER.log(Level.INFO, "Created user account for patient with ID: {0}", patientUser.getUserID());
+            LOGGER.log(Level.INFO, "Created user account for patient with ID: {0} and username: {1}", 
+                      new Object[]{patientUser.getUserID(), username});
             
             // Process file upload
             String imagePath = null;
