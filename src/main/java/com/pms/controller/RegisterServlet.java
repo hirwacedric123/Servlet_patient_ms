@@ -137,10 +137,64 @@ public class RegisterServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
                     return;
                 }
+                
+                // Set user and doctor in session for automatic login
+                request.getSession().setAttribute("user", user);
+                request.getSession().setAttribute("doctor", doctor);
+                
+                // Redirect to doctor dashboard
+                response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+                return;
             }
             
-            // Registration successful, redirect to login page
-            response.sendRedirect(request.getContextPath() + "/login?registered=true");
+            // Handle Patient specific registration
+            if ("Patient".equals(userType)) {
+                String gender = request.getParameter("gender");
+                String dateOfBirth = request.getParameter("dateOfBirth");
+                String address = request.getParameter("address");
+                String contactNumber = request.getParameter("contactNumber");
+                String email = request.getParameter("email");
+                
+                // Validate patient-specific fields
+                if (gender == null || gender.trim().isEmpty() ||
+                    dateOfBirth == null || dateOfBirth.trim().isEmpty() ||
+                    address == null || address.trim().isEmpty() ||
+                    contactNumber == null || contactNumber.trim().isEmpty() ||
+                    email == null || email.trim().isEmpty()) {
+                    userDAO.deleteUser(user.getUserID());
+                    request.setAttribute("errorMessage", "All patient fields are required");
+                    request.setAttribute("userType", userType.toLowerCase());
+                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+                    return;
+                }
+                
+                Patient patient = new Patient();
+                patient.setFirstName(firstName);
+                patient.setLastName(lastName);
+                patient.setGender(gender);
+                patient.setDateOfBirth(dateOfBirth);
+                patient.setAddress(address);
+                patient.setContactNumber(contactNumber);
+                patient.setEmail(email);
+                patient.setUserID(user.getUserID());
+                
+                boolean patientCreated = patientDAO.addPatient(patient);
+                if (!patientCreated) {
+                    userDAO.deleteUser(user.getUserID());
+                    request.setAttribute("errorMessage", "Failed to create patient profile");
+                    request.setAttribute("userType", userType.toLowerCase());
+                    request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+                    return;
+                }
+                
+                // Set user and patient in session for automatic login
+                request.getSession().setAttribute("user", user);
+                request.getSession().setAttribute("patient", patient);
+                
+                // Redirect to patient dashboard
+                response.sendRedirect(request.getContextPath() + "/patient/dashboard");
+                return;
+            }
             
         } catch (Exception e) {
             e.printStackTrace();

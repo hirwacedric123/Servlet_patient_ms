@@ -195,4 +195,19 @@
             var passwordInput = document.getElementById('password')
             if (passwordInput) {
                 passwordInput.addEventListener('input', function() {
-                    var
+                    var password = this.value;
+                    var isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+                    
+                    if (isValid) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
+        })()
+    </script>
+</body>
+</html>
