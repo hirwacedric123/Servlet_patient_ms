@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.IOException;
 
-@WebServlet("/legacy/register-patient")
+@WebServlet("/nurse/legacy-register-patient")
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024, // 1 MB
     maxFileSize = 1024 * 1024 * 10,  // 10 MB
