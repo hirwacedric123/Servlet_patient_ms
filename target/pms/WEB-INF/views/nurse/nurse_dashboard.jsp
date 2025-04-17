@@ -53,7 +53,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/register-patient">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
                             <i class="fas fa-user-plus me-1"></i>Register Patient
                         </a>
                     </li>

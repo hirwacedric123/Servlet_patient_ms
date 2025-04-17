@@ -27,7 +27,7 @@
                     <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register New Patient</h5>
                 </div>
                 <div class="card-body">
-                    <form action="${pageContext.request.contextPath}/nurse/register-patient" method="post" enctype="multipart/form-data">
+                    <form action="${pageContext.request.contextPath}/nurse/patient-registration" method="post" enctype="multipart/form-data">
                         <h5 class="border-bottom pb-2 mb-3">Personal Information</h5>
                         
                         <div class="row">

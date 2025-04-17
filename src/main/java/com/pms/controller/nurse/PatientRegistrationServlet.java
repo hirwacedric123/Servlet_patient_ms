@@ -205,7 +205,21 @@ public class PatientRegistrationServlet extends HttpServlet {
             Diagnosis diagnosis = new Diagnosis();
             diagnosis.setPatientID(patient.getPatientID());
             diagnosis.setNurseID(user.getUserID());
-            diagnosis.setDiagnoStatus(diagnoStatus);
+            
+            // Map the user-selected diagnosis status to database enum values
+            String dbDiagnoStatus;
+            switch(diagnoStatus) {
+                case "Critical":
+                case "Serious":
+                    dbDiagnoStatus = "Referrable";
+                    break;
+                case "Normal":
+                case "Observation":
+                default:
+                    dbDiagnoStatus = "Not Referrable";
+                    break;
+            }
+            diagnosis.setDiagnoStatus(dbDiagnoStatus);
             
             // Combine symptoms and image information if available
             StringBuilder notes = new StringBuilder();
