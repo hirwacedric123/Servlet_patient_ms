@@ -76,8 +76,19 @@ public class NurseDashboardServlet extends HttpServlet {
         int nonReferrableCount = 0;
         
         try {
-            // Get patients registered by this nurse
-            registeredPatients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
+            // First print a diagnostic message
+            System.out.println("Fetching patients for nurse ID: " + nurse.getNurseID());
+            
+            // Try both methods to diagnose the issue
+            List<Patient> allPatients = patientDAO.getAllPatients();
+            System.out.println("Total patients in system: " + allPatients.size());
+            
+            List<Patient> nursePatients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
+            System.out.println("Patients by nurse ID method: " + nursePatients.size());
+            
+            // Get patients registered by this nurse using our new method
+            registeredPatients = patientDAO.getRegisteredPatientsByNurseID(nurse.getNurseID());
+            System.out.println("Patients by registered method: " + registeredPatients.size());
             
             // Count referrable and non-referrable cases
             for (Patient patient : registeredPatients) {

@@ -34,9 +34,6 @@
         .patients { color: #2ecc71; }
         .referrable { color: #e74c3c; }
         .non-referrable { color: #f39c12; }
-        .badge-referrable { background-color: #e74c3c; }
-        .badge-non-referrable { background-color: #f39c12; }
-        .badge-registered-by-you { background-color: #3498db; }
         .patient-image {
             width: 50px;
             height: 50px;
@@ -217,14 +214,14 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${patient.isReferrable()}">
-                                                            <span class="badge badge-referrable">Referrable</span>
+                                                            <span class="badge bg-danger">Referrable</span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="badge badge-non-referrable">Non-Referrable</span>
+                                                            <span class="badge bg-success">Non-Referrable</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                     <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
-                                                        <span class="badge badge-registered-by-you">Registered by you</span>
+                                                        <span class="badge bg-primary">Registered by you</span>
                                                     </c:if>
                                                 </td>
                                                 <td>
