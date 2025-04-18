@@ -172,7 +172,7 @@ public class DoctorDashboardServlet extends HttpServlet {
         request.setAttribute("nursesCount", nursesCount);
         
         // Forward to the dashboard JSP
-        request.getRequestDispatcher("/WEB-INF/views/doctor/dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/doctor/doctor_dashboard.jsp").forward(request, response);
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
