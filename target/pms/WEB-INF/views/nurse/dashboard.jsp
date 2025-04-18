@@ -36,6 +36,7 @@
         .non-referrable { color: #f39c12; }
         .badge-referrable { background-color: #e74c3c; }
         .badge-non-referrable { background-color: #f39c12; }
+        .badge-registered-by-you { background-color: #3498db; }
         .patient-image {
             width: 50px;
             height: 50px;
@@ -58,6 +59,9 @@
             padding: 12px;
             margin-bottom: 20px;
             border-radius: 4px;
+        }
+        .registered-by-you {
+            background-color: rgba(52, 152, 219, 0.1);
         }
     </style>
 </head>
@@ -153,11 +157,21 @@
             </div>
         </div>
 
-        <!-- Recent Patients -->
+        <!-- Patient List -->
         <div class="card mb-4">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Recently Registered Patients</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>
+                        <c:choose>
+                            <c:when test="${pageContext.request.servletPath == '/nurse/patients'}">
+                                All Patients
+                            </c:when>
+                            <c:otherwise>
+                                Recently Registered Patients
+                            </c:otherwise>
+                        </c:choose>
+                    </h5>
                     <a href="${pageContext.request.contextPath}/nurse/patient-registration" class="btn btn-light btn-sm">
                         <i class="fas fa-plus me-1"></i>Register New Patient
                     </a>
@@ -185,7 +199,7 @@
                                 <tbody>
                                     <c:forEach items="${registeredPatients}" var="patient" varStatus="loop">
                                         <c:if test="${loop.index < 10}"> <!-- Show only the 10 most recent -->
-                                            <tr>
+                                            <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty patient.pImageLink}">
@@ -209,6 +223,9 @@
                                                             <span class="badge badge-non-referrable">Non-Referrable</span>
                                                         </c:otherwise>
                                                     </c:choose>
+                                                    <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
+                                                        <span class="badge badge-registered-by-you">Registered by you</span>
+                                                    </c:if>
                                                 </td>
                                                 <td>
                                                     <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary">
