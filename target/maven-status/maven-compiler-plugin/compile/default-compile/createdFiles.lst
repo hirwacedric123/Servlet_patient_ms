@@ -1,3 +1,4 @@
+com\pms\controller\doctor\DiagnosePatientServlet.class
 com\pms\model\User.class
 com\pms\controller\nurse\NursePatientsServlet.class
 com\pms\controller\LogoutServlet.class

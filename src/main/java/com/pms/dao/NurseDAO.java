@@ -38,11 +38,10 @@ public class NurseDAO {
                     "UserID INT NOT NULL, " +
                     "FirstName VARCHAR(50) NOT NULL, " +
                     "LastName VARCHAR(50) NOT NULL, " +
-                    "ContactNumber VARCHAR(20) NOT NULL, " +
+                    "telephone VARCHAR(20), " +
                     "Email VARCHAR(100) NOT NULL, " +
                     "Department VARCHAR(100), " +
                     "RegisteredByDoctorID INT, " +
-                    "telephone VARCHAR(20), " +
                     "address VARCHAR(255), " +
                     "healthcenter VARCHAR(100), " +
                     "FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE" +
@@ -93,6 +92,21 @@ public class NurseDAO {
                     stmt.executeUpdate(addColumnSQL);
                     System.out.println("Added healthcenter column to Nurses table");
                     stmt.close();
+                }
+                
+                // Drop ContactNumber column if it exists (to prevent conflicts)
+                try {
+                    ResultSet contactColumns = meta.getColumns(null, null, "Nurses", "ContactNumber");
+                    if (contactColumns.next()) {
+                        Statement stmt = connection.createStatement();
+                        String dropColumnSQL = "ALTER TABLE Nurses DROP COLUMN ContactNumber";
+                        stmt.executeUpdate(dropColumnSQL);
+                        System.out.println("Dropped ContactNumber column from Nurses table (using telephone instead)");
+                        stmt.close();
+                    }
+                } catch (SQLException e) {
+                    // Ignore if the column doesn't exist or can't be dropped
+                    System.out.println("No ContactNumber column found or error dropping it: " + e.getMessage());
                 }
             }
         } catch (SQLException e) {
@@ -256,7 +270,7 @@ public class NurseDAO {
     }
     
     public boolean addNurse(Nurse nurse) {
-        String sql = "INSERT INTO Nurses (UserID, FirstName, LastName, ContactNumber, Email, Department, RegisteredByDoctorID, telephone, address, healthcenter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Nurses (UserID, FirstName, LastName, telephone, Email, Department, RegisteredByDoctorID, address, healthcenter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement stmt = null;
         boolean result = false;
         
@@ -266,12 +280,12 @@ public class NurseDAO {
             stmt.setString(2, nurse.getFirstName());
             stmt.setString(3, nurse.getLastName());
             
-            // ContactNumber is required, use telephone if available, otherwise use a default
-            String contactNumber = nurse.getTelephone();
-            if (contactNumber == null || contactNumber.isEmpty()) {
-                contactNumber = "Unknown";
+            // telephone is the actual column name we should use
+            String phoneNumber = nurse.getTelephone();
+            if (phoneNumber == null || phoneNumber.isEmpty()) {
+                phoneNumber = "Unknown";
             }
-            stmt.setString(4, contactNumber);
+            stmt.setString(4, phoneNumber);
             
             // Email is required, use a default if not provided
             String email = nurse.getEmail();
@@ -292,9 +306,8 @@ public class NurseDAO {
             }
             
             // Optional fields
-            stmt.setString(8, nurse.getTelephone());
-            stmt.setString(9, nurse.getAddress());
-            stmt.setString(10, nurse.getHealthCenter());
+            stmt.setString(8, nurse.getAddress());
+            stmt.setString(9, nurse.getHealthCenter());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -318,12 +331,12 @@ public class NurseDAO {
                     stmt.setString(2, nurse.getFirstName());
                     stmt.setString(3, nurse.getLastName());
                     
-                    // ContactNumber is required, use telephone if available, otherwise use a default
-                    String contactNumber = nurse.getTelephone();
-                    if (contactNumber == null || contactNumber.isEmpty()) {
-                        contactNumber = "Unknown";
+                    // telephone is the actual column name we should use
+                    String phoneNumber = nurse.getTelephone();
+                    if (phoneNumber == null || phoneNumber.isEmpty()) {
+                        phoneNumber = "Unknown";
                     }
-                    stmt.setString(4, contactNumber);
+                    stmt.setString(4, phoneNumber);
                     
                     // Email is required, use a default if not provided
                     String email = nurse.getEmail();
@@ -344,9 +357,8 @@ public class NurseDAO {
                     }
                     
                     // Optional fields
-                    stmt.setString(8, nurse.getTelephone());
-                    stmt.setString(9, nurse.getAddress());
-                    stmt.setString(10, nurse.getHealthCenter());
+                    stmt.setString(8, nurse.getAddress());
+                    stmt.setString(9, nurse.getHealthCenter());
                     
                     int rowsAffected = stmt.executeUpdate();
                     if (rowsAffected > 0) {
@@ -376,7 +388,7 @@ public class NurseDAO {
     }
     
     public boolean updateNurse(Nurse nurse) {
-        String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, ContactNumber = ?, Email = ?, Department = ?, telephone = ?, address = ?, healthcenter = ? WHERE NurseID = ?";
+        String sql = "UPDATE Nurses SET FirstName = ?, LastName = ?, telephone = ?, Email = ?, Department = ?, address = ?, healthcenter = ? WHERE NurseID = ?";
         PreparedStatement stmt = null;
         boolean result = false;
         
@@ -385,12 +397,12 @@ public class NurseDAO {
             stmt.setString(1, nurse.getFirstName());
             stmt.setString(2, nurse.getLastName());
             
-            // ContactNumber is required, use telephone if available, otherwise use a default
-            String contactNumber = nurse.getTelephone();
-            if (contactNumber == null || contactNumber.isEmpty()) {
-                contactNumber = "Unknown";
+            // telephone is the actual column name we should use
+            String phoneNumber = nurse.getTelephone();
+            if (phoneNumber == null || phoneNumber.isEmpty()) {
+                phoneNumber = "Unknown";
             }
-            stmt.setString(3, contactNumber);
+            stmt.setString(3, phoneNumber);
             
             // Email is required, use a default if not provided
             String email = nurse.getEmail();
@@ -404,10 +416,9 @@ public class NurseDAO {
             stmt.setString(5, department);
             
             // Optional fields
-            stmt.setString(6, nurse.getTelephone());
-            stmt.setString(7, nurse.getAddress());
-            stmt.setString(8, nurse.getHealthCenter());
-            stmt.setInt(9, nurse.getNurseID());
+            stmt.setString(6, nurse.getAddress());
+            stmt.setString(7, nurse.getHealthCenter());
+            stmt.setInt(8, nurse.getNurseID());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {

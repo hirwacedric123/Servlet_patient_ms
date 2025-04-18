@@ -54,9 +54,8 @@ public class DiagnosePatientServlet extends HttpServlet {
         try {
             int patientID = Integer.parseInt(patientId);
             
-            // Get the patient and diagnosis information
+            // Get the patient information
             Patient patient = patientDAO.getPatientByID(patientID);
-            Diagnosis diagnosis = diagnosisDAO.getDiagnosisByPatientID(patientID);
             
             if (patient == null) {
                 request.setAttribute("errorMessage", "Patient not found");
@@ -64,10 +63,61 @@ public class DiagnosePatientServlet extends HttpServlet {
                 return;
             }
             
+            // Get diagnosis or create a new one if it doesn't exist
+            Diagnosis diagnosis = diagnosisDAO.getDiagnosisByPatientID(patientID);
+            
             if (diagnosis == null) {
-                request.setAttribute("errorMessage", "No diagnosis found for this patient");
-                request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
-                return;
+                // Create a new diagnosis for this patient
+                diagnosis = new Diagnosis();
+                diagnosis.setPatientID(patientID);
+                
+                // Get the doctor ID from the session
+                int doctorId = 0;
+                if (session.getAttribute("doctor") != null) {
+                    doctorId = ((com.pms.model.Doctor) session.getAttribute("doctor")).getId();
+                } else {
+                    doctorId = user.getUserID();
+                }
+                
+                diagnosis.setDoctorID(doctorId);
+                
+                // Use the User ID as nurse ID temporarily (or fetch from patient record if possible)
+                // For a real system, you should store or retrieve the actual nurse ID
+                int nurseId = 0;
+                try {
+                    // Try to get the nurse ID associated with the patient
+                    nurseId = patient.getCreatedBy();
+                } catch (Exception e) {
+                    // If not available, use the first available nurse or a default value
+                    nurseId = 1; // Default to first nurse ID
+                }
+                
+                diagnosis.setNurseID(nurseId);
+                diagnosis.setDiagnoStatus("Referrable"); // Default to referrable
+                diagnosis.setResult("Pending"); // Default to pending
+                
+                // Set timestamps
+                Timestamp now = new Timestamp(System.currentTimeMillis());
+                diagnosis.setCreatedDate(now);
+                diagnosis.setUpdatedDate(now);
+                
+                // Add the diagnosis to the database
+                boolean added = diagnosisDAO.addDiagnosis(diagnosis);
+                
+                if (!added) {
+                    request.setAttribute("errorMessage", "Failed to create diagnosis record");
+                    request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+                    return;
+                }
+                
+                // Get the newly created diagnosis with its ID
+                diagnosis = diagnosisDAO.getDiagnosisByPatientID(patientID);
+                
+                if (diagnosis == null) {
+                    request.setAttribute("errorMessage", "Failed to retrieve newly created diagnosis");
+                    request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+                    return;
+                }
             }
             
             // Set attributes for the JSP
