@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/nurse/dashboard")
 public class NurseDashboardServlet extends HttpServlet {
@@ -76,19 +74,8 @@ public class NurseDashboardServlet extends HttpServlet {
         int nonReferrableCount = 0;
         
         try {
-            // First print a diagnostic message
-            System.out.println("Fetching patients for nurse ID: " + nurse.getNurseID());
-            
-            // Try both methods to diagnose the issue
-            List<Patient> allPatients = patientDAO.getAllPatients();
-            System.out.println("Total patients in system: " + allPatients.size());
-            
-            List<Patient> nursePatients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
-            System.out.println("Patients by nurse ID method: " + nursePatients.size());
-            
-            // Get patients registered by this nurse using our new method
+            // Get patients registered by this nurse
             registeredPatients = patientDAO.getRegisteredPatientsByNurseID(nurse.getNurseID());
-            System.out.println("Patients by registered method: " + registeredPatients.size());
             
             // Count referrable and non-referrable cases
             for (Patient patient : registeredPatients) {
@@ -98,6 +85,12 @@ public class NurseDashboardServlet extends HttpServlet {
                     nonReferrableCount++;
                 }
             }
+            
+            // Debug information to console
+            System.out.println("Nurse ID: " + nurse.getNurseID());
+            System.out.println("Registered Patients Count: " + registeredPatients.size());
+            System.out.println("Referrable: " + referrableCount + ", Non-Referrable: " + nonReferrableCount);
+            
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Error retrieving patient data: " + e.getMessage());
