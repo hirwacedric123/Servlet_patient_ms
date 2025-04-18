@@ -178,8 +178,13 @@
                 <c:choose>
                     <c:when test="${empty registeredPatients}">
                         <p class="text-center text-muted">No patients registered yet</p>
+                        <!-- Debug information (will be removed in production) -->
+                        <p class="text-center text-muted small">Debug: Empty patients list</p>
                     </c:when>
                     <c:otherwise>
+                        <!-- Debug information (will be removed in production) -->
+                        <p class="text-center text-muted small">Debug: Found ${registeredPatients.size()} patients</p>
+                        
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
@@ -195,45 +200,43 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach items="${registeredPatients}" var="patient" varStatus="loop">
-                                        <c:if test="${loop.index < 10}"> <!-- Show only the 10 most recent -->
-                                            <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
-                                                <td>
-                                                    <c:choose>
-                                                        <c:when test="${not empty patient.pImageLink}">
-                                                            <img src="${pageContext.request.contextPath}/${patient.pImageLink}" class="patient-image" alt="Patient Photo">
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <img src="${pageContext.request.contextPath}/images/default-avatar.png" class="patient-image" alt="Default Photo">
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </td>
-                                                <td>${patient.patientID}</td>
-                                                <td>${patient.firstName} ${patient.lastName}</td>
-                                                <td>${patient.gender}</td>
-                                                <td>${patient.contactNumber}</td>
-                                                <td>
-                                                    <c:choose>
-                                                        <c:when test="${patient.isReferrable()}">
-                                                            <span class="badge bg-danger">Referrable</span>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <span class="badge bg-success">Non-Referrable</span>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                    <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
-                                                        <span class="badge bg-primary">Registered by you</span>
-                                                    </c:if>
-                                                </td>
-                                                <td>
-                                                    <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-edit"></i> Edit
-                                                    </a>
-                                                    <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:if>
+                                        <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${not empty patient.pImageLink}">
+                                                        <img src="${pageContext.request.contextPath}/${patient.pImageLink}" class="patient-image" alt="Patient Photo">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img src="${pageContext.request.contextPath}/images/default-avatar.png" class="patient-image" alt="Default Photo">
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>${patient.patientID}</td>
+                                            <td>${patient.firstName} ${patient.lastName}</td>
+                                            <td>${patient.gender}</td>
+                                            <td>${patient.contactNumber}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${patient.isReferrable()}">
+                                                        <span class="badge bg-danger">Referrable</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge bg-success">Non-Referrable</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
+                                                    <span class="badge bg-primary">Registered by you</span>
+                                                </c:if>
+                                            </td>
+                                            <td>
+                                                <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
                                     </c:forEach>
                                 </tbody>
                             </table>

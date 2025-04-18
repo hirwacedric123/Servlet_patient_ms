@@ -103,7 +103,23 @@ public class NurseDashboardServlet extends HttpServlet {
         
         // Set attributes for the JSP
         request.setAttribute("nurse", nurse);
-        request.setAttribute("registeredPatients", registeredPatients.isEmpty() ? allPatients : registeredPatients);
+        
+        // If registeredPatients is empty, use allPatients instead
+        if (registeredPatients.isEmpty()) {
+            System.out.println("WARNING: No patients registered specifically by this nurse. Using all patients instead.");
+            request.setAttribute("registeredPatients", allPatients);
+        } else {
+            System.out.println("Found patients registered by this nurse. Total: " + registeredPatients.size());
+            // Print the first few patients for debugging
+            for (int i = 0; i < Math.min(3, registeredPatients.size()); i++) {
+                Patient p = registeredPatients.get(i);
+                System.out.println("Patient #" + (i+1) + ": ID=" + p.getPatientID() + 
+                                 ", Name=" + p.getFirstName() + " " + p.getLastName() + 
+                                 ", CreatedBy=" + p.getCreatedBy());
+            }
+            request.setAttribute("registeredPatients", registeredPatients);
+        }
+        
         request.setAttribute("patientCount", allPatients.size());
         request.setAttribute("referrableCount", referrableCount);
         request.setAttribute("nonReferrableCount", nonReferrableCount);

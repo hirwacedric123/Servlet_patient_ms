@@ -769,11 +769,13 @@ public class PatientDAO {
      */
     public List<Patient> getRegisteredPatientsByNurseID(int nurseID) {
         String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact, " +
-                     "(SELECT DiagnoStatus FROM Diagnosis WHERE PatientID = u.UserID ORDER BY CreatedDate DESC LIMIT 1) AS LatestDiagnosis " +
+                     "(SELECT DiagnoStatus FROM Diagnosis WHERE PatientID = u.UserID ORDER BY CreatedDate DESC LIMIT 1) AS LatestDiagnosis, " +
+                     "(SELECT MAX(CreatedDate) FROM Diagnosis WHERE PatientID = u.UserID AND NurseID = ?) as RegistrationDate " +
                      "FROM Users u " +
                      "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
                      "INNER JOIN Diagnosis d ON u.UserID = d.PatientID " +
-                     "WHERE d.NurseID = ? AND u.Role = 'Patient'";
+                     "WHERE d.NurseID = ? AND u.Role = 'Patient' " +
+                     "ORDER BY RegistrationDate DESC";
         
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -784,6 +786,7 @@ public class PatientDAO {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, nurseID);
+            stmt.setInt(2, nurseID);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -820,6 +823,10 @@ public class PatientDAO {
                 
                 patients.add(patient);
             }
+            
+            // Debug log
+            System.out.println("Found " + patients.size() + " patients registered by nurse " + nurseID);
+            
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
