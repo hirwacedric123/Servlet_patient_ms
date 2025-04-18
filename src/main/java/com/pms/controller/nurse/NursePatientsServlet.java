@@ -120,7 +120,7 @@ public class NursePatientsServlet extends HttpServlet {
         
         // Forward to the patients JSP
         LOGGER.log(Level.INFO, "Forwarding to patients view for nurse ID: {0}", nurse.getNurseID());
-        request.getRequestDispatcher("/WEB-INF/views/nurse/dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/nurse/nurse_dashboard.jsp").forward(request, response);
     }
     
     @Override

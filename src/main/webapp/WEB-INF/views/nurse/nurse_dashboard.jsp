@@ -92,7 +92,7 @@
                 <div class="card stats-card h-100">
                     <div class="card-body">
                         <i class="fas fa-check-circle stats-icon not-referrable"></i>
-                        <h3>${notReferrableCount}</h3>
+                        <h3>${nonReferrableCount}</h3>
                         <h5>Not Referrable Cases</h5>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
             </div>
             <div class="card-body">
                 <c:choose>
-                    <c:when test="${empty registeredPatients}">
+                    <c:when test="${empty patients}">
                         <p class="text-center text-muted">You haven't registered any patients yet</p>
                     </c:when>
                     <c:otherwise>
@@ -124,7 +124,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${registeredPatients}" var="patient">
+                                    <c:forEach items="${patients}" var="patient">
                                         <tr>
                                             <td>${patient.patientID}</td>
                                             <td>${patient.firstName} ${patient.lastName}</td>

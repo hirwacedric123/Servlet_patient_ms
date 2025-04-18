@@ -684,9 +684,10 @@ public class PatientDAO {
      */
     public List<Patient> getAllPatientsForNurse(int nurseID) {
         // This will get all patients in the system with Role='Patient'
-        String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+        String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact, d.DiagnoStatus " +
                      "FROM Users u " +
                      "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "LEFT JOIN Diagnosis d ON u.UserID = d.PatientID " +
                      "WHERE u.Role = 'Patient'";
         
         PreparedStatement stmt = null;
@@ -709,6 +710,14 @@ public class PatientDAO {
                 patient.setDateOfBirth(rs.getDate("DateOfBirth"));
                 patient.setGender(rs.getString("Gender"));
                 patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Set referrable flag based on diagnosis status
+                String diagnoStatus = rs.getString("DiagnoStatus");
+                if (diagnoStatus != null && diagnoStatus.equals("Referrable")) {
+                    patient.setReferrable(true);
+                } else {
+                    patient.setReferrable(false);
+                }
                 
                 // Calculate age if date of birth is available
                 if (rs.getDate("DateOfBirth") != null) {
