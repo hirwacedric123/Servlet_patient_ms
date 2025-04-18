@@ -754,4 +754,34 @@ public class DiagnosisDAO {
         
         return diagnoses;
     }
+    
+    /**
+     * Update a diagnosis result by a doctor
+     * 
+     * @param diagnosisID the diagnosis ID
+     * @param result the updated result
+     * @param doctorID the doctor's ID
+     * @return true if successful, false otherwise
+     */
+    public boolean updateDiagnosisResult(int diagnosisID, String result, int doctorID) {
+        String sql = "UPDATE Diagnosis SET Result = ?, DiagnoStatus = 'Completed', DoctorID = ?, UpdatedDate = NOW() WHERE DiagnosisID = ? AND DiagnoStatus = 'Referrable'";
+        PreparedStatement stmt = null;
+        boolean success = false;
+        
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, result);
+            stmt.setInt(2, doctorID);
+            stmt.setInt(3, diagnosisID);
+            
+            int rowsAffected = stmt.executeUpdate();
+            success = rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(null, stmt);
+        }
+        
+        return success;
+    }
 } 
