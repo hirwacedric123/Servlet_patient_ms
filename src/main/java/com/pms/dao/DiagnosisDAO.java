@@ -71,34 +71,7 @@ public class DiagnosisDAO {
      * @return the diagnosis or null if not found
      */
     public Diagnosis getDiagnosisByID(int diagnosisID) {
-        String sql = "SELECT * FROM Diagnosis WHERE DiagnosisID = ?";
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Diagnosis diagnosis = null;
-        
-        try {
-            stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, diagnosisID);
-            rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                diagnosis = new Diagnosis();
-                diagnosis.setDiagnosisID(rs.getInt("DiagnosisID"));
-                diagnosis.setPatientID(rs.getInt("PatientID"));
-                diagnosis.setNurseID(rs.getInt("NurseID"));
-                diagnosis.setDoctorID(rs.getInt("DoctorID"));
-                diagnosis.setDiagnoStatus(rs.getString("DiagnoStatus"));
-                diagnosis.setResult(rs.getString("Result"));
-                diagnosis.setCreatedDate(rs.getTimestamp("CreatedDate"));
-                diagnosis.setUpdatedDate(rs.getTimestamp("UpdatedDate"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(rs, stmt);
-        }
-        
-        return diagnosis;
+        return getDiagnosisById(diagnosisID);
     }
     
     /**
@@ -293,7 +266,7 @@ public class DiagnosisDAO {
      * @return a list of non-referrable diagnoses
      */
     public List<Diagnosis> getNonReferrableDiagnoses() {
-        String sql = "SELECT * FROM Diagnosis WHERE DiagnoStatus = 'Not Referrable'";
+        String sql = "SELECT * FROM Diagnosis WHERE DiagnoStatus = 'Not Referrable' ORDER BY CreatedDate DESC LIMIT 100";
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
@@ -705,5 +678,80 @@ public class DiagnosisDAO {
                 e.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Get a diagnosis by ID
+     * 
+     * @param diagnosisID the diagnosis ID
+     * @return the diagnosis or null if not found
+     */
+    public Diagnosis getDiagnosisById(int diagnosisID) {
+        String sql = "SELECT * FROM Diagnosis WHERE DiagnosisID = ?";
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Diagnosis diagnosis = null;
+        
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, diagnosisID);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                diagnosis = new Diagnosis();
+                diagnosis.setDiagnosisID(rs.getInt("DiagnosisID"));
+                diagnosis.setPatientID(rs.getInt("PatientID"));
+                diagnosis.setNurseID(rs.getInt("NurseID"));
+                diagnosis.setDoctorID(rs.getInt("DoctorID"));
+                diagnosis.setDiagnoStatus(rs.getString("DiagnoStatus"));
+                diagnosis.setResult(rs.getString("Result"));
+                diagnosis.setCreatedDate(rs.getTimestamp("CreatedDate"));
+                diagnosis.setUpdatedDate(rs.getTimestamp("UpdatedDate"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, stmt);
+        }
+        
+        return diagnosis;
+    }
+    
+    /**
+     * Get all referrable diagnoses assigned to a doctor
+     * 
+     * @param doctorID the ID of the doctor
+     * @return a list of referrable diagnoses for the doctor
+     */
+    public List<Diagnosis> getReferrableDiagnosesByDoctorID(int doctorID) {
+        String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ? AND DiagnoStatus = 'Referrable'";
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Diagnosis> diagnoses = new ArrayList<>();
+        
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, doctorID);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Diagnosis diagnosis = new Diagnosis();
+                diagnosis.setDiagnosisID(rs.getInt("DiagnosisID"));
+                diagnosis.setPatientID(rs.getInt("PatientID"));
+                diagnosis.setNurseID(rs.getInt("NurseID"));
+                diagnosis.setDoctorID(rs.getInt("DoctorID"));
+                diagnosis.setDiagnoStatus(rs.getString("DiagnoStatus"));
+                diagnosis.setResult(rs.getString("Result"));
+                diagnosis.setCreatedDate(rs.getTimestamp("CreatedDate"));
+                diagnosis.setUpdatedDate(rs.getTimestamp("UpdatedDate"));
+                diagnoses.add(diagnosis);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, stmt);
+        }
+        
+        return diagnoses;
     }
 } 
