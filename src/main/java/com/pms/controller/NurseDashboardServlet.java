@@ -71,16 +71,16 @@ public class NurseDashboardServlet extends HttpServlet {
         }
         
         // Initialize dashboard data
-        List<Patient> patients = new ArrayList<>();
+        List<Patient> registeredPatients = new ArrayList<>();
         int referrableCount = 0;
         int nonReferrableCount = 0;
         
         try {
             // Get patients registered by this nurse
-            patients = patientDAO.getAllPatientsForNurse(nurse.getNurseID());
+            registeredPatients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
             
             // Count referrable and non-referrable cases
-            for (Patient patient : patients) {
+            for (Patient patient : registeredPatients) {
                 if (patient.isReferrable()) {
                     referrableCount++;
                 } else {
@@ -94,13 +94,13 @@ public class NurseDashboardServlet extends HttpServlet {
         
         // Set attributes for the JSP
         request.setAttribute("nurse", nurse);
-        request.setAttribute("patients", patients);
-        request.setAttribute("patientCount", patients.size());
+        request.setAttribute("registeredPatients", registeredPatients);
+        request.setAttribute("patientCount", registeredPatients.size());
         request.setAttribute("referrableCount", referrableCount);
         request.setAttribute("nonReferrableCount", nonReferrableCount);
         
         // Forward to the dashboard JSP
-        request.getRequestDispatcher("/WEB-INF/views/nurse/nurse_dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/nurse/dashboard.jsp").forward(request, response);
     }
     
     @Override
