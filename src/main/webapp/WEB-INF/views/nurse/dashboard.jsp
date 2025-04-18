@@ -203,8 +203,8 @@
                                         <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
                                             <td>
                                                 <c:choose>
-                                                    <c:when test="${not empty patient.pImageLink}">
-                                                        <img src="${pageContext.request.contextPath}/${patient.pImageLink}" class="patient-image" alt="Patient Photo">
+                                                    <c:when test="${not empty patient.profileImage}">
+                                                        <img src="${pageContext.request.contextPath}/${patient.profileImage}" class="patient-image" alt="Patient Photo">
                                                     </c:when>
                                                     <c:otherwise>
                                                         <img src="${pageContext.request.contextPath}/images/default-avatar.png" class="patient-image" alt="Default Photo">

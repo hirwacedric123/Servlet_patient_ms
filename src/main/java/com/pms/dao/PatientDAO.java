@@ -768,14 +768,13 @@ public class PatientDAO {
      * @return a list of patients registered by this nurse
      */
     public List<Patient> getRegisteredPatientsByNurseID(int nurseID) {
-        String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact, " +
-                     "(SELECT DiagnoStatus FROM Diagnosis WHERE PatientID = u.UserID ORDER BY CreatedDate DESC LIMIT 1) AS LatestDiagnosis, " +
-                     "(SELECT MAX(CreatedDate) FROM Diagnosis WHERE PatientID = u.UserID AND NurseID = ?) as RegistrationDate " +
+        // Simplified query to get all patients associated with this nurse
+        String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
                      "FROM Users u " +
                      "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
                      "INNER JOIN Diagnosis d ON u.UserID = d.PatientID " +
                      "WHERE d.NurseID = ? AND u.Role = 'Patient' " +
-                     "ORDER BY RegistrationDate DESC";
+                     "ORDER BY u.FirstName, u.LastName";
         
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -786,7 +785,6 @@ public class PatientDAO {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, nurseID);
-            stmt.setInt(2, nurseID);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -807,18 +805,42 @@ public class PatientDAO {
                     patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
                 }
                 
-                // Set created by (registered by) nurse
+                // This patient was registered by this nurse
                 patient.setCreatedBy(nurseID);
                 
-                // Set if this patient is referrable based on latest diagnosis
-                String latestDiagnosis = rs.getString("LatestDiagnosis");
-                if (latestDiagnosis != null) {
-                    // A patient is referrable if diagnosis status contains "refer" or "emergency"
-                    boolean isReferrable = latestDiagnosis.toLowerCase().contains("refer") || 
-                                         latestDiagnosis.toLowerCase().contains("emergency");
-                    patient.setReferrable(isReferrable);
-                } else {
-                    patient.setReferrable(false);
+                // We will initially set all patients as non-referrable
+                patient.setReferrable(false);
+                
+                // Now get the latest diagnosis for this patient to determine referrability
+                String diagSql = "SELECT DiagnoStatus FROM Diagnosis " +
+                                "WHERE PatientID = ? ORDER BY CreatedDate DESC LIMIT 1";
+                
+                PreparedStatement diagStmt = null;
+                ResultSet diagRs = null;
+                
+                try {
+                    diagStmt = conn.prepareStatement(diagSql);
+                    diagStmt.setInt(1, patient.getPatientID());
+                    diagRs = diagStmt.executeQuery();
+                    
+                    if (diagRs.next()) {
+                        String latestDiagnosis = diagRs.getString("DiagnoStatus");
+                        if (latestDiagnosis != null) {
+                            // A patient is referrable if diagnosis status contains "refer" or "emergency"
+                            boolean isReferrable = latestDiagnosis.toLowerCase().contains("refer") || 
+                                                latestDiagnosis.toLowerCase().contains("emergency");
+                            patient.setReferrable(isReferrable);
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (diagRs != null) {
+                        try { diagRs.close(); } catch (SQLException e) { e.printStackTrace(); }
+                    }
+                    if (diagStmt != null) {
+                        try { diagStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+                    }
                 }
                 
                 patients.add(patient);
