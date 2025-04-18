@@ -70,6 +70,7 @@ public class NurseDashboardServlet extends HttpServlet {
         
         // Initialize dashboard data
         List<Patient> registeredPatients = new ArrayList<>();
+        List<Patient> allPatients = new ArrayList<>();
         int referrableCount = 0;
         int nonReferrableCount = 0;
         
@@ -77,8 +78,11 @@ public class NurseDashboardServlet extends HttpServlet {
             // Get patients registered by this nurse
             registeredPatients = patientDAO.getRegisteredPatientsByNurseID(nurse.getNurseID());
             
+            // Also get all patients in the system for the nurse
+            allPatients = patientDAO.getAllPatientsForNurse(nurse.getNurseID());
+            
             // Count referrable and non-referrable cases
-            for (Patient patient : registeredPatients) {
+            for (Patient patient : allPatients) {
                 if (patient.isReferrable()) {
                     referrableCount++;
                 } else {
@@ -88,7 +92,8 @@ public class NurseDashboardServlet extends HttpServlet {
             
             // Debug information to console
             System.out.println("Nurse ID: " + nurse.getNurseID());
-            System.out.println("Registered Patients Count: " + registeredPatients.size());
+            System.out.println("Registered Patients Count (by nurse): " + registeredPatients.size());
+            System.out.println("All Patients Count: " + allPatients.size());
             System.out.println("Referrable: " + referrableCount + ", Non-Referrable: " + nonReferrableCount);
             
         } catch (Exception e) {
@@ -98,8 +103,8 @@ public class NurseDashboardServlet extends HttpServlet {
         
         // Set attributes for the JSP
         request.setAttribute("nurse", nurse);
-        request.setAttribute("registeredPatients", registeredPatients);
-        request.setAttribute("patientCount", registeredPatients.size());
+        request.setAttribute("registeredPatients", registeredPatients.isEmpty() ? allPatients : registeredPatients);
+        request.setAttribute("patientCount", allPatients.size());
         request.setAttribute("referrableCount", referrableCount);
         request.setAttribute("nonReferrableCount", nonReferrableCount);
         
