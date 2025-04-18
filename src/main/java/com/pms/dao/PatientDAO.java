@@ -9,6 +9,60 @@ import java.util.List;
 
 public class PatientDAO {
     
+    private Connection connection;
+    
+    // Constructor for the PatientDAO
+    public PatientDAO() {
+        try {
+            connection = DBConnection.getConnection();
+            // Ensure the necessary tables exist
+            ensurePatientsTableExists();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to establish database connection", e);
+        }
+    }
+    
+    /**
+     * Creates the patients table if it doesn't exist
+     */
+    private void ensurePatientsTableExists() {
+        try {
+            DatabaseMetaData meta = connection.getMetaData();
+            
+            // Check if patients table exists
+            ResultSet tables = meta.getTables(null, null, "patients", null);
+            
+            if (!tables.next()) {
+                System.out.println("Patients table does not exist, using UserDetails instead");
+                
+                // Check if UserDetails table exists
+                ResultSet userDetailsTables = meta.getTables(null, null, "UserDetails", null);
+                
+                if (!userDetailsTables.next()) {
+                    // Create UserDetails table if it doesn't exist
+                    Statement stmt = connection.createStatement();
+                    String createUserDetailsSQL = 
+                        "CREATE TABLE IF NOT EXISTS UserDetails (" +
+                        "UserID INT PRIMARY KEY, " +
+                        "DateOfBirth DATE, " +
+                        "Gender VARCHAR(10), " +
+                        "BloodGroup VARCHAR(5), " +
+                        "EmergencyContact VARCHAR(50), " +
+                        "FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE" +
+                        ")";
+                    
+                    stmt.executeUpdate(createUserDetailsSQL);
+                    System.out.println("Created UserDetails table");
+                    stmt.close();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error ensuring patients table: " + e.getMessage());
+        }
+    }
+    
     public Patient getPatientByID(int userID) {
         String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
                      "FROM Users u " +
@@ -251,36 +305,31 @@ public class PatientDAO {
     }
     
     public boolean addPatient(Patient patient) {
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean success = false;
         
         try {
-            conn = DBConnection.getConnection();
-            String sql = "INSERT INTO patients (UserID, FirstName, LastName, Gender, DateOfBirth, ContactNumber, " +
-                          "Email, Address, BloodGroup, EmergencyContact) " +
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Instead of using patients table directly, we'll store the data in Users and UserDetails tables
             
-            stmt = conn.prepareStatement(sql);
+            // Insert into UserDetails for patient-specific data
+            String sql = "INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup, EmergencyContact) " +
+                          "VALUES (?, ?, ?, ?, ?)";
+            
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, patient.getUserID());
-            stmt.setString(2, patient.getFirstName());
-            stmt.setString(3, patient.getLastName());
-            stmt.setString(4, patient.getGender());
-            stmt.setDate(5, patient.getDateOfBirth());
-            stmt.setString(6, patient.getContactNumber());
-            stmt.setString(7, patient.getEmail());
-            stmt.setString(8, patient.getAddress());
-            stmt.setString(9, patient.getBloodGroup());
-            stmt.setString(10, patient.getEmergencyContact());
+            stmt.setDate(2, patient.getDateOfBirth());
+            stmt.setString(3, patient.getGender());
+            stmt.setString(4, patient.getBloodGroup());
+            stmt.setString(5, patient.getEmergencyContact());
             
             int rowsAffected = stmt.executeUpdate();
             success = rowsAffected > 0;
             
             // Log the patient creation for debugging
             if (success) {
-                System.out.println("Successfully added patient with ID: " + patient.getUserID());
+                System.out.println("Successfully added patient details with ID: " + patient.getUserID());
             } else {
-                System.out.println("Failed to add patient with ID: " + patient.getUserID());
+                System.out.println("Failed to add patient details with ID: " + patient.getUserID());
             }
             
         } catch (SQLException e) {
@@ -294,37 +343,44 @@ public class PatientDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return success;
     }
     
     public boolean updatePatient(Patient patient) {
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean success = false;
         
         try {
-            conn = DBConnection.getConnection();
-            String sql = "UPDATE patients SET FirstName=?, LastName=?, Gender=?, DateOfBirth=?, " +
-                         "ContactNumber=?, Email=?, Address=?, BloodGroup=?, EmergencyContact=? " +
-                         "WHERE PatientID=?";
+            // Update the UserDetails table
+            String sql = "UPDATE UserDetails SET DateOfBirth=?, Gender=?, BloodGroup=?, EmergencyContact=? " +
+                         "WHERE UserID=?";
             
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, patient.getFirstName());
-            stmt.setString(2, patient.getLastName());
-            stmt.setString(3, patient.getGender());
-            stmt.setDate(4, patient.getDateOfBirth());
-            stmt.setString(5, patient.getContactNumber());
-            stmt.setString(6, patient.getEmail());
-            stmt.setString(7, patient.getAddress());
-            stmt.setString(8, patient.getBloodGroup());
-            stmt.setString(9, patient.getEmergencyContact());
-            stmt.setInt(10, patient.getPatientID());
+            stmt = connection.prepareStatement(sql);
+            stmt.setDate(1, patient.getDateOfBirth());
+            stmt.setString(2, patient.getGender());
+            stmt.setString(3, patient.getBloodGroup());
+            stmt.setString(4, patient.getEmergencyContact());
+            stmt.setInt(5, patient.getUserID());
             
             int rowsAffected = stmt.executeUpdate();
-            success = rowsAffected > 0;
+            
+            // Update the Users table
+            String userSql = "UPDATE Users SET FirstName=?, LastName=?, ContactNumber=?, Email=?, Address=? " +
+                            "WHERE UserID=?";
+            
+            stmt = connection.prepareStatement(userSql);
+            stmt.setString(1, patient.getFirstName());
+            stmt.setString(2, patient.getLastName());
+            stmt.setString(3, patient.getContactNumber());
+            stmt.setString(4, patient.getEmail());
+            stmt.setString(5, patient.getAddress());
+            stmt.setInt(6, patient.getUserID());
+            
+            int userRowsAffected = stmt.executeUpdate();
+            
+            success = rowsAffected > 0 || userRowsAffected > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -336,7 +392,6 @@ public class PatientDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return success;
@@ -345,13 +400,11 @@ public class PatientDAO {
     public boolean deletePatient(int patientID) {
         // With foreign key constraints using ON DELETE CASCADE, deleting from Users will also delete from UserDetails
         String sql = "DELETE FROM Users WHERE UserID = ? AND Role = 'Patient'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, patientID);
             
             int rowsAffected = stmt.executeUpdate();
@@ -368,7 +421,6 @@ public class PatientDAO {
                     e.printStackTrace();
                 }
             }
-            DBConnection.closeConnection(conn);
         }
         
         return result;
