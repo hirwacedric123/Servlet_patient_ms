@@ -201,10 +201,22 @@ public class Patient {
         this.symptoms = symptoms;
     }
     
+    /**
+     * Check if the patient is referrable
+     * Default to false if not set (non-referrable)
+     * 
+     * @return true if the patient is referrable, false otherwise
+     */
     public boolean isReferrable() {
+        // Default to non-referrable if not explicitly set
         return referrable;
     }
     
+    /**
+     * Set whether the patient is referrable
+     * 
+     * @param referrable true if the patient is referrable, false otherwise
+     */
     public void setReferrable(boolean referrable) {
         this.referrable = referrable;
     }
