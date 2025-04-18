@@ -18,6 +18,7 @@ com\pms\model\Nurse.class
 com\pms\controller\RegisterServlet.class
 com\pms\dao\NurseDAO.class
 com\pms\filter\AuthenticationFilter.class
+com\pms\AppEntryPoint.class
 com\pms\controller\admin\AdminDashboardServlet.class
 com\pms\model\Diagnosis.class
 com\pms\dao\PatientDAO.class
