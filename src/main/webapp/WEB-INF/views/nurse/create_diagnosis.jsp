@@ -122,7 +122,7 @@
                         <select class="form-select" id="doctorId" name="doctorId">
                             <option value="" selected disabled>Select a doctor</option>
                             <c:forEach items="${doctors}" var="doctor">
-                                <option value="${doctor.id}">${doctor.firstName} ${doctor.lastName}</option>
+                                <option value="${doctor.doctorID}">${doctor.firstName} ${doctor.lastName}</option>
                             </c:forEach>
                         </select>
                         <div class="form-text">Select a doctor to review this case.</div>

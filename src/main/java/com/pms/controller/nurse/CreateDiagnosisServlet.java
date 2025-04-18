@@ -2,9 +2,11 @@ package com.pms.controller.nurse;
 
 import com.pms.dao.DiagnosisDAO;
 import com.pms.dao.DoctorDAO;
+import com.pms.dao.NurseDAO;
 import com.pms.dao.PatientDAO;
 import com.pms.model.Diagnosis;
 import com.pms.model.Doctor;
+import com.pms.model.Nurse;
 import com.pms.model.Patient;
 import com.pms.model.User;
 
@@ -31,6 +33,7 @@ public class CreateDiagnosisServlet extends HttpServlet {
     private PatientDAO patientDAO;
     private DiagnosisDAO diagnosisDAO;
     private DoctorDAO doctorDAO;
+    private NurseDAO nurseDAO;
     
     @Override
     public void init() throws ServletException {
@@ -38,6 +41,7 @@ public class CreateDiagnosisServlet extends HttpServlet {
         patientDAO = new PatientDAO();
         diagnosisDAO = new DiagnosisDAO();
         doctorDAO = new DoctorDAO();
+        nurseDAO = new NurseDAO();
     }
     
     @Override
@@ -106,6 +110,19 @@ public class CreateDiagnosisServlet extends HttpServlet {
             return;
         }
         
+        // Get the nurse from session or database
+        Nurse nurse = (Nurse) session.getAttribute("nurse");
+        if (nurse == null) {
+            nurse = nurseDAO.getNurseByUserID(user.getUserID());
+            if (nurse == null) {
+                request.setAttribute("errorMessage", "Nurse record not found. Please contact admin.");
+                request.getRequestDispatcher("/nurse/dashboard").forward(request, response);
+                return;
+            }
+            // Store in session for future use
+            session.setAttribute("nurse", nurse);
+        }
+        
         // Get form data
         String patientIdParam = request.getParameter("patientId");
         String diagnosisStatus = request.getParameter("diagnosisStatus");
@@ -127,7 +144,7 @@ public class CreateDiagnosisServlet extends HttpServlet {
             // Create a new diagnosis
             Diagnosis diagnosis = new Diagnosis();
             diagnosis.setPatientID(patientId);
-            diagnosis.setNurseID(user.getUserID());
+            diagnosis.setNurseID(nurse.getNurseID()); // Use NurseID from the nurses table
             
             // Set doctor ID if this is a referrable case
             int doctorId = 0;
@@ -156,6 +173,10 @@ public class CreateDiagnosisServlet extends HttpServlet {
             diagnosis.setCreatedDate(now);
             diagnosis.setUpdatedDate(now);
             
+            // Log debug info
+            LOGGER.log(Level.INFO, "Creating diagnosis: PatientID={0}, NurseID={1}, Status={2}",
+                  new Object[]{patientId, nurse.getNurseID(), diagnosisStatus});
+            
             // Save the diagnosis
             boolean success = diagnosisDAO.addDiagnosis(diagnosis);
             
@@ -172,6 +193,13 @@ public class CreateDiagnosisServlet extends HttpServlet {
             } else {
                 LOGGER.log(Level.WARNING, "Failed to create diagnosis for patient ID " + patientId);
                 request.setAttribute("errorMessage", "Failed to create diagnosis. Please try again.");
+                
+                // Get patient and doctors again for the form
+                Patient patient = patientDAO.getPatientByID(patientId);
+                List<Doctor> doctors = doctorDAO.getAllDoctors();
+                request.setAttribute("patient", patient);
+                request.setAttribute("doctors", doctors);
+                
                 request.getRequestDispatcher("/WEB-INF/views/nurse/create_diagnosis.jsp").forward(request, response);
             }
             
