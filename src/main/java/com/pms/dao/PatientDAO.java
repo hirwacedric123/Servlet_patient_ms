@@ -660,4 +660,74 @@ public class PatientDAO {
         
         return doctorName;
     }
+    
+    /**
+     * Close the database connection when the DAO is no longer needed
+     */
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("PatientDAO connection closed");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Get all patients for a specific nurse, regardless of diagnosis status
+     * This is needed for the nurse dashboard to show all patients
+     * 
+     * @param nurseID the ID of the nurse
+     * @return a list of all patients 
+     */
+    public List<Patient> getAllPatientsForNurse(int nurseID) {
+        // This will get all patients in the system with Role='Patient'
+        String sql = "SELECT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "WHERE u.Role = 'Patient'";
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Patient> patients = new ArrayList<>();
+        
+        try {
+            stmt = connection.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Patient patient = new Patient();
+                patient.setPatientID(rs.getInt("UserID"));
+                patient.setFirstName(rs.getString("FirstName"));
+                patient.setLastName(rs.getString("LastName"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
+                patient.setEmail(rs.getString("Email"));
+                patient.setAddress(rs.getString("Address"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
+                
+                patients.add(patient);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return patients;
+    }
 } 

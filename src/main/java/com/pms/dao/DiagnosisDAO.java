@@ -10,6 +10,60 @@ import java.util.List;
 
 public class DiagnosisDAO {
     
+    private Connection connection;
+    
+    // Constructor for the DiagnosisDAO
+    public DiagnosisDAO() {
+        try {
+            connection = DBConnection.getConnection();
+            // Ensure the diagnosis table exists
+            ensureDiagnosisTableExists();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to establish database connection", e);
+        }
+    }
+    
+    /**
+     * Creates the diagnosis table if it doesn't exist
+     */
+    private void ensureDiagnosisTableExists() {
+        try {
+            DatabaseMetaData meta = connection.getMetaData();
+            
+            // Check if Diagnosis table exists
+            ResultSet tables = meta.getTables(null, null, "Diagnosis", null);
+            
+            if (!tables.next()) {
+                System.out.println("Diagnosis table does not exist, creating it now");
+                
+                // Create Diagnosis table if it doesn't exist
+                Statement stmt = connection.createStatement();
+                String createDiagnosisSQL = 
+                    "CREATE TABLE IF NOT EXISTS Diagnosis (" +
+                    "DiagnosisID INT PRIMARY KEY AUTO_INCREMENT, " +
+                    "PatientID INT NOT NULL, " +
+                    "NurseID INT NOT NULL, " +
+                    "DoctorID INT, " +
+                    "DiagnoStatus VARCHAR(20) NOT NULL, " +
+                    "Result TEXT, " +
+                    "CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, " +
+                    "FOREIGN KEY (PatientID) REFERENCES Users(UserID) ON DELETE CASCADE, " +
+                    "FOREIGN KEY (NurseID) REFERENCES Users(UserID), " +
+                    "FOREIGN KEY (DoctorID) REFERENCES Users(UserID)" +
+                    ")";
+                
+                stmt.executeUpdate(createDiagnosisSQL);
+                System.out.println("Created Diagnosis table");
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error ensuring Diagnosis table: " + e.getMessage());
+        }
+    }
+    
     /**
      * Get diagnosis by ID
      * 
@@ -18,14 +72,12 @@ public class DiagnosisDAO {
      */
     public Diagnosis getDiagnosisByID(int diagnosisID) {
         String sql = "SELECT * FROM Diagnosis WHERE DiagnosisID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Diagnosis diagnosis = null;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, diagnosisID);
             rs = stmt.executeQuery();
             
@@ -43,21 +95,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnosis;
@@ -70,14 +108,12 @@ public class DiagnosisDAO {
      */
     public List<Diagnosis> getAllDiagnoses() {
         String sql = "SELECT * FROM Diagnosis";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -95,21 +131,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnoses;
@@ -123,14 +145,12 @@ public class DiagnosisDAO {
      */
     public List<Diagnosis> getDiagnosesByPatient(int patientID) {
         String sql = "SELECT * FROM Diagnosis WHERE PatientID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, patientID);
             rs = stmt.executeQuery();
             
@@ -149,21 +169,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnoses;
@@ -177,14 +183,12 @@ public class DiagnosisDAO {
      */
     public List<Diagnosis> getDiagnosesByDoctorID(int doctorID) {
         String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, doctorID);
             rs = stmt.executeQuery();
             
@@ -203,21 +207,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnoses;
@@ -231,14 +221,12 @@ public class DiagnosisDAO {
      */
     public List<Diagnosis> getDiagnosesByNurseID(int nurseID) {
         String sql = "SELECT * FROM Diagnosis WHERE NurseID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, nurseID);
             rs = stmt.executeQuery();
             
@@ -257,21 +245,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnoses;
@@ -284,14 +258,12 @@ public class DiagnosisDAO {
      */
     public List<Diagnosis> getReferrableDiagnoses() {
         String sql = "SELECT * FROM Diagnosis WHERE DiagnoStatus = 'Referrable'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -309,21 +281,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnoses;
@@ -336,14 +294,12 @@ public class DiagnosisDAO {
      */
     public List<Diagnosis> getNonReferrableDiagnoses() {
         String sql = "SELECT * FROM Diagnosis WHERE DiagnoStatus = 'Not Referrable'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -361,21 +317,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnoses;
@@ -389,14 +331,12 @@ public class DiagnosisDAO {
      */
     public Diagnosis getDiagnosisByPatientID(int patientID) {
         String sql = "SELECT * FROM Diagnosis WHERE PatientID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Diagnosis diagnosis = null;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, patientID);
             rs = stmt.executeQuery();
             
@@ -414,21 +354,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return diagnosis;
@@ -442,13 +368,11 @@ public class DiagnosisDAO {
      */
     public boolean addDiagnosis(Diagnosis diagnosis) {
         String sql = "INSERT INTO Diagnosis (PatientID, NurseID, DoctorID, DiagnoStatus, Result, CreatedDate, UpdatedDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, diagnosis.getPatientID());
             stmt.setInt(2, diagnosis.getNurseID());
             
@@ -483,18 +407,13 @@ public class DiagnosisDAO {
                 if (generatedKeys.next()) {
                     diagnosis.setDiagnosisID(generatedKeys.getInt(1));
                 }
+                generatedKeys.close();
             }
         } catch (SQLException e) {
+            System.err.println("Error adding diagnosis: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(null, stmt);
         }
         
         return result;
@@ -508,13 +427,11 @@ public class DiagnosisDAO {
      */
     public boolean updateDiagnosis(Diagnosis diagnosis) {
         String sql = "UPDATE Diagnosis SET DoctorID = ?, Result = ?, UpdatedDate = ? WHERE DiagnosisID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             
             if (diagnosis.getDoctorID() > 0) {
                 stmt.setInt(1, diagnosis.getDoctorID());
@@ -531,14 +448,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(null, stmt);
         }
         
         return result;
@@ -552,13 +462,11 @@ public class DiagnosisDAO {
      */
     public boolean deleteDiagnosis(int diagnosisID) {
         String sql = "DELETE FROM Diagnosis WHERE DiagnosisID = ?";
-        Connection conn = null;
         PreparedStatement stmt = null;
         boolean result = false;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, diagnosisID);
             
             int rowsAffected = stmt.executeUpdate();
@@ -566,14 +474,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(null, stmt);
         }
         
         return result;
@@ -587,14 +488,12 @@ public class DiagnosisDAO {
      */
     public int countReferrableByNurse(int nurseID) {
         String sql = "SELECT COUNT(*) FROM Diagnosis WHERE NurseID = ? AND DiagnoStatus = 'Referrable'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int count = 0;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, nurseID);
             rs = stmt.executeQuery();
             
@@ -604,21 +503,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return count;
@@ -632,14 +517,12 @@ public class DiagnosisDAO {
      */
     public int countNonReferrableByNurse(int nurseID) {
         String sql = "SELECT COUNT(*) FROM Diagnosis WHERE NurseID = ? AND DiagnoStatus = 'Not Referrable'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int count = 0;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, nurseID);
             rs = stmt.executeQuery();
             
@@ -649,21 +532,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return count;
@@ -677,14 +546,12 @@ public class DiagnosisDAO {
      */
     public int countPendingCasesForDoctor(int doctorID) {
         String sql = "SELECT COUNT(*) FROM Diagnosis WHERE DoctorID = ? AND Result = 'Pending'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int count = 0;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, doctorID);
             rs = stmt.executeQuery();
             
@@ -694,21 +561,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return count;
@@ -722,14 +575,12 @@ public class DiagnosisDAO {
      */
     public int countConfirmedCasesForDoctor(int doctorID) {
         String sql = "SELECT COUNT(*) FROM Diagnosis WHERE DoctorID = ? AND Result != 'Pending'";
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int count = 0;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             stmt.setInt(1, doctorID);
             rs = stmt.executeQuery();
             
@@ -739,21 +590,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return count;
@@ -773,13 +610,11 @@ public class DiagnosisDAO {
                      "GROUP BY d.DoctorID, DoctorName, d.HospitalName " +
                      "ORDER BY TotalCases DESC";
         
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -795,21 +630,7 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return doctorStats;
@@ -831,13 +652,11 @@ public class DiagnosisDAO {
                      "GROUP BY n.NurseID, NurseName, n.HealthCenter " +
                      "ORDER BY TotalCases DESC";
         
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
+            stmt = connection.prepareStatement(sql);
             rs = stmt.executeQuery();
             
             while (rs.next()) {
@@ -856,23 +675,35 @@ public class DiagnosisDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
+            closeResources(rs, stmt);
         }
         
         return nurseStats;
+    }
+    
+    /**
+     * Close database resources
+     */
+    private void closeResources(ResultSet rs, Statement stmt) {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Close the database connection when the DAO is no longer needed
+     */
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("DiagnosisDAO connection closed");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 } 

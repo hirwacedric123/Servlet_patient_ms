@@ -91,7 +91,9 @@ public class NursePatientsServlet extends HttpServlet {
         try {
             // Get patients registered by this nurse
             LOGGER.log(Level.INFO, "Retrieving patients for nurse ID: {0}", nurse.getNurseID());
-            patients = patientDAO.getPatientsByNurseID(nurse.getNurseID());
+            
+            // Use the new method to get all patients in the system
+            patients = patientDAO.getAllPatientsForNurse(nurse.getNurseID());
             
             // Count referrable and non-referrable cases
             for (Patient patient : patients) {
