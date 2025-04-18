@@ -90,30 +90,34 @@ CREATE TABLE IF NOT EXISTS Diagnosis (
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE SET NULL
 );
 
--- Insert default admin user
+-- Insert admin user into Users table with plaintext password temporarily for testing
+INSERT INTO Users (Username, Password, Role, FirstName, LastName, Email, ContactNumber)
+VALUES ('admin', 'admin123', 'Admin', 'System', 'Administrator', 'admin@example.com', '000-000-0000');
+
+-- Insert default admin user in Admins table with plaintext password temporarily for testing
 INSERT INTO Admins (Username, Password, FirstName, LastName)
-VALUES ('admin', '$2a$10$QXmYGmUa1Oj1kDqGTbC4YObSZ6fO1ZI2PuTDN09/jQh0tL1H9LJ8e', 'System', 'Administrator'); -- Password: admin123
+VALUES ('admin', 'admin123', 'System', 'Administrator');
 
 -- Sample data for testing
--- Insert a sample Doctor user
+-- Insert a sample Doctor user with plaintext password for testing
 INSERT INTO Users (Username, Password, Role, FirstName, LastName, Email, ContactNumber, Address)
-VALUES ('doctor1', '$2a$10$QXmYGmUa1Oj1kDqGTbC4YObSZ6fO1ZI2PuTDN09/jQh0tL1H9LJ8e', 'Doctor', 'John', 'Doe', 'doctor1@example.com', '123-456-7890', '123 Main St');
+VALUES ('doctor1', 'admin123', 'Doctor', 'John', 'Doe', 'doctor1@example.com', '123-456-7890', '123 Main St');
 
 -- Insert doctor details
 INSERT INTO Doctors (UserID, FirstName, LastName, Specialization, Email, ContactNumber, Address, HospitalName)
 VALUES (LAST_INSERT_ID(), 'John', 'Doe', 'Cardiology', 'doctor1@example.com', '123-456-7890', '123 Main St', 'General Hospital');
 
--- Insert a sample Nurse user
+-- Insert a sample Nurse user with plaintext password for testing
 INSERT INTO Users (Username, Password, Role, FirstName, LastName, Email, ContactNumber, Address)
-VALUES ('nurse1', '$2a$10$QXmYGmUa1Oj1kDqGTbC4YObSZ6fO1ZI2PuTDN09/jQh0tL1H9LJ8e', 'Nurse', 'Jane', 'Smith', 'nurse1@example.com', '123-456-7891', '456 Oak Ave');
+VALUES ('nurse1', 'admin123', 'Nurse', 'Jane', 'Smith', 'nurse1@example.com', '123-456-7891', '456 Oak Ave');
 
 -- Insert nurse details
 INSERT INTO Nurses (UserID, FirstName, LastName, Email, telephone, address, healthcenter)
 VALUES (LAST_INSERT_ID(), 'Jane', 'Smith', 'nurse1@example.com', '123-456-7891', '456 Oak Ave', 'Community Clinic');
 
--- Insert a sample Patient user
+-- Insert a sample Patient user with plaintext password for testing
 INSERT INTO Users (Username, Password, Role, FirstName, LastName, Email, ContactNumber, Address)
-VALUES ('patient1', '$2a$10$QXmYGmUa1Oj1kDqGTbC4YObSZ6fO1ZI2PuTDN09/jQh0tL1H9LJ8e', 'Patient', 'Bob', 'Johnson', 'patient1@example.com', '123-456-7892', '789 Pine St');
+VALUES ('patient1', 'admin123', 'Patient', 'Bob', 'Johnson', 'patient1@example.com', '123-456-7892', '789 Pine St');
 
 -- Insert patient details
 INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup)
