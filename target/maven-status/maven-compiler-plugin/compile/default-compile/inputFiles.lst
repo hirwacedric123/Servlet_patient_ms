@@ -22,6 +22,7 @@ c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\dao\NurseDAO.jav
 c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\AppEntryPoint.java
 c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\admin\DoctorManagementServlet.java
 c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\LogoutServlet.java
+c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\nurse\CreateDiagnosisServlet.java
 c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\doctor\RegisterNurseServlet.java
 c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\nurse\NursePatientsServlet.java
 c:\Users\educa\Desktop\Servlet_patient_ms\src\main\java\com\pms\controller\RegisterServlet.java
