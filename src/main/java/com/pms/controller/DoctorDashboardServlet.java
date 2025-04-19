@@ -113,15 +113,37 @@ public class DoctorDashboardServlet extends HttpServlet {
                     String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
                     caseData.put("submittedByNurse", nurseName);
                     
-                    if ("Pending".equals(diagnosis.getResult())) {
-                        pendingReferrals.add(caseData);
-                        pendingCount++;
-                    } else {
-                        completedCases.add(caseData);
-                        confirmedCount++;
-                    }
-                    
+                    pendingReferrals.add(caseData);
+                    pendingCount++;
                     referrableCount++;
+                }
+            }
+            
+            // Get completed referrable cases
+            List<Diagnosis> completedDiagnoses = diagnosisDAO.getCompletedReferrableDiagnosesByDoctorID(doctor.getDoctorID());
+            
+            for (Diagnosis diagnosis : completedDiagnoses) {
+                Map<String, Object> caseData = new HashMap<>();
+                
+                // Get the patient details
+                Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
+                
+                if (patient != null) {
+                    caseData.put("diagnosisID", diagnosis.getDiagnosisID());
+                    caseData.put("patientID", patient.getPatientID());
+                    caseData.put("patientName", patient.getFirstName() + " " + patient.getLastName());
+                    caseData.put("patientAge", patient.getAge());
+                    caseData.put("patientGender", patient.getGender());
+                    caseData.put("diagnosisStatus", diagnosis.getDiagnoStatus());
+                    caseData.put("diagnosisResult", diagnosis.getResult());
+                    caseData.put("createdDate", diagnosis.getCreatedDate());
+                    
+                    // Get the nurse who submitted this diagnosis
+                    String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    caseData.put("submittedByNurse", nurseName);
+                    
+                    completedCases.add(caseData);
+                    confirmedCount++;
                 }
             }
             

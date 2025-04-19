@@ -724,7 +724,7 @@ public class DiagnosisDAO {
      * @return a list of referrable diagnoses for the doctor
      */
     public List<Diagnosis> getReferrableDiagnosesByDoctorID(int doctorID) {
-        String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ? AND DiagnoStatus = 'Referrable'";
+        String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ? AND DiagnoStatus = 'Referrable' AND Result = 'Pending'";
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
@@ -783,5 +783,43 @@ public class DiagnosisDAO {
         }
         
         return success;
+    }
+    
+    /**
+     * Get all completed referrable diagnoses assigned to a doctor
+     * 
+     * @param doctorID the ID of the doctor
+     * @return a list of completed referrable diagnoses for the doctor
+     */
+    public List<Diagnosis> getCompletedReferrableDiagnosesByDoctorID(int doctorID) {
+        String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ? AND DiagnoStatus = 'Referrable' AND Result != 'Pending'";
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Diagnosis> diagnoses = new ArrayList<>();
+        
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, doctorID);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Diagnosis diagnosis = new Diagnosis();
+                diagnosis.setDiagnosisID(rs.getInt("DiagnosisID"));
+                diagnosis.setPatientID(rs.getInt("PatientID"));
+                diagnosis.setNurseID(rs.getInt("NurseID"));
+                diagnosis.setDoctorID(rs.getInt("DoctorID"));
+                diagnosis.setDiagnoStatus(rs.getString("DiagnoStatus"));
+                diagnosis.setResult(rs.getString("Result"));
+                diagnosis.setCreatedDate(rs.getTimestamp("CreatedDate"));
+                diagnosis.setUpdatedDate(rs.getTimestamp("UpdatedDate"));
+                diagnoses.add(diagnosis);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, stmt);
+        }
+        
+        return diagnoses;
     }
 } 

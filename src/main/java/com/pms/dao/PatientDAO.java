@@ -858,4 +858,15 @@ public class PatientDAO {
         
         return patients;
     }
+    
+    /**
+     * Get patients by nurse ID
+     * 
+     * @param nurseID the ID of the nurse
+     * @return a list of patients associated with this nurse
+     */
+    public List<Patient> getPatientsByNurseID(int nurseID) {
+        // Same as getPatientsByNurse(int nurseUserID) in the new schema
+        return getPatientsByNurse(nurseID);
+    }
 } 
