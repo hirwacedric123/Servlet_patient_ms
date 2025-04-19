@@ -564,11 +564,110 @@ public class PatientDAO {
      * Get patients registered by a specific nurse
      * 
      * @param nurseID the ID of the nurse
-     * @return a list of patients registered by the nurse
+     * @return a list of patients registered by this nurse
      */
-    public List<Patient> getPatientsByNurseID(int nurseID) {
-        // Same as getPatientsByNurse(int nurseUserID) in the new schema
-        return getPatientsByNurse(nurseID);
+    public List<Patient> getRegisteredPatientsByNurseID(int nurseID) {
+        // Modified query to check the CreatedBy field rather than diagnosis table
+        String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
+                     "FROM Users u " +
+                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
+                     "WHERE u.CreatedBy = ? AND u.Role = 'Patient' " +
+                     "ORDER BY u.FirstName, u.LastName";
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Patient> patients = new ArrayList<>();
+        
+        try {
+            conn = DBConnection.getConnection();
+            System.out.println("Attempting to connect to database at " + conn.getMetaData().getURL());
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, nurseID);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Patient patient = new Patient();
+                patient.setPatientID(rs.getInt("UserID"));
+                patient.setFirstName(rs.getString("FirstName"));
+                patient.setLastName(rs.getString("LastName"));
+                patient.setContactNumber(rs.getString("ContactNumber"));
+                patient.setEmail(rs.getString("Email"));
+                patient.setAddress(rs.getString("Address"));
+                patient.setProfileImage(rs.getString("ProfileImage"));
+                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
+                patient.setGender(rs.getString("Gender"));
+                patient.setBloodGroup(rs.getString("BloodGroup"));
+                
+                // Calculate age if date of birth is available
+                if (rs.getDate("DateOfBirth") != null) {
+                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
+                }
+                
+                // This patient was registered by this nurse
+                patient.setCreatedBy(nurseID);
+                
+                // Now get the latest diagnosis for this patient to determine referrability
+                String diagSql = "SELECT DiagnoStatus FROM Diagnosis " +
+                                "WHERE PatientID = ? ORDER BY CreatedDate DESC LIMIT 1";
+                
+                PreparedStatement diagStmt = null;
+                ResultSet diagRs = null;
+                
+                try {
+                    diagStmt = conn.prepareStatement(diagSql);
+                    diagStmt.setInt(1, patient.getPatientID());
+                    diagRs = diagStmt.executeQuery();
+                    
+                    if (diagRs.next()) {
+                        String latestDiagnosis = diagRs.getString("DiagnoStatus");
+                        if (latestDiagnosis != null) {
+                            // A patient is referrable if diagnosis status contains "refer" or "emergency"
+                            boolean isReferrable = latestDiagnosis.toLowerCase().contains("refer") || 
+                                                latestDiagnosis.toLowerCase().contains("emergency");
+                            patient.setReferrable(isReferrable);
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (diagRs != null) {
+                        try { diagRs.close(); } catch (SQLException e) { e.printStackTrace(); }
+                    }
+                    if (diagStmt != null) {
+                        try { diagStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+                    }
+                }
+                
+                patients.add(patient);
+            }
+            
+            // Debug log
+            System.out.println("Found " + patients.size() + " patients registered by nurse " + nurseID);
+            System.out.println("Database connection established successfully");
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DBConnection.closeConnection(conn);
+            System.out.println("Database connection closed successfully");
+        }
+        
+        return patients;
     }
     
     /**
@@ -761,114 +860,13 @@ public class PatientDAO {
     }
     
     /**
-     * Get patients registered specifically by a nurse
-     * Only returns patients that were actually registered by this nurse, not all patients
+     * Get patients by nurse ID
      * 
      * @param nurseID the ID of the nurse
-     * @return a list of patients registered by this nurse
+     * @return a list of patients associated with this nurse
      */
-    public List<Patient> getRegisteredPatientsByNurseID(int nurseID) {
-        // Simplified query to get all patients associated with this nurse
-        String sql = "SELECT DISTINCT u.*, ud.DateOfBirth, ud.Gender, ud.BloodGroup, ud.EmergencyContact " +
-                     "FROM Users u " +
-                     "LEFT JOIN UserDetails ud ON u.UserID = ud.UserID " +
-                     "INNER JOIN Diagnosis d ON u.UserID = d.PatientID " +
-                     "WHERE d.NurseID = ? AND u.Role = 'Patient' " +
-                     "ORDER BY u.FirstName, u.LastName";
-        
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Patient> patients = new ArrayList<>();
-        
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, nurseID);
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Patient patient = new Patient();
-                patient.setPatientID(rs.getInt("UserID"));
-                patient.setFirstName(rs.getString("FirstName"));
-                patient.setLastName(rs.getString("LastName"));
-                patient.setContactNumber(rs.getString("ContactNumber"));
-                patient.setEmail(rs.getString("Email"));
-                patient.setAddress(rs.getString("Address"));
-                patient.setProfileImage(rs.getString("ProfileImage"));
-                patient.setDateOfBirth(rs.getDate("DateOfBirth"));
-                patient.setGender(rs.getString("Gender"));
-                patient.setBloodGroup(rs.getString("BloodGroup"));
-                
-                // Calculate age if date of birth is available
-                if (rs.getDate("DateOfBirth") != null) {
-                    patient.setAge(calculateAge(rs.getDate("DateOfBirth")));
-                }
-                
-                // This patient was registered by this nurse
-                patient.setCreatedBy(nurseID);
-                
-                // We will initially set all patients as non-referrable
-                patient.setReferrable(false);
-                
-                // Now get the latest diagnosis for this patient to determine referrability
-                String diagSql = "SELECT DiagnoStatus FROM Diagnosis " +
-                                "WHERE PatientID = ? ORDER BY CreatedDate DESC LIMIT 1";
-                
-                PreparedStatement diagStmt = null;
-                ResultSet diagRs = null;
-                
-                try {
-                    diagStmt = conn.prepareStatement(diagSql);
-                    diagStmt.setInt(1, patient.getPatientID());
-                    diagRs = diagStmt.executeQuery();
-                    
-                    if (diagRs.next()) {
-                        String latestDiagnosis = diagRs.getString("DiagnoStatus");
-                        if (latestDiagnosis != null) {
-                            // A patient is referrable if diagnosis status contains "refer" or "emergency"
-                            boolean isReferrable = latestDiagnosis.toLowerCase().contains("refer") || 
-                                                latestDiagnosis.toLowerCase().contains("emergency");
-                            patient.setReferrable(isReferrable);
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (diagRs != null) {
-                        try { diagRs.close(); } catch (SQLException e) { e.printStackTrace(); }
-                    }
-                    if (diagStmt != null) {
-                        try { diagStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-                    }
-                }
-                
-                patients.add(patient);
-            }
-            
-            // Debug log
-            System.out.println("Found " + patients.size() + " patients registered by nurse " + nurseID);
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DBConnection.closeConnection(conn);
-        }
-        
-        return patients;
+    public List<Patient> getPatientsByNurseID(int nurseID) {
+        // Same as getPatientsByNurse(int nurseUserID) in the new schema
+        return getPatientsByNurse(nurseID);
     }
 } 

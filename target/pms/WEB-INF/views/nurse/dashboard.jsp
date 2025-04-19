@@ -58,7 +58,8 @@
             border-radius: 4px;
         }
         .registered-by-you {
-            background-color: rgba(52, 152, 219, 0.1);
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
         }
     </style>
 </head>
@@ -162,10 +163,10 @@
                         <i class="fas fa-users me-2"></i>
                         <c:choose>
                             <c:when test="${pageContext.request.servletPath == '/nurse/patients'}">
-                                All Patients
+                                All Patients in System
                             </c:when>
                             <c:otherwise>
-                                Recently Registered Patients
+                                Patients You've Registered
                             </c:otherwise>
                         </c:choose>
                     </h5>
@@ -234,6 +235,9 @@
                                                 </a>
                                                 <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
                                                     <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="${pageContext.request.contextPath}/nurse/create-diagnosis?patientId=${patient.patientID}" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-stethoscope"></i> Diagnose
                                                 </a>
                                             </td>
                                         </tr>

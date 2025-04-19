@@ -27,6 +27,7 @@ com\pms\controller\DatabaseTestServlet.class
 com\pms\model\Patient.class
 com\pms\controller\NurseDashboardServlet.class
 com\pms\model\DiagnosisStats.class
+com\pms\controller\nurse\CreateDiagnosisServlet.class
 com\pms\controller\admin\DoctorManagementServlet.class
 com\pms\controller\PatientDashboardServlet.class
 com\pms\controller\admin\SyncNursesServlet.class

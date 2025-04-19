@@ -236,6 +236,9 @@
                                                 <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
+                                                <a href="${pageContext.request.contextPath}/nurse/create-diagnosis?patientId=${patient.patientID}" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-stethoscope"></i> Diagnose
+                                                </a>
                                             </td>
                                         </tr>
                                     </c:forEach>

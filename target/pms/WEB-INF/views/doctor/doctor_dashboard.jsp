@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,8 +34,16 @@
         }
         .pending { color: #f39c12; }
         .confirmed { color: #2980b9; }
-        .badge-pending { background-color: #f39c12; }
-        .badge-confirmed { background-color: #2980b9; }
+        .referrable { color: #e74c3c; }
+        .nurses { color: #9b59b6; }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
         .alert-warning {
             background-color: #f8d7da;
             color: #721c24;
@@ -63,11 +72,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/doctor/diagnose">
-                            <i class="fas fa-stethoscope me-1"></i>Diagnose Patients
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="${pageContext.request.contextPath}/doctor/register-nurse">
                             <i class="fas fa-user-nurse me-1"></i>Register Nurse
                         </a>
@@ -86,6 +90,13 @@
 
     <!-- Main content -->
     <div class="container mt-4">
+        <!-- Success message if present -->
+        <c:if test="${not empty successMessage}">
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>${successMessage}
+            </div>
+        </c:if>
+        
         <!-- Error message if present -->
         <c:if test="${not empty errorMessage}">
             <div class="alert alert-warning">
@@ -95,72 +106,92 @@
         
         <!-- Welcome message -->
         <div class="welcome-banner">
-            <h2><i class="fas fa-user-md me-2"></i>Welcome, Dr. ${doctor.name}!</h2>
-            <p>You are logged in as a doctor
-                <c:if test="${not empty doctor.specialization}">
-                    specializing in ${doctor.specialization}
-                </c:if>
-            </p>
+            <h2><i class="fas fa-user-md me-2"></i>Welcome, Dr. ${doctor.firstName} ${doctor.lastName}!</h2>
+            <p>You are logged in as a doctor specializing in ${doctor.specialization} at ${doctor.hospitalName}</p>
         </div>
 
         <!-- Statistics Cards -->
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card stats-card h-100">
                     <div class="card-body">
                         <i class="fas fa-clock stats-icon pending"></i>
-                        <h3>${pendingCasesCount}</h3>
+                        <h3>${pendingCount}</h3>
                         <h5>Pending Cases</h5>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card stats-card h-100">
                     <div class="card-body">
                         <i class="fas fa-check-double stats-icon confirmed"></i>
-                        <h3>${confirmedCasesCount}</h3>
+                        <h3>${confirmedCount}</h3>
                         <h5>Confirmed Cases</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-exclamation-triangle stats-icon referrable"></i>
+                        <h3>${referrableCount}</h3>
+                        <h5>Referrable Cases</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-user-nurse stats-icon nurses"></i>
+                        <h3>${nursesCount}</h3>
+                        <h5>Registered Nurses</h5>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pending Cases -->
+        <!-- Pending Referrals -->
         <div class="card mb-4">
             <div class="card-header">
-                <i class="fas fa-clock me-1"></i>Pending Cases
+                <i class="fas fa-clock me-1"></i>Pending Referrals from Nurses
             </div>
             <div class="card-body">
                 <c:choose>
-                    <c:when test="${empty pendingCases}">
-                        <p class="text-center text-muted">No pending cases at the moment</p>
+                    <c:when test="${empty pendingReferrals}">
+                        <p class="text-center text-muted">No pending referrals at the moment</p>
                     </c:when>
                     <c:otherwise>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>Diag. ID</th>
                                         <th>Patient Name</th>
                                         <th>Age</th>
                                         <th>Gender</th>
-                                        <th>Symptoms</th>
-                                        <th>Registered By</th>
+                                        <th>Submitted By</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${pendingCases}" var="patientCase">
+                                    <c:forEach items="${pendingReferrals}" var="referral">
                                         <tr>
-                                            <td>${patientCase.patientID}</td>
-                                            <td>${patientCase.patientName}</td>
-                                            <td>${patientCase.patientAge}</td>
-                                            <td>${patientCase.patientGender}</td>
-                                            <td>${patientCase.symptoms}</td>
-                                            <td>${patientCase.registeredByNurse}</td>
+                                            <td>${referral.diagnosisID}</td>
+                                            <td>${referral.patientName}</td>
+                                            <td>${referral.patientAge}</td>
+                                            <td>${referral.patientGender}</td>
+                                            <td>${referral.submittedByNurse}</td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/doctor/diagnose?id=${patientCase.patientID}" class="btn btn-sm btn-warning">
-                                                    <i class="fas fa-stethoscope"></i> Diagnose
+                                                <span class="badge bg-warning">${referral.diagnosisResult}</span>
+                                            </td>
+                                            <td>
+                                                <fmt:formatDate value="${referral.createdDate}" pattern="dd-MM-yyyy" />
+                                            </td>
+                                            <td>
+                                                <a href="${pageContext.request.contextPath}/doctor/diagnose?id=${referral.diagnosisID}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-stethoscope"></i> Update
                                                 </a>
                                             </td>
                                         </tr>
@@ -173,46 +204,41 @@
             </div>
         </div>
 
-        <!-- Confirmed Cases -->
+        <!-- Completed Cases -->
         <div class="card mb-4">
             <div class="card-header">
-                <i class="fas fa-check-double me-1"></i>Confirmed Cases
+                <i class="fas fa-check-double me-1"></i>Completed Referrals
             </div>
             <div class="card-body">
                 <c:choose>
-                    <c:when test="${empty confirmedCases}">
-                        <p class="text-center text-muted">No confirmed cases yet</p>
+                    <c:when test="${empty completedCases}">
+                        <p class="text-center text-muted">No completed referrals yet</p>
                     </c:when>
                     <c:otherwise>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>Diag. ID</th>
                                         <th>Patient Name</th>
                                         <th>Age</th>
-                                        <th>Diagnosis</th>
-                                        <th>Treatment</th>
-                                        <th>Diagnosed On</th>
-                                        <th>Actions</th>
+                                        <th>Gender</th>
+                                        <th>Submitted By</th>
+                                        <th>Result</th>
+                                        <th>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${confirmedCases}" var="patientCase">
+                                    <c:forEach items="${completedCases}" var="caseData">
                                         <tr>
-                                            <td>${patientCase.patientID}</td>
-                                            <td>${patientCase.patientName}</td>
-                                            <td>${patientCase.patientAge}</td>
-                                            <td>${patientCase.diagnosis}</td>
-                                            <td>${patientCase.treatment}</td>
-                                            <td>${patientCase.diagnosisDate}</td>
+                                            <td>${caseData.diagnosisID}</td>
+                                            <td>${caseData.patientName}</td>
+                                            <td>${caseData.patientAge}</td>
+                                            <td>${caseData.patientGender}</td>
+                                            <td>${caseData.submittedByNurse}</td>
+                                            <td>${caseData.diagnosisResult}</td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/doctor/view-case?id=${patientCase.patientID}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/doctor/update-case?id=${patientCase.patientID}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-edit"></i> Update
-                                                </a>
+                                                <fmt:formatDate value="${caseData.createdDate}" pattern="dd-MM-yyyy" />
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -223,42 +249,43 @@
                 </c:choose>
             </div>
         </div>
-
-        <!-- Registered Nurses -->
+        
+        <!-- Non-Referrable Cases (Read Only) -->
         <div class="card mb-4">
             <div class="card-header">
-                <i class="fas fa-user-nurse me-1"></i>Nurses Registered by You
+                <i class="fas fa-ban me-1"></i>Non-Referrable Cases (Read-Only)
             </div>
             <div class="card-body">
-                <div class="mb-3 text-end">
-                    <a href="${pageContext.request.contextPath}/doctor/register-nurse" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>Register New Nurse
-                    </a>
-                </div>
                 <c:choose>
-                    <c:when test="${empty nursesRegistered}">
-                        <p class="text-center text-muted">You haven't registered any nurses yet</p>
+                    <c:when test="${empty nonReferrableCases}">
+                        <p class="text-center text-muted">No non-referrable cases available</p>
                     </c:when>
                     <c:otherwise>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Health Center</th>
-                                        <th>Contact</th>
-                                        <th>Email</th>
+                                        <th>Diag. ID</th>
+                                        <th>Patient Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Submitted By</th>
+                                        <th>Result</th>
+                                        <th>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${nursesRegistered}" var="nurse">
+                                    <c:forEach items="${nonReferrableCases}" var="caseData">
                                         <tr>
-                                            <td>${nurse.nurseID}</td>
-                                            <td>${nurse.firstName} ${nurse.lastName}</td>
-                                            <td>${nurse.healthCenter}</td>
-                                            <td>${nurse.telephone}</td>
-                                            <td>${nurse.email}</td>
+                                            <td>${caseData.diagnosisID}</td>
+                                            <td>${caseData.patientName}</td>
+                                            <td>${caseData.patientAge}</td>
+                                            <td>${caseData.patientGender}</td>
+                                            <td>${caseData.submittedByNurse}</td>
+                                            <td>${caseData.diagnosisResult}</td>
+                                            <td>
+                                                <fmt:formatDate value="${caseData.createdDate}" pattern="dd-MM-yyyy" />
+                                            </td>
                                         </tr>
                                     </c:forEach>
                                 </tbody>

@@ -98,30 +98,72 @@
                 <!-- Diagnosis Information -->
                 <div class="patient-info">
                     <h5>Diagnosis Information</h5>
-                    <p><strong>Status:</strong> ${diagnosis.diagnoStatus}</p>
-                    <p><strong>Current Result:</strong> ${diagnosis.result}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Diagnosis ID:</strong> ${diagnosis.diagnosisID}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-${diagnosis.diagnoStatus eq 'Referrable' ? 'danger' : 'success'}">
+                                    ${diagnosis.diagnoStatus}
+                                </span>
+                            </p>
+                            <p><strong>Current Result:</strong> ${diagnosis.result}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Referred by Nurse:</strong> ${nurseName}</p>
+                            <p><strong>Created Date:</strong> ${diagnosis.createdDate}</p>
+                            <p><strong>Last Updated:</strong> ${diagnosis.updatedDate}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Diagnosis Form -->
-                <form action="${pageContext.request.contextPath}/doctor/diagnose" method="post">
-                    <input type="hidden" name="diagnosisId" value="${diagnosis.diagnosisID}">
-                    <input type="hidden" name="patientId" value="${patient.patientID}">
-                    
-                    <div class="mb-3">
-                        <label for="diagnosisResult" class="form-label">Diagnosis Result</label>
-                        <textarea class="form-control" id="diagnosisResult" name="diagnosisResult" rows="5" required>${diagnosis.result eq 'Pending' ? '' : diagnosis.result}</textarea>
-                        <div class="form-text">Enter your detailed diagnosis and treatment plan for the patient.</div>
+                <!-- Error Message if present -->
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-danger mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
                     </div>
-                    
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary me-md-2">
-                            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Save Diagnosis
-                        </button>
-                    </div>
-                </form>
+                </c:if>
+
+                <!-- Diagnosis Form - Only show if referrable and pending -->
+                <c:choose>
+                    <c:when test="${diagnosis.diagnoStatus eq 'Referrable' && diagnosis.result eq 'Pending'}">
+                        <form action="${pageContext.request.contextPath}/doctor/diagnose" method="post">
+                            <input type="hidden" name="diagnosisId" value="${diagnosis.diagnosisID}">
+                            
+                            <div class="mb-3">
+                                <label for="diagnosisResult" class="form-label">Diagnosis Result <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="diagnosisResult" name="diagnosisResult" rows="5" required></textarea>
+                                <div class="form-text">Enter your detailed diagnosis and treatment plan for the patient.</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Save Diagnosis
+                                </button>
+                            </div>
+                        </form>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <c:choose>
+                                <c:when test="${diagnosis.diagnoStatus ne 'Referrable'}">
+                                    This case is marked as "Not Referrable" and cannot be updated.
+                                </c:when>
+                                <c:otherwise>
+                                    This case has already been diagnosed and cannot be updated again.
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>
