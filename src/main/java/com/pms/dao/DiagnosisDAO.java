@@ -792,7 +792,7 @@ public class DiagnosisDAO {
      * @return a list of completed referrable diagnoses for the doctor
      */
     public List<Diagnosis> getCompletedReferrableDiagnosesByDoctorID(int doctorID) {
-        String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ? AND DiagnoStatus = 'Referrable' AND Result != 'Pending'";
+        String sql = "SELECT * FROM Diagnosis WHERE DoctorID = ? AND DiagnoStatus = 'Referrable' AND Result NOT LIKE '%Pending%'";
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Diagnosis> diagnoses = new ArrayList<>();
