@@ -5,6 +5,29 @@
          version="4.0">
     <display-name>Patient Management System</display-name>
     
+    <!-- Explicitly define the NurseDashboardServlet -->
+    <servlet>
+        <servlet-name>NurseDashboardServlet</servlet-name>
+        <servlet-class>com.pms.controller.nurse.NurseDashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NurseDashboardServlet</servlet-name>
+        <url-pattern>/nurse/dashboard</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Authentication Filter Definition -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>com.pms.filter.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+        <url-pattern>/doctor/*</url-pattern>
+        <url-pattern>/nurse/*</url-pattern>
+        <url-pattern>/patient/*</url-pattern>
+    </filter-mapping>
+    
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

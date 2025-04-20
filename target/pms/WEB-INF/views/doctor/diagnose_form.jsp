@@ -125,7 +125,7 @@
 
                 <!-- Diagnosis Form - Only show if referrable and pending -->
                 <c:choose>
-                    <c:when test="${diagnosis.diagnoStatus eq 'Referrable' && diagnosis.result eq 'Pending'}">
+                    <c:when test="${diagnosis.diagnoStatus eq 'Referrable' && diagnosis.isPending()}">
                         <form action="${pageContext.request.contextPath}/doctor/diagnose" method="post">
                             <input type="hidden" name="diagnosisId" value="${diagnosis.diagnosisID}">
                             

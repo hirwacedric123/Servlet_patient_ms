@@ -8,6 +8,7 @@ com\pms\util\FormValidator.class
 com\pms\model\Doctor.class
 com\pms\controller\DoctorDashboardServlet.class
 com\pms\controller\LoginServlet.class
+com\pms\controller\nurse\NurseDashboardServlet.class
 com\pms\controller\doctor\RegisterNurseServlet.class
 com\pms\dao\UserDAO.class
 com\pms\util\PasswordUtil.class
@@ -25,7 +26,6 @@ com\pms\dao\PatientDAO.class
 com\pms\util\DBConnection.class
 com\pms\controller\DatabaseTestServlet.class
 com\pms\model\Patient.class
-com\pms\controller\NurseDashboardServlet.class
 com\pms\model\DiagnosisStats.class
 com\pms\controller\nurse\CreateDiagnosisServlet.class
 com\pms\controller\admin\DoctorManagementServlet.class
