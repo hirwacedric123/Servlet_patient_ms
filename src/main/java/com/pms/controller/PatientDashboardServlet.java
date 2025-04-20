@@ -81,8 +81,17 @@ public class PatientDashboardServlet extends HttpServlet {
                     detail.put("result", diagnosis.getResult());
                     detail.put("createdDate", diagnosis.getCreatedDate());
                     detail.put("updatedDate", diagnosis.getUpdatedDate());
-                    detail.put("isPending", diagnosis.isPending());
-                    detail.put("isReferrable", diagnosis.isReferrable());
+                    
+                    // Determine diagnosis status categories for the dashboard
+                    boolean isPending = "Pending".equals(diagnosis.getResult());
+                    boolean isReferrable = "Referrable".equalsIgnoreCase(diagnosis.getDiagnoStatus());
+                    boolean isNegative = "Negative".equals(diagnosis.getResult());
+                    boolean isConfirmed = !isPending && !isNegative;
+                    
+                    detail.put("isPending", isPending);
+                    detail.put("isReferrable", isReferrable);
+                    detail.put("isNegative", isNegative);
+                    detail.put("isConfirmed", isConfirmed);
                     
                     // Get nurse and doctor information if available
                     String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
@@ -93,6 +102,8 @@ public class PatientDashboardServlet extends HttpServlet {
                     
                     detail.put("nurseName", nurseName);
                     detail.put("doctorName", doctorName);
+                    detail.put("nurseID", diagnosis.getNurseID());
+                    detail.put("doctorID", diagnosis.getDoctorID());
                     
                     diagnosisDetails.add(detail);
                 }
@@ -102,11 +113,29 @@ public class PatientDashboardServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Error retrieving diagnosis data: " + e.getMessage());
         }
         
+        // Count diagnoses by status
+        int pendingCount = 0;
+        int confirmedCount = 0;
+        int negativeCount = 0;
+        
+        for (Map<String, Object> diagnosis : diagnosisDetails) {
+            if ((Boolean) diagnosis.get("isPending")) {
+                pendingCount++;
+            } else if ((Boolean) diagnosis.get("isNegative")) {
+                negativeCount++;
+            } else if ((Boolean) diagnosis.get("isConfirmed")) {
+                confirmedCount++;
+            }
+        }
+        
         // Set attributes for the JSP
         request.setAttribute("patient", patient);
         request.setAttribute("diagnoses", diagnosisDetails);
         request.setAttribute("diagnosesCount", diagnosisDetails.size());
-        request.setAttribute("hasPendingDiagnosis", diagnosisDetails.stream().anyMatch(d -> (Boolean)d.get("isPending")));
+        request.setAttribute("pendingCount", pendingCount);
+        request.setAttribute("confirmedCount", confirmedCount);
+        request.setAttribute("negativeCount", negativeCount);
+        request.setAttribute("hasPendingDiagnosis", pendingCount > 0);
         
         // Forward to the dashboard JSP
         request.getRequestDispatcher("/WEB-INF/views/patient/patient_dashboard.jsp").forward(request, response);
