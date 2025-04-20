@@ -111,6 +111,44 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Fixed Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #343a40;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .content-area {
+            margin-left: 250px;
+        }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: static;
+                padding-top: 0;
+            }
+            .content-area {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -118,8 +156,8 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <div class="text-center mb-4">
+                <div class="position-sticky">
+                    <div class="text-center mb-4 mt-3">
                         <i class="fas fa-hospital text-light fa-3x mb-3"></i>
                         <h5 class="text-light">Patient Management System</h5>
                     </div>
