@@ -68,8 +68,8 @@ public class DiagnosePatientServlet extends HttpServlet {
                 return;
             }
             
-            // Check if diagnosis is referrable and pending
-            if (!"Referrable".equals(diagnosis.getDiagnoStatus()) || !"Pending".equals(diagnosis.getResult())) {
+            // Check if diagnosis is referrable and pending - using isPending() method
+            if (!"Referrable".equals(diagnosis.getDiagnoStatus()) || !diagnosis.isPending()) {
                 if (!"Referrable".equals(diagnosis.getDiagnoStatus())) {
                     request.setAttribute("errorMessage", "Cannot update non-referrable diagnosis");
                 } else {
@@ -148,8 +148,8 @@ public class DiagnosePatientServlet extends HttpServlet {
                 return;
             }
             
-            // Check if this diagnosis is referrable and pending
-            if (!"Referrable".equals(diagnosis.getDiagnoStatus()) || !"Pending".equals(diagnosis.getResult())) {
+            // Check if this diagnosis is referrable and pending - using isPending() method
+            if (!"Referrable".equals(diagnosis.getDiagnoStatus()) || !diagnosis.isPending()) {
                 if (!"Referrable".equals(diagnosis.getDiagnoStatus())) {
                     request.setAttribute("errorMessage", "Cannot update non-referrable diagnosis");
                 } else {

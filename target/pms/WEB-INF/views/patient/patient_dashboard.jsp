@@ -22,8 +22,11 @@
         .diagnosis-card.pending {
             border-left: 4px solid #ffc107;
         }
-        .diagnosis-card.completed {
+        .diagnosis-card.confirmed {
             border-left: 4px solid #28a745;
+        }
+        .diagnosis-card.negative {
+            border-left: 4px solid #6c757d;
         }
         .status-badge {
             position: absolute;
@@ -60,6 +63,14 @@
         }
         .health-widget.pending {
             background: linear-gradient(to bottom right, #ffeb3b, #ffa000);
+            color: white;
+        }
+        .health-widget.negative {
+            background: linear-gradient(to bottom right, #6c757d, #495057);
+            color: white;
+        }
+        .health-widget.confirmed {
+            background: linear-gradient(to bottom right, #4caf50, #2e7d32);
             color: white;
         }
         .timeline {
@@ -100,15 +111,54 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #343a40;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .content-area {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: static;
+                padding-top: 0;
+            }
+            .content-area {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <div class="text-center mb-4">
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky">
+                    <div class="text-center mb-4 mt-3">
                         <i class="fas fa-hospital text-light fa-3x mb-3"></i>
                         <h5 class="text-light">Patient Management System</h5>
                     </div>
@@ -147,23 +197,8 @@
                         </button>
                         <span class="navbar-brand d-md-none">PMS</span>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="dropdown">
-                                <a class="dropdown-toggle text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user-circle me-1"></i>${patient.firstName} ${patient.lastName}
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/patient/profile">
-                                            <i class="fas fa-id-card me-1"></i>Profile
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/logout">
-                                            <i class="fas fa-sign-out-alt me-1"></i>Logout
-                                        </a>
-                                    </li>
-                                </ul>
+                            <div class="user-info">
+                                <i class="fas fa-user-circle me-1"></i>${patient.firstName} ${patient.lastName}
                             </div>
                         </div>
                     </div>
@@ -185,7 +220,7 @@
                         </div>
                         <div class="col-md-4 text-md-end">
                             <c:if test="${not empty patient.profileImage}">
-                                <img src="${pageContext.request.contextPath}/${patient.profileImage}" 
+                                <img src="${pageContext.request.contextPath}${patient.profileImage}" 
                                      alt="Patient Photo" class="img-thumbnail rounded-circle" 
                                      style="width: 100px; height: 100px; object-fit: cover;">
                             </c:if>
@@ -201,28 +236,26 @@
                 <!-- Health Status Widgets -->
                 <div class="row mb-4">
                     <div class="col-md-4 mb-4">
-                        <div class="health-widget ${hasPendingDiagnosis ? 'pending' : 'not-referrable'} shadow-sm rounded animated-card">
-                            <i class="fas ${hasPendingDiagnosis ? 'fa-clock' : 'fa-check-circle'} health-widget-icon"></i>
-                            <h3>${hasPendingDiagnosis ? 'Pending' : 'Completed'}</h3>
-                            <h5>Diagnostic Status</h5>
+                        <div class="health-widget pending shadow-sm rounded animated-card">
+                            <i class="fas fa-clock health-widget-icon"></i>
+                            <h3>${pendingCount}</h3>
+                            <h5>Pending Diagnoses</h5>
                         </div>
                     </div>
                     
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm animated-card">
-                            <div class="card-body text-center">
-                                <i class="fas fa-calendar-alt health-widget-icon text-primary"></i>
-                                <h3>${diagnosesCount}</h3>
-                                <h5>Total Diagnoses</h5>
-                            </div>
+                        <div class="health-widget confirmed shadow-sm rounded animated-card">
+                            <i class="fas fa-check-circle health-widget-icon"></i>
+                            <h3>${confirmedCount}</h3>
+                            <h5>Confirmed Diagnoses</h5>
                         </div>
                     </div>
                     
                     <div class="col-md-4 mb-4">
-                        <div class="health-widget ${diagnoses[0].isReferrable ? 'referrable' : 'not-referrable'} shadow-sm rounded animated-card">
-                            <i class="fas ${diagnoses[0].isReferrable ? 'fa-exclamation-triangle' : 'fa-shield-alt'} health-widget-icon"></i>
-                            <h3>${diagnoses[0].isReferrable ? 'Referrable' : 'Not Referrable'}</h3>
-                            <h5>Current Status</h5>
+                        <div class="health-widget negative shadow-sm rounded animated-card">
+                            <i class="fas fa-shield-alt health-widget-icon"></i>
+                            <h3>${negativeCount}</h3>
+                            <h5>Not Referable</h5>
                         </div>
                     </div>
                 </div>
@@ -230,30 +263,50 @@
                 <!-- Patient Information Card -->
                 <div class="card mb-4 shadow-sm animated-card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Patient Information</h5>
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Patient Profile</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Full Name:</strong> <span class="patient-info-text">${patient.firstName} ${patient.lastName}</span></p>
-                                <p><strong>Gender:</strong> <span class="patient-info-text">${patient.gender}</span></p>
-                                <p><strong>Date of Birth:</strong> <span class="patient-info-text">
-                                    <fmt:formatDate value="${patient.dateOfBirth}" pattern="MMMM dd, yyyy" />
-                                </span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Contact Number:</strong> <span class="patient-info-text">${patient.contactNumber}</span></p>
-                                <p><strong>Email:</strong> <span class="patient-info-text">${patient.email}</span></p>
-                                <p><strong>Address:</strong> <span class="patient-info-text">${patient.address}</span></p>
-                            </div>
-                        </div>
+                        <c:choose>
+                            <c:when test="${empty patient.gender || empty patient.dateOfBirth || empty patient.contactNumber || empty patient.email || empty patient.address}">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Your profile is incomplete. Please update your information to ensure you receive the best healthcare service.
+                                    <div class="mt-3">
+                                        <a href="${pageContext.request.contextPath}/patient/profile" class="btn btn-primary">
+                                            <i class="fas fa-user-edit me-2"></i>Complete Profile
+                                        </a>
+                                    </div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Full Name:</strong> <span class="patient-info-text">${patient.firstName} ${patient.lastName}</span></p>
+                                        <p><strong>Gender:</strong> <span class="patient-info-text">${patient.gender}</span></p>
+                                        <p><strong>Date of Birth:</strong> <span class="patient-info-text">
+                                            <fmt:formatDate value="${patient.dateOfBirth}" pattern="MMMM dd, yyyy" />
+                                        </span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Contact Number:</strong> <span class="patient-info-text">${patient.contactNumber}</span></p>
+                                        <p><strong>Email:</strong> <span class="patient-info-text">${patient.email}</span></p>
+                                        <p><strong>Address:</strong> <span class="patient-info-text">${patient.address}</span></p>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-2">
+                                    <a href="${pageContext.request.contextPath}/patient/profile" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-user-edit me-1"></i>Edit Profile
+                                    </a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </div>
 
                 <!-- Recent Diagnoses -->
                 <div class="card mb-4 shadow-sm animated-card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Recent Diagnoses</h5>
+                        <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Diagnosis Status</h5>
                     </div>
                     <div class="card-body">
                         <c:choose>
@@ -265,81 +318,115 @@
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <div class="timeline">
-                                    <c:forEach var="diagnosis" items="${diagnoses}">
-                                        <div class="timeline-item">
-                                            <div class="card diagnosis-card ${diagnosis.isPending ? 'pending' : 'completed'} shadow-sm">
-                                                <div class="card-body">
-                                                    <span class="status-badge badge bg-${diagnosis.isPending ? 'warning' : 'success'}">
-                                                        ${diagnosis.isPending ? 'Pending' : 'Completed'}
-                                                    </span>
-                                                    <h5 class="card-title">
-                                                        <i class="fas ${diagnosis.isReferrable ? 'fa-exclamation-triangle text-danger' : 'fa-check-circle text-success'} me-2"></i>
-                                                        ${diagnosis.diagnoStatus}
-                                                    </h5>
-                                                    <p class="timeline-date">
-                                                        <i class="far fa-calendar-alt me-1"></i>
-                                                        <fmt:formatDate value="${diagnosis.createdDate}" pattern="MMMM dd, yyyy" />
-                                                        <c:if test="${diagnosis.updatedDate != diagnosis.createdDate}">
-                                                            (Updated: <fmt:formatDate value="${diagnosis.updatedDate}" pattern="MMMM dd, yyyy" />)
-                                                        </c:if>
-                                                    </p>
-                                                    <hr>
-                                                    <p><strong>Result:</strong> ${diagnosis.result}</p>
-                                                    <p><strong>Diagnosed by:</strong> 
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nurse</th>
+                                                <th>Doctor</th>
+                                                <th>Status</th>
+                                                <th>Result</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="diagnosis" items="${diagnoses}">
+                                                <tr>
+                                                    <td>${diagnosis.diagnosisID}</td>
+                                                    <td>Nurse ${diagnosis.nurseName}</td>
+                                                    <td>
                                                         <c:choose>
                                                             <c:when test="${not empty diagnosis.doctorName}">
                                                                 Dr. ${diagnosis.doctorName}
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span class="text-muted">Pending doctor review</span>
+                                                                <span class="text-muted">N/A</span>
                                                             </c:otherwise>
                                                         </c:choose>
-                                                    </p>
-                                                    <p><strong>Registered by:</strong> Nurse ${diagnosis.nurseName}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:forEach>
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${diagnosis.isReferrable}">
+                                                                <span class="badge bg-danger">Referrable</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge bg-success">Not Referrable</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${diagnosis.isPending}">
+                                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                            </c:when>
+                                                            <c:when test="${diagnosis.isNegative}">
+                                                                <span class="badge bg-secondary">Negative</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge bg-success">${diagnosis.result}</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <fmt:formatDate value="${diagnosis.createdDate}" pattern="MMM dd, yyyy" />
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </c:otherwise>
                         </c:choose>
                     </div>
                 </div>
 
-                <!-- Health Tips Section -->
-                <div class="card mb-4 shadow-sm animated-card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Health Tips</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="fas fa-heart text-danger me-2"></i>Stay Active</h5>
-                                        <p class="card-text">Aim for at least 30 minutes of physical activity daily to maintain good cardiovascular health.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="fas fa-apple-alt text-success me-2"></i>Healthy Diet</h5>
-                                        <p class="card-text">Consume a balanced diet rich in fruits, vegetables, whole grains, and lean proteins.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="fas fa-bed text-primary me-2"></i>Adequate Sleep</h5>
-                                        <p class="card-text">Aim for 7-9 hours of quality sleep each night to support overall health and wellbeing.</p>
+                <!-- Detailed Diagnosis Cards -->
+                <div class="row">
+                    <c:forEach var="diagnosis" items="${diagnoses}" varStatus="status">
+                        <div class="col-md-6 mb-4">
+                            <div class="card diagnosis-card ${diagnosis.isPending ? 'pending' : diagnosis.isNegative ? 'negative' : 'confirmed'} shadow-sm animated-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <c:choose>
+                                            <c:when test="${diagnosis.isPending}">
+                                                <i class="fas fa-clock text-warning me-2"></i>Pending Diagnosis
+                                            </c:when>
+                                            <c:when test="${diagnosis.isConfirmed}">
+                                                <i class="fas fa-check-circle text-success me-2"></i>Confirmed Diagnosis
+                                            </c:when>
+                                            <c:when test="${diagnosis.isNegative}">
+                                                <i class="fas fa-shield-alt text-secondary me-2"></i>Not Referable
+                                            </c:when>
+                                        </c:choose>
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <fmt:formatDate value="${diagnosis.createdDate}" pattern="MMMM dd, yyyy" />
+                                    </h6>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Status:</strong> ${diagnosis.diagnoStatus}</p>
+                                            <p><strong>Result:</strong> ${diagnosis.result}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Nurse:</strong> ${diagnosis.nurseName}</p>
+                                            <p><strong>Doctor:</strong> 
+                                                <c:choose>
+                                                    <c:when test="${not empty diagnosis.doctorName}">
+                                                        Dr. ${diagnosis.doctorName}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-muted">Not assigned</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </c:forEach>
                 </div>
             </main>
         </div>

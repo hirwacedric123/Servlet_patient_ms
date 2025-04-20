@@ -350,25 +350,55 @@ public class PatientDAO {
     
     public boolean updatePatient(Patient patient) {
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         boolean success = false;
         
         try {
-            // Update the UserDetails table
-            String sql = "UPDATE UserDetails SET DateOfBirth=?, Gender=?, BloodGroup=?, EmergencyContact=? " +
-                         "WHERE UserID=?";
+            // First check if user details exist
+            String checkSql = "SELECT * FROM UserDetails WHERE UserID = ?";
+            stmt = connection.prepareStatement(checkSql);
+            stmt.setInt(1, patient.getUserID());
+            rs = stmt.executeQuery();
             
-            stmt = connection.prepareStatement(sql);
-            stmt.setDate(1, patient.getDateOfBirth());
-            stmt.setString(2, patient.getGender());
-            stmt.setString(3, patient.getBloodGroup());
-            stmt.setString(4, patient.getEmergencyContact());
-            stmt.setInt(5, patient.getUserID());
+            boolean userDetailsExist = rs.next();
             
-            int rowsAffected = stmt.executeUpdate();
+            if (userDetailsExist) {
+                // Update the UserDetails table
+                String sql = "UPDATE UserDetails SET DateOfBirth=?, Gender=?, BloodGroup=?, EmergencyContact=? " +
+                             "WHERE UserID=?";
+                
+                stmt = connection.prepareStatement(sql);
+                stmt.setDate(1, patient.getDateOfBirth());
+                stmt.setString(2, patient.getGender());
+                stmt.setString(3, patient.getBloodGroup());
+                stmt.setString(4, patient.getEmergencyContact());
+                stmt.setInt(5, patient.getUserID());
+                
+                stmt.executeUpdate();
+            } else {
+                // Insert into UserDetails table
+                String sql = "INSERT INTO UserDetails (UserID, DateOfBirth, Gender, BloodGroup, EmergencyContact) " +
+                             "VALUES (?, ?, ?, ?, ?)";
+                
+                stmt = connection.prepareStatement(sql);
+                stmt.setInt(1, patient.getUserID());
+                stmt.setDate(2, patient.getDateOfBirth());
+                stmt.setString(3, patient.getGender());
+                stmt.setString(4, patient.getBloodGroup());
+                stmt.setString(5, patient.getEmergencyContact());
+                
+                stmt.executeUpdate();
+            }
             
             // Update the Users table
-            String userSql = "UPDATE Users SET FirstName=?, LastName=?, ContactNumber=?, Email=?, Address=? " +
-                            "WHERE UserID=?";
+            String userSql = "UPDATE Users SET FirstName=?, LastName=?, ContactNumber=?, Email=?, Address=? ";
+            
+            // Add profile image update if it's not null or empty
+            if (patient.getProfileImage() != null && !patient.getProfileImage().isEmpty()) {
+                userSql += ", ProfileImage=? ";
+            }
+            
+            userSql += "WHERE UserID=?";
             
             stmt = connection.prepareStatement(userSql);
             stmt.setString(1, patient.getFirstName());
@@ -376,15 +406,28 @@ public class PatientDAO {
             stmt.setString(3, patient.getContactNumber());
             stmt.setString(4, patient.getEmail());
             stmt.setString(5, patient.getAddress());
-            stmt.setInt(6, patient.getUserID());
+            
+            int paramIndex = 6;
+            if (patient.getProfileImage() != null && !patient.getProfileImage().isEmpty()) {
+                stmt.setString(paramIndex++, patient.getProfileImage());
+            }
+            
+            stmt.setInt(paramIndex, patient.getUserID());
             
             int userRowsAffected = stmt.executeUpdate();
             
-            success = rowsAffected > 0 || userRowsAffected > 0;
+            success = userRowsAffected > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             if (stmt != null) {
                 try {
                     stmt.close();
