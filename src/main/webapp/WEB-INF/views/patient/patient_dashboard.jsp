@@ -242,20 +242,40 @@
                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Patient Profile</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Full Name:</strong> <span class="patient-info-text">${patient.firstName} ${patient.lastName}</span></p>
-                                <p><strong>Gender:</strong> <span class="patient-info-text">${patient.gender}</span></p>
-                                <p><strong>Date of Birth:</strong> <span class="patient-info-text">
-                                    <fmt:formatDate value="${patient.dateOfBirth}" pattern="MMMM dd, yyyy" />
-                                </span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Contact Number:</strong> <span class="patient-info-text">${patient.contactNumber}</span></p>
-                                <p><strong>Email:</strong> <span class="patient-info-text">${patient.email}</span></p>
-                                <p><strong>Address:</strong> <span class="patient-info-text">${patient.address}</span></p>
-                            </div>
-                        </div>
+                        <c:choose>
+                            <c:when test="${empty patient.gender || empty patient.dateOfBirth || empty patient.contactNumber || empty patient.email || empty patient.address}">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Your profile is incomplete. Please update your information to ensure you receive the best healthcare service.
+                                    <div class="mt-3">
+                                        <a href="${pageContext.request.contextPath}/patient/profile" class="btn btn-primary">
+                                            <i class="fas fa-user-edit me-2"></i>Complete Profile
+                                        </a>
+                                    </div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Full Name:</strong> <span class="patient-info-text">${patient.firstName} ${patient.lastName}</span></p>
+                                        <p><strong>Gender:</strong> <span class="patient-info-text">${patient.gender}</span></p>
+                                        <p><strong>Date of Birth:</strong> <span class="patient-info-text">
+                                            <fmt:formatDate value="${patient.dateOfBirth}" pattern="MMMM dd, yyyy" />
+                                        </span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Contact Number:</strong> <span class="patient-info-text">${patient.contactNumber}</span></p>
+                                        <p><strong>Email:</strong> <span class="patient-info-text">${patient.email}</span></p>
+                                        <p><strong>Address:</strong> <span class="patient-info-text">${patient.address}</span></p>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-2">
+                                    <a href="${pageContext.request.contextPath}/patient/profile" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-user-edit me-1"></i>Edit Profile
+                                    </a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </div>
 
