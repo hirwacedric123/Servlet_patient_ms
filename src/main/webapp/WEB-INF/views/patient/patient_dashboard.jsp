@@ -158,23 +158,8 @@
                         </button>
                         <span class="navbar-brand d-md-none">PMS</span>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="dropdown">
-                                <a class="dropdown-toggle text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user-circle me-1"></i>${patient.firstName} ${patient.lastName}
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/patient/profile">
-                                            <i class="fas fa-id-card me-1"></i>Profile
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/logout">
-                                            <i class="fas fa-sign-out-alt me-1"></i>Logout
-                                        </a>
-                                    </li>
-                                </ul>
+                            <div class="user-info">
+                                <i class="fas fa-user-circle me-1"></i>${patient.firstName} ${patient.lastName}
                             </div>
                         </div>
                     </div>
@@ -196,7 +181,7 @@
                         </div>
                         <div class="col-md-4 text-md-end">
                             <c:if test="${not empty patient.profileImage}">
-                                <img src="${pageContext.request.contextPath}/${patient.profileImage}" 
+                                <img src="${pageContext.request.contextPath}${patient.profileImage}" 
                                      alt="Patient Photo" class="img-thumbnail rounded-circle" 
                                      style="width: 100px; height: 100px; object-fit: cover;">
                             </c:if>

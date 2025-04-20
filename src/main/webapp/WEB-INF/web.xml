@@ -36,4 +36,10 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+
+    <!-- Add static resources mappings -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/patient_images/*</url-pattern>
+    </servlet-mapping>
 </web-app> 

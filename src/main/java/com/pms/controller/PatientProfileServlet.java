@@ -30,6 +30,8 @@ public class PatientProfileServlet extends HttpServlet {
 
     public void init() {
         patientDAO = new PatientDAO();
+        // Initialize FileUploadUtil with the ServletContext
+        FileUploadUtil.setServletContext(getServletContext());
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -153,10 +155,15 @@ public class PatientProfileServlet extends HttpServlet {
         Part filePart = request.getPart("profileImage");
         if (filePart != null && filePart.getSize() > 0) {
             try {
+                System.out.println("Processing image upload for user: " + patient.getPatientID());
                 String imageLink = FileUploadUtil.saveFile(filePart);
+                System.out.println("Image saved successfully at: " + imageLink);
+                
+                // Set the image path - this is already prefixed with context path by FileUploadUtil
                 patient.setProfileImage(imageLink);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.err.println("Error uploading image: " + e.getMessage());
                 request.setAttribute("errorMessage", "Error uploading image: " + e.getMessage());
                 request.setAttribute("patient", patient);
                 request.getRequestDispatcher("/WEB-INF/views/patient/patient_profile.jsp").forward(request, response);
@@ -171,6 +178,8 @@ public class PatientProfileServlet extends HttpServlet {
             // Update session data
             session.setAttribute("patient", patient);
             session.setAttribute("successMessage", "Profile updated successfully.");
+            System.out.println("Profile updated successfully for patient: " + patient.getPatientID() + 
+                              ", Profile image: " + patient.getProfileImage());
             response.sendRedirect(request.getContextPath() + "/patient/profile");
         } else {
             request.setAttribute("errorMessage", "Failed to update profile. Please try again.");
