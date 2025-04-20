@@ -9,9 +9,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .navbar {
-            background-color: #3498db;
-        }
         .card-header {
             background-color: #3498db;
             color: white;
@@ -29,121 +26,178 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #3498db;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .content-area {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: static;
+                padding-top: 0;
+            }
+            .content-area {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-hospital me-2"></i>Patient Management System
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/dashboard">
-                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
-                            <i class="fas fa-user-plus me-1"></i>Register Patient
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/patients">
-                            <i class="fas fa-procedures me-1"></i>My Patients
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/logout">
-                            <i class="fas fa-sign-out-alt me-1"></i>Logout
-                        </a>
-                    </li>
-                </ul>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky">
+                    <div class="text-center mb-4 mt-3">
+                        <i class="fas fa-hospital text-light fa-3x mb-3"></i>
+                        <h5 class="text-light">Patient Management System</h5>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
+                                <i class="fas fa-user-plus me-2"></i>Register Patient
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patients">
+                                <i class="fas fa-procedures me-2"></i>My Patients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link active" href="#">
+                                <i class="fas fa-stethoscope me-2"></i>Create Diagnosis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
 
-    <!-- Main content -->
-    <div class="container mt-4">
-        <c:if test="${not empty errorMessage}">
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
-            </div>
-        </c:if>
-        
-        <div class="card">
-            <div class="card-header">
-                <h4><i class="fas fa-stethoscope me-2"></i>Create Diagnosis</h4>
-            </div>
-            <div class="card-body">
-                <!-- Patient Information -->
-                <div class="patient-info">
-                    <h5>Patient Information</h5>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Name:</strong> ${patient.firstName} ${patient.lastName}</p>
-                            <p><strong>Gender:</strong> ${patient.gender}</p>
-                            <p><strong>Age:</strong> ${patient.age}</p>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content-area">
+                <!-- Top Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 shadow-sm rounded">
+                    <div class="container-fluid">
+                        <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <span class="navbar-brand d-md-none">PMS</span>
+                        <div class="d-flex align-items-center ms-auto">
+                            <div class="user-info">
+                                <i class="fas fa-user-nurse me-1"></i>${nurse.firstName} ${nurse.lastName}
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>Contact:</strong> ${patient.contactNumber}</p>
-                            <p><strong>Email:</strong> ${patient.email}</p>
-                            <p><strong>Blood Group:</strong> ${patient.bloodGroup}</p>
+                    </div>
+                </nav>
+                
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
+                    </div>
+                </c:if>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-stethoscope me-2"></i>Create Diagnosis</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Patient Information -->
+                        <div class="patient-info">
+                            <h5>Patient Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> ${patient.firstName} ${patient.lastName}</p>
+                                    <p><strong>Gender:</strong> ${patient.gender}</p>
+                                    <p><strong>Age:</strong> ${patient.age}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Contact:</strong> ${patient.contactNumber}</p>
+                                    <p><strong>Email:</strong> ${patient.email}</p>
+                                    <p><strong>Blood Group:</strong> ${patient.bloodGroup}</p>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Diagnosis Form -->
+                        <form action="${pageContext.request.contextPath}/nurse/create-diagnosis" method="post">
+                            <input type="hidden" name="patientId" value="${patient.patientID}">
+                            
+                            <div class="mb-3">
+                                <label for="diagnosisStatus" class="form-label">Diagnosis Status <span class="text-danger">*</span></label>
+                                <select class="form-select" id="diagnosisStatus" name="diagnosisStatus" required onchange="toggleDoctorField()">
+                                    <option value="" selected disabled>Select status</option>
+                                    <option value="Referrable">Referrable (requires doctor review)</option>
+                                    <option value="Not Referrable">Not Referrable (no further review needed)</option>
+                                </select>
+                                <div class="form-text">
+                                    <strong>Referrable:</strong> The patient's case requires a doctor's review. Result will be set to "Pending" until reviewed.<br>
+                                    <strong>Not Referrable:</strong> The patient's case does not require further review. Result will be set to "Negative".
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3" id="doctorField" style="display: none;">
+                                <label for="doctorId" class="form-label">Assign Doctor <span class="text-danger">*</span></label>
+                                <select class="form-select" id="doctorId" name="doctorId">
+                                    <option value="" selected disabled>Select a doctor</option>
+                                    <c:forEach items="${doctors}" var="doctor">
+                                        <option value="${doctor.doctorID}">${doctor.firstName} ${doctor.lastName}</option>
+                                    </c:forEach>
+                                </select>
+                                <div class="form-text">Select a doctor to review this case.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="symptoms" class="form-label">Symptoms / Notes</label>
+                                <textarea class="form-control" id="symptoms" name="symptoms" rows="4" placeholder="Enter patient symptoms and relevant notes"></textarea>
+                                <div class="form-text">Provide information about the patient's symptoms and any relevant notes.</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="${pageContext.request.contextPath}/nurse/dashboard" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Create Diagnosis
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
-                <!-- Diagnosis Form -->
-                <form action="${pageContext.request.contextPath}/nurse/create-diagnosis" method="post">
-                    <input type="hidden" name="patientId" value="${patient.patientID}">
-                    
-                    <div class="mb-3">
-                        <label for="diagnosisStatus" class="form-label">Diagnosis Status <span class="text-danger">*</span></label>
-                        <select class="form-select" id="diagnosisStatus" name="diagnosisStatus" required onchange="toggleDoctorField()">
-                            <option value="" selected disabled>Select status</option>
-                            <option value="Referrable">Referrable (requires doctor review)</option>
-                            <option value="Not Referrable">Not Referrable (no further review needed)</option>
-                        </select>
-                        <div class="form-text">
-                            <strong>Referrable:</strong> The patient's case requires a doctor's review. Result will be set to "Pending" until reviewed.<br>
-                            <strong>Not Referrable:</strong> The patient's case does not require further review. Result will be set to "Negative".
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3" id="doctorField" style="display: none;">
-                        <label for="doctorId" class="form-label">Assign Doctor <span class="text-danger">*</span></label>
-                        <select class="form-select" id="doctorId" name="doctorId">
-                            <option value="" selected disabled>Select a doctor</option>
-                            <c:forEach items="${doctors}" var="doctor">
-                                <option value="${doctor.doctorID}">${doctor.firstName} ${doctor.lastName}</option>
-                            </c:forEach>
-                        </select>
-                        <div class="form-text">Select a doctor to review this case.</div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="symptoms" class="form-label">Symptoms / Notes</label>
-                        <textarea class="form-control" id="symptoms" name="symptoms" rows="4" placeholder="Enter patient symptoms and relevant notes"></textarea>
-                        <div class="form-text">Provide information about the patient's symptoms and any relevant notes.</div>
-                    </div>
-                    
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="${pageContext.request.contextPath}/nurse/dashboard" class="btn btn-secondary me-md-2">
-                            <i class="fas fa-times me-1"></i>Cancel
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Create Diagnosis
-                        </button>
-                    </div>
-                </form>
-            </div>
+            </main>
         </div>
     </div>
 
