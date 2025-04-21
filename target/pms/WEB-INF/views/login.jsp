@@ -34,37 +34,6 @@
         .input-group-text {
             background-color: #f8f9fa;
         }
-        .register-section {
-            margin-top: 30px;
-            text-align: center;
-            padding: 15px;
-            background-color: #f1f8ff;
-            border-radius: 8px;
-            border: 1px solid #d1e9ff;
-        }
-        .register-buttons {
-            margin-top: 15px;
-        }
-        .or-divider {
-            margin: 30px 0;
-            text-align: center;
-            position: relative;
-        }
-        .or-divider:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            border-top: 1px solid #ccc;
-            z-index: 1;
-        }
-        .or-divider span {
-            background-color: #fff;
-            padding: 0 15px;
-            position: relative;
-            z-index: 2;
-        }
     </style>
 </head>
 <body>
@@ -111,23 +80,6 @@
                                 </button>
                             </div>
                         </form>
-                        
-                        <div class="or-divider">
-                            <span>OR</span>
-                        </div>
-                        
-                        <div class="register-section">
-                            <h5><i class="fas fa-user-plus me-2"></i>Don't have an account?</h5>
-                            <p>Create a new account to access our services</p>
-                            <div class="register-buttons">
-                                <a href="${pageContext.request.contextPath}/register?type=patient" class="btn btn-success me-2">
-                                    <i class="fas fa-user me-1"></i>Register as Patient
-                                </a>
-                                <a href="${pageContext.request.contextPath}/register?type=doctor" class="btn btn-info">
-                                    <i class="fas fa-user-md me-1"></i>Register as Doctor
-                                </a>
-                            </div>
-                        </div>
                     </div>
                     <div class="card-footer text-center py-3">
                         <small class="text-muted">&copy; 2025 Patient Management System</small>

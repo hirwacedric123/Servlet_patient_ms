@@ -9,9 +9,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .navbar {
-            background-color: #3498db;
-        }
         .card-header {
             background-color: #3498db;
             color: white;
@@ -61,207 +58,256 @@
             background-color: rgba(52, 152, 219, 0.2);
             border-left: 4px solid #3498db;
         }
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #3498db;
+            width: 250px;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .content-area {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: static;
+                padding-top: 0;
+                width: 100%;
+            }
+            .content-area {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-hospital me-2"></i>Patient Management System
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="${pageContext.request.contextPath}/nurse/dashboard">
-                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
-                            <i class="fas fa-user-plus me-1"></i>Register Patient
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/nurse/patients">
-                            <i class="fas fa-procedures me-1"></i>My Patients
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/logout">
-                            <i class="fas fa-sign-out-alt me-1"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main content -->
-    <div class="container mt-4">
-        <!-- Success message if present -->
-        <c:if test="${not empty successMessage}">
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle me-2"></i>${successMessage}
-            </div>
-        </c:if>
-        
-        <!-- Error message if present -->
-        <c:if test="${not empty errorMessage}">
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
-            </div>
-        </c:if>
-        
-        <!-- Welcome message -->
-        <div class="welcome-banner">
-            <h2><i class="fas fa-user-nurse me-2"></i>Welcome, ${nurse.firstName} ${nurse.lastName}!</h2>
-            <p>You are logged in as a nurse from ${nurse.healthCenter} health center.</p>
-        </div>
-
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card stats-card h-100">
-                    <div class="card-body">
-                        <i class="fas fa-users stats-icon patients"></i>
-                        <h3>${patientCount}</h3>
-                        <h5>Total Patients</h5>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky">
+                    <div class="text-center mb-4 mt-3">
+                        <i class="fas fa-hospital text-light fa-3x mb-3"></i>
+                        <h5 class="text-light">Patient Management System</h5>
                     </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="sidebar-link active" href="${pageContext.request.contextPath}/nurse/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
+                                <i class="fas fa-user-plus me-2"></i>Register Patient
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patients">
+                                <i class="fas fa-procedures me-2"></i>My Patients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card stats-card h-100">
-                    <div class="card-body">
-                        <i class="fas fa-hospital-user stats-icon referrable"></i>
-                        <h3>${referrableCount}</h3>
-                        <h5>Referrable Cases</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card stats-card h-100">
-                    <div class="card-body">
-                        <i class="fas fa-user-check stats-icon non-referrable"></i>
-                        <h3>${nonReferrableCount}</h3>
-                        <h5>Non-Referrable Cases</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Patient List -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-users me-2"></i>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content-area">
+                <!-- Top Navbar for mobile -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 shadow-sm rounded d-md-none">
+                    <div class="container-fluid">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <span class="navbar-brand">PMS</span>
+                        <div class="d-flex align-items-center ms-auto">
+                            <div class="user-info">
+                                <i class="fas fa-user-nurse me-1"></i>${nurse.firstName} ${nurse.lastName}
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Success message if present -->
+                <c:if test="${not empty successMessage}">
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>${successMessage}
+                    </div>
+                </c:if>
+                
+                <!-- Error message if present -->
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
+                    </div>
+                </c:if>
+                
+                <!-- Welcome message -->
+                <div class="welcome-banner">
+                    <h2><i class="fas fa-user-nurse me-2"></i>Welcome, ${nurse.firstName} ${nurse.lastName}!</h2>
+                    <p>You are logged in as a nurse from ${nurse.healthCenter} health center.</p>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card stats-card h-100">
+                            <div class="card-body">
+                                <i class="fas fa-users stats-icon patients"></i>
+                                <h3>${patientCount}</h3>
+                                <h5>Total Patients</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stats-card h-100">
+                            <div class="card-body">
+                                <i class="fas fa-hospital-user stats-icon referrable"></i>
+                                <h3>${referrableCount}</h3>
+                                <h5>Referrable Cases</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stats-card h-100">
+                            <div class="card-body">
+                                <i class="fas fa-user-check stats-icon non-referrable"></i>
+                                <h3>${nonReferrableCount}</h3>
+                                <h5>Non-Referrable Cases</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient List -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>
+                                <c:choose>
+                                    <c:when test="${pageContext.request.servletPath == '/nurse/patients'}">
+                                        All Patients in System
+                                    </c:when>
+                                    <c:otherwise>
+                                        Patients You've Registered
+                                    </c:otherwise>
+                                </c:choose>
+                            </h5>
+                            <a href="${pageContext.request.contextPath}/nurse/patient-registration" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus me-1"></i>Register New Patient
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
                         <c:choose>
-                            <c:when test="${pageContext.request.servletPath == '/nurse/patients'}">
-                                All Patients in System
+                            <c:when test="${empty registeredPatients}">
+                                <p class="text-center text-muted">No patients registered yet</p>
+                                <!-- Debug information (will be removed in production) -->
+                                <p class="text-center text-muted small">Debug: Empty patients list</p>
                             </c:when>
                             <c:otherwise>
-                                Patients You've Registered
+                                <!-- Debug information (will be removed in production) -->
+                                <p class="text-center text-muted small">Debug: Found ${registeredPatients.size()} patients</p>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Photo</th>
+                                                <th>ID</th>
+                                                <th>Patient Name</th>
+                                                <th>Gender</th>
+                                                <th>Contact</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${registeredPatients}" var="patient" varStatus="loop">
+                                                <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${not empty patient.profileImage}">
+                                                                <img src="${pageContext.request.contextPath}/${patient.profileImage}" class="patient-image" alt="Patient Photo">
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <img src="${pageContext.request.contextPath}/images/default-avatar.png" class="patient-image" alt="Default Photo">
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>${patient.patientID}</td>
+                                                    <td>${patient.firstName} ${patient.lastName}</td>
+                                                    <td>${patient.gender}</td>
+                                                    <td>${patient.contactNumber}</td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${patient.isReferrable()}">
+                                                                <span class="badge bg-danger">Referrable</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge bg-success">Non-Referrable</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                        <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
+                                                            <span class="badge bg-primary">Registered by you</span>
+                                                        </c:if>
+                                                    </td>
+                                                    <td>
+                                                        <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-edit"></i> Edit
+                                                        </a>
+                                                        <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </a>
+                                                        <a href="${pageContext.request.contextPath}/nurse/create-diagnosis?patientId=${patient.patientID}" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-stethoscope"></i> Diagnose
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <c:if test="${patientCount > 10}">
+                                    <div class="text-center mt-3">
+                                        <a href="${pageContext.request.contextPath}/nurse/patients" class="btn btn-outline-primary">
+                                            View All Patients
+                                        </a>
+                                    </div>
+                                </c:if>
                             </c:otherwise>
                         </c:choose>
-                    </h5>
-                    <a href="${pageContext.request.contextPath}/nurse/patient-registration" class="btn btn-light btn-sm">
-                        <i class="fas fa-plus me-1"></i>Register New Patient
-                    </a>
+                    </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <c:choose>
-                    <c:when test="${empty registeredPatients}">
-                        <p class="text-center text-muted">No patients registered yet</p>
-                        <!-- Debug information (will be removed in production) -->
-                        <p class="text-center text-muted small">Debug: Empty patients list</p>
-                    </c:when>
-                    <c:otherwise>
-                        <!-- Debug information (will be removed in production) -->
-                        <p class="text-center text-muted small">Debug: Found ${registeredPatients.size()} patients</p>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Photo</th>
-                                        <th>ID</th>
-                                        <th>Patient Name</th>
-                                        <th>Gender</th>
-                                        <th>Contact</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach items="${registeredPatients}" var="patient" varStatus="loop">
-                                        <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${not empty patient.profileImage}">
-                                                        <img src="${pageContext.request.contextPath}/${patient.profileImage}" class="patient-image" alt="Patient Photo">
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <img src="${pageContext.request.contextPath}/images/default-avatar.png" class="patient-image" alt="Default Photo">
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td>${patient.patientID}</td>
-                                            <td>${patient.firstName} ${patient.lastName}</td>
-                                            <td>${patient.gender}</td>
-                                            <td>${patient.contactNumber}</td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${patient.isReferrable()}">
-                                                        <span class="badge bg-danger">Referrable</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="badge bg-success">Non-Referrable</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                                <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
-                                                    <span class="badge bg-primary">Registered by you</span>
-                                                </c:if>
-                                            </td>
-                                            <td>
-                                                <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/nurse/create-diagnosis?patientId=${patient.patientID}" class="btn btn-sm btn-success">
-                                                    <i class="fas fa-stethoscope"></i> Diagnose
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </div>
-                        <c:if test="${patientCount > 10}">
-                            <div class="text-center mt-3">
-                                <a href="${pageContext.request.contextPath}/nurse/patients" class="btn btn-outline-primary">
-                                    View All Patients
-                                </a>
-                            </div>
-                        </c:if>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+            </main>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">&copy; 2025 Patient Management System | Nurse Dashboard</p>
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
