@@ -1,3 +1,6 @@
+-- Use the pms database
+USE pms;
+
 -- First, delete existing admin user if exists
 DELETE FROM Users WHERE Username = 'admin';
 

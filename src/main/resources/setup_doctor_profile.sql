@@ -1,3 +1,6 @@
+-- Use the pms database
+USE pms;
+
 -- Check if the hospitals table has any entries
 SELECT COUNT(*) FROM hospitals;
 

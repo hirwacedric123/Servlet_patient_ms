@@ -1,3 +1,7 @@
+-- Create database
+CREATE DATABASE IF NOT EXISTS pms;
+USE pms;
+
 -- Create Doctors table
 CREATE TABLE IF NOT EXISTS Doctors (
     DoctorID INT PRIMARY KEY AUTO_INCREMENT,

@@ -20,7 +20,8 @@ If you don't have MySQL installed:
 - When prompted, enter your MySQL root password
 - Run the following command to create the database:
   ```
-  CREATE DATABASE IF NOT EXISTS PMS;
+  CREATE DATABASE IF NOT EXISTS pms;
+  USE pms;
   ```
 - Exit the MySQL command line:
   ```

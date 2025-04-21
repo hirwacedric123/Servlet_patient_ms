@@ -7,8 +7,8 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS hospitals;
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS PMS;
-USE PMS;
+CREATE DATABASE IF NOT EXISTS pms;
+USE pms;
 
 -- Users table - consolidated table for all user types
 CREATE TABLE IF NOT EXISTS Users (
