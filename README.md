@@ -1,29 +1,69 @@
 # Patient Management System
 
-## Overview
-The Patient Management System is a Java web application built using Servlet/JSP technology. It provides functionality for managing patients, doctors, nurses, and diagnoses in a healthcare setting.
+## Project Overview
+The Patient Management System is a web-based application developed using Java Servlets and JSP. It provides functionality for managing patients, doctors, nurses, and diagnoses in a healthcare setting. The system follows the Model-View-Controller (MVC) architecture and is designed to be responsive across different devices.
 
-## Features
-- User authentication and role-based access control
+## Key Features
+
+### User Management
+- Role-based authentication (Admin, Doctor, Nurse, Patient)
+- Secure login and session management
+- User profile management
+
+### Patient Features
 - Patient registration and profile management
-- Doctor and nurse dashboards
-- Diagnosis creation and management
-- Responsive design for various device sizes
+- View medical diagnoses and history
+- Track diagnosis status (Referrable, Not Referrable, Pending)
+
+### Healthcare Provider Features
+- Doctors can view and manage assigned patients
+- Nurses can create initial diagnoses and refer patients to doctors
+- Medical staff can update patient records
+
+### Administrative Features
+- User account management
+- System monitoring and configuration
 
 ## Technology Stack
-- **Backend**: Java Servlets, JSP
-- **Frontend**: HTML, CSS, Bootstrap, JavaScript
-- **Database**: MySQL
+- **Backend**: Java Servlets, JSP (JavaServer Pages)
+- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript
+- **Database**: MySQL 8.0
 - **Build Tool**: Maven
-- **Server**: Apache Tomcat
+- **Application Server**: Apache Tomcat 9.x
+- **Authentication**: Password hashing with jBCrypt
+- **File Uploads**: Apache Commons FileUpload
+
+## Project Structure
+- `src/main/java/com/pms/controller/` - Servlet controllers
+- `src/main/java/com/pms/model/` - Data models
+- `src/main/java/com/pms/dao/` - Data Access Objects
+- `src/main/java/com/pms/util/` - Utility classes
+- `src/main/webapp/WEB-INF/views/` - JSP views
+- `src/main/webapp/css/` - Stylesheets
+- `src/main/webapp/images/` - Image resources
 
 ## Getting Started
-See the BUILD_INSTRUCTIONS.md file for detailed setup and deployment instructions.
+- For setup instructions, see [BUILD.md](BUILD.md)
+- For database configuration, see [DATABASE.md](DATABASE.md)
 
-## Database Setup
-Use the consolidated database script to create all required tables in one step:
-```
-mysql -u root -p < pms_database.sql
-```
+## Default Login Credentials
+After setup, you can use these default accounts:
 
-For detailed database setup instructions, see the DB_SETUP.md file.
+- **Admin**
+  - Username: `admin`
+  - Password: `admin123`
+
+- **Patient**
+  - Username: `cedric`
+  - Password: `cedric123`
+
+## Screenshots
+The application includes several key screens:
+- Login and Registration
+- Patient Dashboard
+- Doctor Dashboard
+- Patient Profile Management
+- Diagnosis Management
+
+## License
+This project is for educational purposes.
