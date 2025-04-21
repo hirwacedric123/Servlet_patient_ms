@@ -1,5 +1,9 @@
 -- Database schema for the Patient Management System
 
+-- Create database if not exists
+CREATE DATABASE IF NOT EXISTS pms;
+USE pms;
+
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,

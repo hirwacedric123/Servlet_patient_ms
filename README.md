@@ -21,4 +21,9 @@ The Patient Management System is a Java web application built using Servlet/JSP 
 See the BUILD_INSTRUCTIONS.md file for detailed setup and deployment instructions.
 
 ## Database Setup
-Run the database setup script to create the required schema and tables:
+Use the consolidated database script to create all required tables in one step:
+```
+mysql -u root -p < pms_database.sql
+```
+
+For detailed database setup instructions, see the DB_SETUP.md file.
