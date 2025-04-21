@@ -8,14 +8,56 @@
     <title>Nurse Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-            color: #495057;
+        .card-header {
+            background-color: #3498db;
+            color: white;
         }
-        
+        .welcome-banner {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stats-card {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .patients { color: #2ecc71; }
+        .referrable { color: #e74c3c; }
+        .non-referrable { color: #f39c12; }
+        .patient-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-warning {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .registered-by-you {
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
+        }
         /* Sidebar styles */
         .sidebar {
             position: fixed;
@@ -23,318 +65,38 @@
             bottom: 0;
             left: 0;
             z-index: 100;
-            padding: 0;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            background-color: #344a6c;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #3498db;
             width: 250px;
-            transition: all 0.3s ease-in-out;
         }
-        
-        .sidebar-header {
-            background-color: #293952;
-            padding: 20px 15px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
         .sidebar-link {
             display: block;
-            padding: 0.75rem 1.25rem;
-            color: rgba(255, 255, 255, 0.8);
+            padding: 0.5rem 1rem;
+            color: white;
             text-decoration: none;
             transition: all 0.3s;
-            border-left: 4px solid transparent;
-            font-weight: 500;
         }
-        
         .sidebar-link:hover {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
-            border-left-color: rgba(255, 255, 255, 0.5);
         }
-        
         .sidebar-link.active {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.2);
             color: white;
-            border-left-color: #4ca8ef;
         }
-        
-        .sidebar-link i {
-            width: 24px;
-            text-align: center;
-            margin-right: 8px;
-        }
-        
-        /* Content area */
         .content-area {
             margin-left: 250px;
-            padding: 25px;
-            min-height: 100vh;
-            transition: all 0.3s ease-in-out;
+            padding: 20px;
         }
-        
-        /* Cards */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            transition: all 0.3s;
-            margin-bottom: 24px;
-        }
-        
-        .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-            transform: translateY(-3px);
-        }
-        
-        .card-header {
-            background-color: #3498db;
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 15px 20px;
-            font-weight: 600;
-            border-bottom: none;
-        }
-        
-        /* Welcome banner */
-        .welcome-banner {
-            background: linear-gradient(135deg, #3498db, #2c3e50);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-        
-        .welcome-banner h2 {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        /* Stats cards */
-        .stats-card {
-            text-align: center;
-            padding: 5px;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-        
-        .stats-card .card-body {
-            padding: 25px 15px;
-        }
-        
-        .stats-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            background-color: rgba(0, 0, 0, 0.05);
-            width: 80px;
-            height: 80px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-        
-        .patients { 
-            color: #2ecc71; 
-        }
-        
-        .patients-card {
-            border-bottom: 4px solid #2ecc71;
-        }
-        
-        .referrable { 
-            color: #e74c3c; 
-        }
-        
-        .referrable-card {
-            border-bottom: 4px solid #e74c3c;
-        }
-        
-        .non-referrable { 
-            color: #f39c12; 
-        }
-        
-        .non-referrable-card {
-            border-bottom: 4px solid #f39c12;
-        }
-        
-        .stats-card h3 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stats-card h5 {
-            color: #6c757d;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        /* Patient images */
-        .patient-image {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #fff;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        
-        /* Alerts */
-        .alert {
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        
-        .alert-success {
-            background-color: rgba(46, 204, 113, 0.1);
-            color: #1e7b34;
-            border-left: 4px solid #2ecc71;
-        }
-        
-        .alert-warning {
-            background-color: rgba(231, 76, 60, 0.1);
-            color: #a82315;
-            border-left: 4px solid #e74c3c;
-        }
-        
-        /* Tables */
-        .table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            padding: 12px 15px;
-            border-top: none;
-            border-bottom: 2px solid #e9ecef;
-        }
-        
-        .table td {
-            padding: 15px;
-            vertical-align: middle;
-        }
-        
-        /* Patient row styles */
-        .registered-by-you {
-            background-color: rgba(52, 152, 219, 0.05);
-            border-left: 4px solid #3498db;
-        }
-        
-        /* Badges */
-        .badge {
-            padding: 6px 10px;
-            font-weight: 500;
-            border-radius: 6px;
-        }
-        
-        /* Buttons */
-        .btn {
-            border-radius: 5px;
-            padding: 8px 16px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.82rem;
-        }
-        
-        .btn-primary {
-            background-color: #3498db;
-            border-color: #3498db;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-        }
-        
-        .btn-success {
-            background-color: #2ecc71;
-            border-color: #2ecc71;
-        }
-        
-        .btn-success:hover {
-            background-color: #27ae60;
-            border-color: #27ae60;
-        }
-        
-        .btn-info {
-            background-color: #3498db;
-            border-color: #3498db;
-            color: white;
-        }
-        
-        .btn-info:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-            color: white;
-        }
-        
-        .btn-light {
-            background-color: #f8f9fa;
-            border-color: #e9ecef;
-            color: #495057;
-        }
-        
-        .btn-light:hover {
-            background-color: #e9ecef;
-            border-color: #dee2e6;
-            color: #212529;
-        }
-        
-        .btn-outline-primary {
-            color: #3498db;
-            border-color: #3498db;
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: #3498db;
-            border-color: #3498db;
-        }
-        
-        /* Mobile styles */
         @media (max-width: 767.98px) {
             .sidebar {
                 position: static;
+                padding-top: 0;
                 width: 100%;
-                margin-bottom: 20px;
             }
-            
             .content-area {
                 margin-left: 0;
-                padding: 15px;
-            }
-            
-            .welcome-banner {
-                padding: 15px;
-            }
-            
-            .welcome-banner h2 {
-                font-size: 1.5rem;
-            }
-            
-            .stats-card h3 {
-                font-size: 1.8rem;
-            }
-            
-            .stats-icon {
-                font-size: 2.2rem;
-                width: 60px;
-                height: 60px;
             }
         }
     </style>
@@ -344,30 +106,30 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="sidebar-header">
-                    <i class="fas fa-hospital text-light fa-3x mb-3"></i>
-                    <h5 class="text-light m-0">Patient Management System</h5>
-                </div>
                 <div class="position-sticky">
-                    <ul class="nav flex-column mt-3">
+                    <div class="text-center mb-4 mt-3">
+                        <i class="fas fa-hospital text-light fa-3x mb-3"></i>
+                        <h5 class="text-light">Patient Management System</h5>
+                    </div>
+                    <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="sidebar-link active" href="${pageContext.request.contextPath}/nurse/dashboard">
-                                <i class="fas fa-tachometer-alt"></i>Dashboard
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
-                                <i class="fas fa-user-plus"></i>Register Patient
+                                <i class="fas fa-user-plus me-2"></i>Register Patient
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patients">
-                                <i class="fas fa-procedures"></i>My Patients
+                                <i class="fas fa-procedures me-2"></i>My Patients
                             </a>
                         </li>
-                        <li class="nav-item mt-4">
+                        <li class="nav-item">
                             <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
-                                <i class="fas fa-sign-out-alt"></i>Logout
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
                             </a>
                         </li>
                     </ul>
@@ -408,39 +170,33 @@
                 <!-- Welcome message -->
                 <div class="welcome-banner">
                     <h2><i class="fas fa-user-nurse me-2"></i>Welcome, ${nurse.firstName} ${nurse.lastName}!</h2>
-                    <p class="mb-0">You are logged in as a nurse from ${nurse.healthCenter} health center.</p>
+                    <p>You are logged in as a nurse from ${nurse.healthCenter} health center.</p>
                 </div>
 
                 <!-- Statistics Cards -->
                 <div class="row mb-4">
                     <div class="col-md-4">
-                        <div class="card stats-card patients-card h-100">
+                        <div class="card stats-card h-100">
                             <div class="card-body">
-                                <div class="stats-icon patients">
-                                    <i class="fas fa-users"></i>
-                                </div>
+                                <i class="fas fa-users stats-icon patients"></i>
                                 <h3>${patientCount}</h3>
                                 <h5>Total Patients</h5>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card stats-card referrable-card h-100">
+                        <div class="card stats-card h-100">
                             <div class="card-body">
-                                <div class="stats-icon referrable">
-                                    <i class="fas fa-hospital-user"></i>
-                                </div>
+                                <i class="fas fa-hospital-user stats-icon referrable"></i>
                                 <h3>${referrableCount}</h3>
                                 <h5>Referrable Cases</h5>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card stats-card non-referrable-card h-100">
+                        <div class="card stats-card h-100">
                             <div class="card-body">
-                                <div class="stats-icon non-referrable">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
+                                <i class="fas fa-user-check stats-icon non-referrable"></i>
                                 <h3>${nonReferrableCount}</h3>
                                 <h5>Non-Referrable Cases</h5>
                             </div>
@@ -471,15 +227,16 @@
                     <div class="card-body">
                         <c:choose>
                             <c:when test="${empty registeredPatients}">
-                                <div class="text-center py-5">
-                                    <i class="fas fa-user-plus text-muted fa-4x mb-3"></i>
-                                    <p class="text-center text-muted h5">No patients registered yet</p>
-                                    <p class="text-center text-muted">Start by registering your first patient</p>
-                                </div>
+                                <p class="text-center text-muted">No patients registered yet</p>
+                                <!-- Debug information (will be removed in production) -->
+                                <p class="text-center text-muted small">Debug: Empty patients list</p>
                             </c:when>
                             <c:otherwise>
+                                <!-- Debug information (will be removed in production) -->
+                                <p class="text-center text-muted small">Debug: Found ${registeredPatients.size()} patients</p>
+                                
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-striped table-hover">
                                         <thead>
                                             <tr>
                                                 <th>Photo</th>
@@ -505,7 +262,7 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>${patient.patientID}</td>
-                                                    <td><strong>${patient.firstName} ${patient.lastName}</strong></td>
+                                                    <td>${patient.firstName} ${patient.lastName}</td>
                                                     <td>${patient.gender}</td>
                                                     <td>${patient.contactNumber}</td>
                                                     <td>
@@ -518,18 +275,18 @@
                                                             </c:otherwise>
                                                         </c:choose>
                                                         <c:if test="${patient.getCreatedBy() == nurse.getNurseID()}">
-                                                            <span class="badge bg-primary mt-1">Registered by you</span>
+                                                            <span class="badge bg-primary">Registered by you</span>
                                                         </c:if>
                                                     </td>
                                                     <td>
-                                                        <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary mb-1">
-                                                            <i class="fas fa-edit me-1"></i>Edit
+                                                        <a href="${pageContext.request.contextPath}/nurse/edit-patient?id=${patient.patientID}" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-edit"></i> Edit
                                                         </a>
-                                                        <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info mb-1">
-                                                            <i class="fas fa-eye me-1"></i>View
+                                                        <a href="${pageContext.request.contextPath}/nurse/view-patient?id=${patient.patientID}" class="btn btn-sm btn-info">
+                                                            <i class="fas fa-eye"></i> View
                                                         </a>
-                                                        <a href="${pageContext.request.contextPath}/nurse/create-diagnosis?patientId=${patient.patientID}" class="btn btn-sm btn-success mb-1">
-                                                            <i class="fas fa-stethoscope me-1"></i>Diagnose
+                                                        <a href="${pageContext.request.contextPath}/nurse/create-diagnosis?patientId=${patient.patientID}" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-stethoscope"></i> Diagnose
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -538,9 +295,9 @@
                                     </table>
                                 </div>
                                 <c:if test="${patientCount > 10}">
-                                    <div class="text-center mt-4">
+                                    <div class="text-center mt-3">
                                         <a href="${pageContext.request.contextPath}/nurse/patients" class="btn btn-outline-primary">
-                                            <i class="fas fa-list me-1"></i>View All Patients
+                                            View All Patients
                                         </a>
                                     </div>
                                 </c:if>
