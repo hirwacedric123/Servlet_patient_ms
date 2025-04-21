@@ -536,12 +536,6 @@
                             <span>Register Patient</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patients">
-                            <i class="fas fa-procedures"></i>
-                            <span>My Patients</span>
-                        </a>
-                    </li>
                     <li class="nav-item mt-3">
                         <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
                             <i class="fas fa-sign-out-alt"></i>

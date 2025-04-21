@@ -169,11 +169,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="sidebar-link" href="${pageContext.request.contextPath}/patient/diagnoses">
-                                <i class="fas fa-stethoscope me-2"></i>My Diagnoses
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="sidebar-link" href="${pageContext.request.contextPath}/patient/profile">
                                 <i class="fas fa-user-circle me-2"></i>My Profile
                             </a>
