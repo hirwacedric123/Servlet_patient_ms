@@ -118,9 +118,6 @@
                     <li class="nav-item">
                         <a class="nav-link btn btn-light text-primary" href="login">Login</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="register">Register</a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -133,7 +130,6 @@
                     <h1 class="landing-title">Patient Management System</h1>
                     <p class="landing-subtitle">A comprehensive solution for healthcare providers to manage patient records, appointments, and treatments efficiently and securely.</p>
                     <a href="login" class="btn btn-light btn-login">Log In</a>
-                    <a href="register" class="btn btn-outline-light btn-login">Register</a>
                 </div>
                 <div class="col-lg-5">
                     <!-- Placeholder for a future image -->
