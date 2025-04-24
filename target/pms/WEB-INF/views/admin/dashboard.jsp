@@ -424,7 +424,7 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
+            <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="text-center">
@@ -432,54 +432,54 @@
                 <h5 class="text-light fw-bold">Patient Management</h5>
                 <p class="text-muted small mb-0">Admin Dashboard</p>
             </div>
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" href="${pageContext.request.contextPath}/admin/dashboard">
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="${pageContext.request.contextPath}/admin/dashboard">
                     <i class="fas fa-tachometer-alt"></i>Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/doctors">
                     <i class="fas fa-user-md"></i>Manage Doctors
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/nurses">
                     <i class="fas fa-user-nurse"></i>Manage Nurses
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/patients">
                     <i class="fas fa-procedures"></i>Manage Patients
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/appointments">
                     <i class="fas fa-calendar-check"></i>Appointments
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/departments">
                     <i class="fas fa-hospital"></i>Departments
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/users">
                     <i class="fas fa-users-cog"></i>User Management
-                </a>
-            </li>
-            <li class="nav-item">
+                            </a>
+                        </li>
+                        <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/profile">
                     <i class="fas fa-user-circle"></i>Profile
-                </a>
-            </li>
+                            </a>
+                        </li>
             <li class="nav-item mt-3">
                 <a class="nav-link" href="${pageContext.request.contextPath}/logout">
                     <i class="fas fa-sign-out-alt"></i>Logout
-                </a>
-            </li>
-        </ul>
+                            </a>
+                        </li>
+                    </ul>
     </div>
 
     <!-- Main content -->
@@ -501,12 +501,12 @@
                     <div class="fw-bold">${user.username}</div>
                     <div class="text-muted small">Administrator</div>
                 </div>
+                </div>
             </div>
-        </div>
-        
-        <!-- Welcome Banner -->
-        <div class="welcome-banner">
-            <h2><i class="fas fa-user-shield me-2"></i>Welcome, ${user.username}!</h2>
+
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+                    <h2><i class="fas fa-user-shield me-2"></i>Welcome, ${user.username}!</h2>
             <p>Manage your hospital's operations from one central dashboard. Monitor statistics, track staff and patients, and access all administrative functions.</p>
         </div>
 
@@ -528,15 +528,15 @@
                 <i class="fas fa-chart-bar"></i>
                 <h6>Reports</h6>
             </a>
-        </div>
+                </div>
 
-        <!-- Statistics Cards -->
-        <div class="row g-4 mb-4">
-            <div class="col-12 col-sm-6 col-xl-3">
+                <!-- Statistics Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
                 <div class="stats-card">
                     <div class="stats-icon bg-gradient-primary text-white">
                         <i class="fas fa-user-md"></i>
-                    </div>
+                                    </div>
                     <h6 class="card-title">TOTAL DOCTORS</h6>
                     <div class="stats-number">${doctorCount}</div>
                     <div class="d-flex align-items-center">
@@ -544,14 +544,14 @@
                             <i class="fas fa-arrow-up"></i> 12%
                         </span>
                         <span class="text-muted small">Since last month</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-12 col-sm-6 col-xl-3">
                 <div class="stats-card">
                     <div class="stats-icon bg-gradient-success text-white">
                         <i class="fas fa-user-nurse"></i>
-                    </div>
+                                    </div>
                     <h6 class="card-title">TOTAL NURSES</h6>
                     <div class="stats-number">${nurseCount}</div>
                     <div class="d-flex align-items-center">
@@ -559,14 +559,14 @@
                             <i class="fas fa-arrow-up"></i> 8%
                         </span>
                         <span class="text-muted small">Since last month</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-12 col-sm-6 col-xl-3">
                 <div class="stats-card">
                     <div class="stats-icon bg-gradient-info text-white">
                         <i class="fas fa-procedures"></i>
-                    </div>
+                                    </div>
                     <h6 class="card-title">TOTAL PATIENTS</h6>
                     <div class="stats-number">${patientCount}</div>
                     <div class="d-flex align-items-center">
@@ -574,14 +574,14 @@
                             <i class="fas fa-arrow-up"></i> 16%
                         </span>
                         <span class="text-muted small">Since last month</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-12 col-sm-6 col-xl-3">
                 <div class="stats-card">
                     <div class="stats-icon bg-gradient-warning text-white">
                         <i class="fas fa-users"></i>
-                    </div>
+                                    </div>
                     <h6 class="card-title">TOTAL USERS</h6>
                     <div class="stats-number">${userCount}</div>
                     <div class="d-flex align-items-center">
@@ -589,34 +589,34 @@
                             <i class="fas fa-arrow-up"></i> 5%
                         </span>
                         <span class="text-muted small">Since last month</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Recent Activity Tables -->
-        <div class="row">
-            <!-- Recent Doctors -->
-            <div class="col-12 col-lg-6 mb-4">
-                <div class="table-container">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                <!-- Recent Activity Tables -->
+                <div class="row">
+                    <!-- Recent Doctors -->
+                    <div class="col-12 col-lg-6 mb-4">
+                        <div class="table-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5>Recent Doctors</h5>
                         <a href="${pageContext.request.contextPath}/admin/doctors" class="btn btn-sm btn-primary">
                             <i class="fas fa-arrow-right me-1"></i> View All
                         </a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Specialization</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach items="${doctors}" var="doctor" end="4">
-                                    <tr>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Specialization</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${doctors}" var="doctor" end="4">
+                                            <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-light rounded-circle p-2 me-2">
@@ -625,39 +625,39 @@
                                                 ${doctor.name}
                                             </div>
                                         </td>
-                                        <td>${doctor.specialization}</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                                                <td>${doctor.specialization}</td>
+                                                <td>
+                                                    <span class="badge bg-success">Active</span>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Recent Nurses -->
-            <div class="col-12 col-lg-6 mb-4">
-                <div class="table-container">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <!-- Recent Nurses -->
+                    <div class="col-12 col-lg-6 mb-4">
+                        <div class="table-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5>Recent Nurses</h5>
                         <a href="${pageContext.request.contextPath}/admin/nurses" class="btn btn-sm btn-primary">
                             <i class="fas fa-arrow-right me-1"></i> View All
                         </a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Department</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach items="${nurses}" var="nurse" end="4">
-                                    <tr>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Department</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${nurses}" var="nurse" end="4">
+                                            <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-light rounded-circle p-2 me-2">
@@ -666,18 +666,18 @@
                                                 ${nurse.name}
                                             </div>
                                         </td>
-                                        <td>${nurse.department}</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                                                <td>${nurse.department}</td>
+                                                <td>
+                                                    <span class="badge bg-success">Active</span>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
         
         <!-- System Status -->
         <div class="system-status">
