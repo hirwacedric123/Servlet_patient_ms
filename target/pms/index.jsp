@@ -258,17 +258,19 @@
             z-index: 1;
         }
         
-        /* Fallback image if local image doesn't load */
+        /* Use a direct SVG-based div instead of background image */
         .hero-image-fallback {
             width: 100%;
             height: 400px;
+            padding: 20px;
             border-radius: 20px;
-            background-image: url('https://img.freepik.com/free-photo/middle-aged-cheerful-dark-skinned-doctor-with-folder_171337-10435.jpg');
-            background-size: cover;
-            background-position: center;
+            background-color: white;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             transform: perspective(1000px) rotateY(-5deg);
             animation: float 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         @keyframes float {
@@ -392,8 +394,32 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="image-container animate__animated animate__zoomIn animate__delay-1s">
-                        <!-- Use the fallback image directly instead of trying to load the local image -->
-                        <div class="hero-image-fallback"></div>
+                        <div class="hero-image-fallback">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="90%" height="90%" viewBox="0 0 800 600">
+                                <!-- Healthcare icon set -->
+                                <g fill="#3498db">
+                                    <!-- Stethoscope -->
+                                    <path d="M350,150 C310,150 280,180 280,220 L280,350 C280,390 250,420 210,420 C170,420 140,390 140,350 C140,310 170,280 210,280 L210,220 C150,220 80,290 80,350 C80,410 150,480 210,480 C270,480 340,410 340,350 L340,220 C340,200 360,180 380,180 L380,150 Z" />
+                                    <circle cx="380" cy="130" r="30" />
+                                    
+                                    <!-- Pills -->
+                                    <ellipse cx="500" cy="200" rx="70" ry="40" transform="rotate(-30 500 200)" fill="#e74c3c" />
+                                    <ellipse cx="470" cy="200" rx="70" ry="40" transform="rotate(30 470 200)" fill="#3498db" />
+                                    
+                                    <!-- Medical cross -->
+                                    <rect x="550" y="350" width="120" height="30" fill="#2ecc71" />
+                                    <rect x="595" y="305" width="30" height="120" fill="#2ecc71" />
+                                    
+                                    <!-- Heart rate -->
+                                    <polyline points="100,530 150,530 170,480 200,580 230,500 260,530 400,530" fill="none" stroke="#e74c3c" stroke-width="6" />
+                                    
+                                    <!-- Microscope simplified -->
+                                    <rect x="450" y="450" width="40" height="100" />
+                                    <circle cx="470" cy="430" r="30" />
+                                    <rect x="450" y="550" width="100" height="20" />
+                                </g>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
