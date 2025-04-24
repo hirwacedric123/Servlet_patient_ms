@@ -21,6 +21,8 @@
         
         body {
             overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
         }
         
         .landing-banner {
@@ -256,6 +258,19 @@
             z-index: 1;
         }
         
+        /* Fallback image if local image doesn't load */
+        .hero-image-fallback {
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
+            background-image: url('https://img.freepik.com/free-photo/stethoscope-copy-space_23-2147827734.jpg');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: perspective(1000px) rotateY(-5deg);
+            animation: float 6s ease-in-out infinite;
+        }
+        
         @keyframes float {
             0% {
                 transform: translateY(0px) perspective(1000px) rotateY(-5deg);
@@ -339,20 +354,6 @@
         .feature-row {
             margin-bottom: 40px;
         }
-        
-        /* Fix for doctor image in case of any loading issues */
-        .hero-image-fallback {
-            background-image: url('https://img.freepik.com/free-photo/african-american-medical-doctor-man-with-mask-isolated-gradient-blue-background-neon-light_155003-46218.jpg');
-            background-size: cover;
-            background-position: center;
-            width: 100%;
-            height: 400px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            transform: perspective(1000px) rotateY(-5deg);
-            transition: all 0.6s ease;
-            animation: float 6s ease-in-out infinite;
-        }
     </style>
 </head>
 <body>
@@ -391,7 +392,8 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="image-container animate__animated animate__zoomIn animate__delay-1s">
-                        <img src="images/patients.png" onerror="this.style.display='none'; this.parentNode.classList.add('hero-image-fallback');" alt="Healthcare Dashboard" class="hero-image">
+                        <!-- Use the fallback image directly instead of trying to load the local image -->
+                        <div class="hero-image-fallback"></div>
                     </div>
                 </div>
             </div>
@@ -507,34 +509,6 @@
         window.addEventListener('load', animateOnScroll);
         // Check for elements on scroll
         window.addEventListener('scroll', animateOnScroll);
-        
-        // Debug image loading issue
-        window.addEventListener('load', function() {
-            console.log('Page loaded');
-            const heroImage = document.querySelector('.hero-image');
-            if (heroImage) {
-                console.log('Image path:', heroImage.src);
-                
-                // Check if image loaded correctly
-                if (heroImage.complete) {
-                    if (heroImage.naturalHeight === 0) {
-                        console.error('Image failed to load');
-                    } else {
-                        console.log('Image loaded successfully');
-                    }
-                } else {
-                    heroImage.addEventListener('error', function() {
-                        console.error('Image failed to load');
-                    });
-                    
-                    heroImage.addEventListener('load', function() {
-                        console.log('Image loaded successfully');
-                    });
-                }
-            } else {
-                console.error('Hero image element not found');
-            }
-        });
     </script>
 </body>
 </html> 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Management System</title>
+    <base href="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -20,6 +21,8 @@
         
         body {
             overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
         }
         
         .landing-banner {
@@ -255,6 +258,19 @@
             z-index: 1;
         }
         
+        /* Fallback image if local image doesn't load */
+        .hero-image-fallback {
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
+            background-image: url('https://img.freepik.com/free-photo/middle-aged-cheerful-dark-skinned-doctor-with-folder_171337-10435.jpg');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: perspective(1000px) rotateY(-5deg);
+            animation: float 6s ease-in-out infinite;
+        }
+        
         @keyframes float {
             0% {
                 transform: translateY(0px) perspective(1000px) rotateY(-5deg);
@@ -376,7 +392,8 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="image-container animate__animated animate__zoomIn animate__delay-1s">
-                        <img src="${pageContext.request.contextPath}/images/patients.png" alt="Healthcare Dashboard" class="hero-image">
+                        <!-- Use the fallback image directly instead of trying to load the local image -->
+                        <div class="hero-image-fallback"></div>
                     </div>
                 </div>
             </div>
@@ -492,34 +509,6 @@
         window.addEventListener('load', animateOnScroll);
         // Check for elements on scroll
         window.addEventListener('scroll', animateOnScroll);
-        
-        // Debug image loading issue
-        window.addEventListener('load', function() {
-            console.log('Page loaded');
-            const heroImage = document.querySelector('.hero-image');
-            if (heroImage) {
-                console.log('Image path:', heroImage.src);
-                
-                // Check if image loaded correctly
-                if (heroImage.complete) {
-                    if (heroImage.naturalHeight === 0) {
-                        console.error('Image failed to load');
-                    } else {
-                        console.log('Image loaded successfully');
-                    }
-                } else {
-                    heroImage.addEventListener('error', function() {
-                        console.error('Image failed to load');
-                    });
-                    
-                    heroImage.addEventListener('load', function() {
-                        console.log('Image loaded successfully');
-                    });
-                }
-            } else {
-                console.error('Hero image element not found');
-            }
-        });
     </script>
 </body>
 </html> 
