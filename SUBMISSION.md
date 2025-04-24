@@ -15,13 +15,13 @@
 | Name                     | Registration Number |
 |--------------------------|---------------------|
 | Senzele Benjamine        | 223008225           |
-| KEZA UWINEZA Keren       | XXXXX               |
-| RUYANGA Merci            | XXXXX               |
+| KEZA UWINEZA Keren       | 223019964           |
+| RUYANGA Merci            | 223007985           |
 | HIRWA Cyuzuzo Cedric     | 223013417           |
 | UWAMAHORO Jean Chretien  | 223013313           |
 | BYIRINGIRO Olivier       | 223008225           |
 | MUKAMFIZI Gisele         | 223017533           |
-| NAMBAJIMANA Patrick      | XXXXXXXX            |
+| NAMBAJIMANA Patrick      | 223005073           |
 
 
 
