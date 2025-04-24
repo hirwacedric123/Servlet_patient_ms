@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Management System</title>
+    <base href="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -333,6 +334,25 @@
                 transform: scale(1);
             }
         }
+        
+        /* Fix for feature rows spacing */
+        .feature-row {
+            margin-bottom: 40px;
+        }
+        
+        /* Fix for doctor image in case of any loading issues */
+        .hero-image-fallback {
+            background-image: url('https://img.freepik.com/free-photo/african-american-medical-doctor-man-with-mask-isolated-gradient-blue-background-neon-light_155003-46218.jpg');
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: perspective(1000px) rotateY(-5deg);
+            transition: all 0.6s ease;
+            animation: float 6s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -371,7 +391,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="image-container animate__animated animate__zoomIn animate__delay-1s">
-                        <img src="images/patients.png" alt="Healthcare Dashboard" class="hero-image">
+                        <img src="images/patients.png" onerror="this.style.display='none'; this.parentNode.classList.add('hero-image-fallback');" alt="Healthcare Dashboard" class="hero-image">
                     </div>
                 </div>
             </div>
@@ -381,7 +401,7 @@
     <section class="features-section" id="features">
         <div class="container">
             <h2 class="section-title animate-on-scroll">Key Features</h2>
-            <div class="row">
+            <div class="row feature-row">
                 <div class="col-md-4">
                     <div class="feature-card animate-on-scroll delay-1">
                         <div class="feature-icon">
@@ -409,6 +429,8 @@
                         <p>Streamline appointment booking, rescheduling, and cancellations with an intuitive calendar interface.</p>
                     </div>
                 </div>
+            </div>
+            <div class="row feature-row">
                 <div class="col-md-4">
                     <div class="feature-card animate-on-scroll delay-1">
                         <div class="feature-icon">
@@ -442,7 +464,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2023 Patient Management System. All rights reserved.</p>
+            <p>&copy; 2025 Patient Management System. All rights reserved.</p>
         </div>
     </footer>
 
@@ -485,6 +507,34 @@
         window.addEventListener('load', animateOnScroll);
         // Check for elements on scroll
         window.addEventListener('scroll', animateOnScroll);
+        
+        // Debug image loading issue
+        window.addEventListener('load', function() {
+            console.log('Page loaded');
+            const heroImage = document.querySelector('.hero-image');
+            if (heroImage) {
+                console.log('Image path:', heroImage.src);
+                
+                // Check if image loaded correctly
+                if (heroImage.complete) {
+                    if (heroImage.naturalHeight === 0) {
+                        console.error('Image failed to load');
+                    } else {
+                        console.log('Image loaded successfully');
+                    }
+                } else {
+                    heroImage.addEventListener('error', function() {
+                        console.error('Image failed to load');
+                    });
+                    
+                    heroImage.addEventListener('load', function() {
+                        console.log('Image loaded successfully');
+                    });
+                }
+            } else {
+                console.error('Hero image element not found');
+            }
+        });
     </script>
 </body>
 </html> 
