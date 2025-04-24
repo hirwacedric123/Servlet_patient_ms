@@ -341,6 +341,54 @@
                 transform: none;
             }
         }
+        
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .form-container .card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-container .card-header {
+            padding: 1.5rem;
+        }
+        
+        .form-container .card-body {
+            padding: 2rem;
+        }
+        
+        /* Enhance input fields at smaller width */
+        .form-container .form-control,
+        .form-container .form-select {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-container .form-label {
+            font-size: 0.95rem;
+        }
+        
+        .form-container .form-text {
+            margin-top: 0.4rem;
+        }
+        
+        .form-container .section-title {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Responsive adjustments for form container */
+        @media (max-width: 991.98px) {
+            .form-container {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -415,145 +463,149 @@
                     </div>
                 </c:if>
                 
-                <!-- Registration Form Card -->
-                <div class="card mb-5">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register New Patient</h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="${pageContext.request.contextPath}/nurse/patient-registration" method="post" enctype="multipart/form-data">
-                            <h5 class="section-title"><i class="fas fa-id-card me-2"></i>Personal Information</h5>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="gender" name="gender" required>
-                                        <option value="" selected disabled>Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                    <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="contactNumber" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                                    <input type="tel" class="form-control" id="contactNumber" name="contactNumber" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email">
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="emergencyContact" class="form-label">Emergency Contact</label>
-                                    <input type="tel" class="form-control" id="emergencyContact" name="emergencyContact">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="bloodGroup" class="form-label">Blood Group</label>
-                                    <select class="form-select" id="bloodGroup" name="bloodGroup">
-                                        <option value="" selected disabled>Select Blood Group</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A-">A-</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B-">B-</option>
-                                        <option value="AB+">AB+</option>
-                                        <option value="AB-">AB-</option>
-                                        <option value="O+">O+</option>
-                                        <option value="O-">O-</option>
-                                        <option value="Unknown">Unknown</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="address" class="form-label">Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="3"></textarea>
-                            </div>
-                            
-                            <h5 class="section-title"><i class="fas fa-user-lock me-2"></i>Account Information</h5>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
-                                    <div class="form-text">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Choose a unique username that the patient can remember easily.
+                <!-- Form Container - Added to constrain width -->
+                <div class="form-container mx-auto">
+                    <!-- Registration Form Card -->
+                    <div class="card mb-5">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-user-plus fa-lg me-3"></i>
+                            <h5 class="mb-0">Register New Patient</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="${pageContext.request.contextPath}/nurse/patient-registration" method="post" enctype="multipart/form-data">
+                                <h5 class="section-title"><i class="fas fa-id-card me-2"></i>Personal Information</h5>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" required>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="initialPassword" class="form-label">Initial Password <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="initialPassword" name="initialPassword" 
-                                           value="Patient123" required>
-                                    <div class="form-text">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Patient can change this password after first login.
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="gender" name="gender" required>
+                                            <option value="" selected disabled>Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <h5 class="section-title"><i class="fas fa-notes-medical me-2"></i>Medical Information</h5>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="diagnoStatus" class="form-label">Diagnosis Status <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="diagnoStatus" name="diagnoStatus" required>
-                                        <option value="" selected disabled>Select Diagnosis Status</option>
-                                        <option value="Normal">Normal</option>
-                                        <option value="Critical">Critical</option>
-                                        <option value="Serious">Serious</option>
-                                        <option value="Observation">Under Observation</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="patientImage" class="form-label">Patient Image</label>
-                                    <input type="file" class="form-control" id="patientImage" name="patientImage" accept="image/*">
-                                    <div class="form-text">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Upload a photo of the patient (optional).
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="contactNumber" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email">
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="symptoms" class="form-label">Symptoms</label>
-                                <textarea class="form-control" id="symptoms" name="symptoms" rows="3"></textarea>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 text-center">
-                                    <div id="imagePreviewContainer" class="mt-2 mb-3"></div>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                                        <input type="tel" class="form-control" id="emergencyContact" name="emergencyContact">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bloodGroup" class="form-label">Blood Group</label>
+                                        <select class="form-select" id="bloodGroup" name="bloodGroup">
+                                            <option value="" selected disabled>Select Blood Group</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="Unknown">Unknown</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="window.history.back();">
-                                    <i class="fas fa-arrow-left me-2"></i>Cancel
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>Register Patient
-                                </button>
-                            </div>
-                        </form>
+                                
+                                <div class="mb-4">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                                </div>
+                                
+                                <h5 class="section-title"><i class="fas fa-user-lock me-2"></i>Account Information</h5>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="username" name="username" required>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Auto-generated from name
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="initialPassword" class="form-label">Initial Password <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="initialPassword" name="initialPassword" 
+                                               value="Patient123" required>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Can be changed after login
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="section-title"><i class="fas fa-notes-medical me-2"></i>Medical Information</h5>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="diagnoStatus" class="form-label">Diagnosis Status <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="diagnoStatus" name="diagnoStatus" required>
+                                            <option value="" selected disabled>Select Diagnosis Status</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Critical">Critical</option>
+                                            <option value="Serious">Serious</option>
+                                            <option value="Observation">Under Observation</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="patientImage" class="form-label">Patient Image</label>
+                                        <input type="file" class="form-control" id="patientImage" name="patientImage" accept="image/*">
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Optional photo
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="symptoms" class="form-label">Symptoms</label>
+                                    <textarea class="form-control" id="symptoms" name="symptoms" rows="2"></textarea>
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mx-auto text-center">
+                                        <div id="imagePreviewContainer" class="mt-2 mb-3"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Register Patient
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </main>
