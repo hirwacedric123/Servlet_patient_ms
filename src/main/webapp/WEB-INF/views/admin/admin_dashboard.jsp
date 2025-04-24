@@ -299,6 +299,34 @@
                 transform: none;
             }
         }
+        
+        /* Sidebar Logo */
+        .sidebar-logo {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-logo i {
+            background: linear-gradient(135deg, #ffffff, rgba(255,255,255,0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-logo:hover i {
+            transform: scale(1.1);
+        }
+        
+        .sidebar-logo h5 {
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
