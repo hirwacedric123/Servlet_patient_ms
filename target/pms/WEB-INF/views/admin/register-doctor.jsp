@@ -151,12 +151,6 @@
         }
         
         /* Form Styles */
-        .form-label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-        
         .form-control {
             border-radius: 10px;
             padding: 12px 15px;
@@ -164,11 +158,24 @@
             font-size: 0.95rem;
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            padding-left: 5px;
         }
         
         .form-control:focus {
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .form-control:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .required-field::after {
@@ -323,6 +330,33 @@
                 max-width: 100%;
             }
         }
+        
+        .form-card {
+            max-width: 100%;
+        }
+        
+        /* Form Container */
+        .form-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Form Container Specific Styling */
+        .form-container .card {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .form-container .card-header {
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .form-container .card-body {
+            padding: 2rem;
+        }
     </style>
 </head>
 <body>
@@ -394,90 +428,94 @@
                 </c:if>
 
                 <!-- Doctor Registration Form -->
-                <div class="card mb-4 shadow">
-                    <div class="card-header">
-                        <i class="fas fa-user-md me-1"></i>Doctor Registration Form
-                    </div>
-                    <div class="card-body">
-                        <form action="${pageContext.request.contextPath}/admin/register-doctor" method="post" class="animate-form">
-                            <h5 class="mb-4">Personal Information</h5>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="firstName" class="form-label required-field">First Name</label>
-                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="lastName" class="form-label required-field">Last Name</label>
-                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
-                                </div>
+                <div class="row justify-content-center form-container">
+                    <div class="col-lg-9 col-xl-8">
+                        <div class="card mb-4 shadow">
+                            <div class="card-header">
+                                <i class="fas fa-user-md me-1"></i>Doctor Registration Form
                             </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label required-field">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="telephone" class="form-label required-field">Telephone</label>
-                                    <input type="tel" class="form-control" id="telephone" name="telephone" required>
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label for="address" class="form-label required-field">Address</label>
-                                    <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
-                                </div>
-                            </div>
+                            <div class="card-body">
+                                <form action="${pageContext.request.contextPath}/admin/register-doctor" method="post" class="animate-form">
+                                    <h5 class="mb-4">Personal Information</h5>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="firstName" class="form-label required-field">First Name</label>
+                                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="lastName" class="form-label required-field">Last Name</label>
+                                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="email" class="form-label required-field">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="telephone" class="form-label required-field">Telephone</label>
+                                            <input type="tel" class="form-control" id="telephone" name="telephone" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <label for="address" class="form-label required-field">Address</label>
+                                            <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                                        </div>
+                                    </div>
 
-                            <hr class="my-4">
-                            <h5 class="mb-4">Professional Information</h5>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="hospitalName" class="form-label required-field">Hospital Name</label>
-                                    <input type="text" class="form-control" id="hospitalName" name="hospitalName" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="specialization" class="form-label">Specialization</label>
-                                    <input type="text" class="form-control" id="specialization" name="specialization">
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="licenseNumber" class="form-label required-field">License Number</label>
-                                    <input type="text" class="form-control" id="licenseNumber" name="licenseNumber" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="yearsOfExperience" class="form-label">Years of Experience</label>
-                                    <input type="number" class="form-control" id="yearsOfExperience" name="yearsOfExperience" min="0" max="50">
-                                </div>
-                            </div>
+                                    <hr class="my-4">
+                                    <h5 class="mb-4">Professional Information</h5>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="hospitalName" class="form-label required-field">Hospital Name</label>
+                                            <input type="text" class="form-control" id="hospitalName" name="hospitalName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="specialization" class="form-label">Specialization</label>
+                                            <input type="text" class="form-control" id="specialization" name="specialization">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="licenseNumber" class="form-label required-field">License Number</label>
+                                            <input type="text" class="form-control" id="licenseNumber" name="licenseNumber" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="yearsOfExperience" class="form-label">Years of Experience</label>
+                                            <input type="number" class="form-control" id="yearsOfExperience" name="yearsOfExperience" min="0" max="50">
+                                        </div>
+                                    </div>
 
-                            <hr class="my-4">
-                            <h5 class="mb-4">Account Information</h5>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="username" class="form-label required-field">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="password" class="form-label required-field">Password</label>
-                                    <input type="password" class="form-control" id="password" name="password" required>
-                                </div>
+                                    <hr class="my-4">
+                                    <h5 class="mb-4">Account Information</h5>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="username" class="form-label required-field">Username</label>
+                                            <input type="text" class="form-control" id="username" name="username" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="password" class="form-label required-field">Password</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fas fa-save me-2"></i>Register Doctor
+                                        </button>
+                                        <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-secondary btn-lg ms-3 px-5">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </a>
+                                    </div>
+                                </form>
                             </div>
-                            
-                            <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save me-1"></i>Register Doctor
-                                </button>
-                                <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-secondary btn-lg ms-2">
-                                    <i class="fas fa-times me-1"></i>Cancel
-                                </a>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </main>
