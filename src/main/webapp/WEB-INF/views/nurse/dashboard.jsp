@@ -11,137 +11,174 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-width: 220px;
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-color: #f8f9fa;
+            --dark-color: #222;
+            --patients-color: #2ecc71;
+            --referrable-color: #e74c3c;
+            --non-referrable-color: #f39c12;
+            --sidebar-width: 250px;
             --sidebar-width-collapsed: 60px;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f5fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
             color: #333;
             font-size: 14px;
             overflow-x: hidden;
         }
         
         .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 16px;
+            border-radius: 15px;
             overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border: none;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
         }
         
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
         
         .card-header {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             border: none;
-            padding: 12px 16px;
+            padding: 1.2rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C30,40 70,40 100,0 L100,100 0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
         }
         
         .welcome-banner {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 16px 20px;
-            border-radius: 10px;
-            margin-bottom: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease;
         }
         
         .welcome-banner::before {
             content: '';
             position: absolute;
-            top: -50px;
-            right: -50px;
-            background-color: rgba(255, 255, 255, 0.1);
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-        }
-        
-        .welcome-banner::after {
-            content: '';
-            position: absolute;
-            bottom: -50px;
-            left: -50px;
-            background-color: rgba(255, 255, 255, 0.1);
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C30,40 70,40 100,0 L100,100 0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
         }
         
         .welcome-banner h2 {
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: calc(1.2rem + 0.6vw);
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            position: relative;
+            font-size: 1.1rem;
+        }
+        
+        .welcome-icon {
+            color: rgba(255, 255, 255, 0.9);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatIcon {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
         
         .stats-card {
             text-align: center;
-            margin-bottom: 16px;
-            border-radius: 10px;
-            padding: 8px;
+            padding: 25px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border-bottom: 4px solid transparent;
             height: 100%;
         }
         
-        .stats-card .card-body {
-            padding: 16px 12px;
+        .stats-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-card:nth-child(1):hover {
+            border-bottom: 4px solid var(--patients-color);
+        }
+        
+        .stats-card:nth-child(2):hover {
+            border-bottom: 4px solid var(--referrable-color);
+        }
+        
+        .stats-card:nth-child(3):hover {
+            border-bottom: 4px solid var(--non-referrable-color);
         }
         
         .stats-icon {
-            font-size: 1.8rem;
-            margin-bottom: 12px;
-            background: rgba(0, 0, 0, 0.05);
-            width: 60px;
-            height: 60px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .patients { 
+            background: linear-gradient(135deg, var(--patients-color), #27ae60); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .referrable { 
+            background: linear-gradient(135deg, var(--referrable-color), #c0392b); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .non-referrable { 
+            background: linear-gradient(135deg, var(--non-referrable-color), #d35400); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .stats-card h3 {
-            font-size: calc(1.5rem + 1vw);
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
         }
         
         .stats-card h5 {
             color: #666;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
-        .patients { 
-            color: #2ecc71; 
-        }
-        
-        .patients-bg {
-            background: rgba(46, 204, 113, 0.1);
-        }
-        
-        .referrable { 
-            color: #e74c3c; 
-        }
-        
-        .referrable-bg {
-            background: rgba(231, 76, 60, 0.1);
-        }
-        
-        .non-referrable { 
-            color: #f39c12; 
-        }
-        
-        .non-referrable-bg {
-            background: rgba(243, 156, 18, 0.1);
+            font-weight: 600;
+            font-size: 1.1rem;
         }
         
         .patient-image {
@@ -159,126 +196,141 @@
         }
         
         .alert {
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-weight: 500;
             border: none;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
+            background-color: rgba(26, 188, 156, 0.15);
+            color: #1abc9c;
         }
         
         .alert-warning {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-        
-        .registered-by-you {
-            background-color: rgba(52, 152, 219, 0.05);
-            border-left: 4px solid #3498db;
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
         }
         
         /* Table styling */
         .table {
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 0.85rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
         }
         
         .table thead th {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            color: #495057;
+            background-color: rgba(44, 62, 80, 0.05);
+            border-color: rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            padding: 10px;
+            padding: 15px;
         }
         
-        .table tbody td {
-            padding: 10px;
-            vertical-align: middle;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .table tbody tr:hover {
+        .table-striped tbody tr:nth-of-type(odd) {
             background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.08);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
         }
         
         /* Badge styling */
         .badge {
-            padding: 0.4em 0.6em;
+            padding: 6px 12px;
             font-weight: 500;
-            font-size: 0.7rem;
-            border-radius: 4px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+        
+        .badge.bg-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+        }
+        
+        .badge.bg-success {
+            background: linear-gradient(to right, #2ecc71, var(--accent-color)) !important;
+        }
+        
+        .badge.bg-danger {
+            background: linear-gradient(to right, var(--referrable-color), #c0392b) !important;
         }
         
         /* Button styling */
         .btn {
-            border-radius: 6px;
-            font-weight: 500;
-            padding: 0.4rem 0.8rem;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
             transition: all 0.3s ease;
             font-size: 0.85rem;
         }
         
         .btn-sm {
-            padding: 0.25rem 0.5rem;
+            padding: 0.4rem 0.8rem;
             font-size: 0.75rem;
         }
         
         .btn-primary {
-            background-color: #3498db;
-            border-color: #3498db;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-primary:hover, .btn-primary:focus {
-            background-color: #2980b9;
-            border-color: #2980b9;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
         
         .btn-info {
-            background-color: #17a2b8;
-            border-color: #17a2b8;
+            background: linear-gradient(to right, #17a2b8, #00d2ff);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-info:hover, .btn-info:focus {
-            background-color: #138496;
-            border-color: #117a8b;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
+            background: linear-gradient(to right, #00d2ff, #17a2b8);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            color: white;
         }
         
         .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
+            background: linear-gradient(to right, #28a745, #20c997);
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-success:hover, .btn-success:focus {
-            background-color: #218838;
-            border-color: #1e7e34;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
+            background: linear-gradient(to right, #20c997, #28a745);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
         
         .btn-light {
-            background-color: #f8f9fa;
-            border-color: #f8f9fa;
-            color: #212529;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-radius: 50px;
+            color: var(--primary-color);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
         
         .btn-light:hover, .btn-light:focus {
-            background-color: #e2e6ea;
-            border-color: #dae0e5;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
+            background-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         
@@ -289,27 +341,57 @@
             bottom: 0;
             left: 0;
             z-index: 100;
-            padding: 0;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background: linear-gradient(180deg, #2c3e50, #3498db);
+            padding: 48px 0 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
             width: var(--sidebar-width);
             transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .sidebar:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C20,0 50,0 100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+            pointer-events: none;
         }
         
         .sidebar.collapsed {
             width: var(--sidebar-width-collapsed);
         }
         
+        /* Sidebar Logo */
         .sidebar-header {
-            padding: 16px 10px;
-            background: rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
             text-align: center;
         }
         
+        .sidebar-header i {
+            background: linear-gradient(135deg, #ffffff, rgba(255,255,255,0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-header:hover i {
+            transform: scale(1.1);
+        }
+        
         .sidebar-header h5 {
-            font-size: 0.9rem;
-            margin-top: 8px;
-            transition: opacity 0.3s;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         
         .sidebar.collapsed .sidebar-header h5 {
@@ -317,14 +399,16 @@
         }
         
         .sidebar-link {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
+            display: block;
+            padding: 0.8rem 1.5rem;
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: all 0.3s;
-            border-left: 3px solid transparent;
-            margin: 3px 0;
+            border-left: 4px solid transparent;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 5px;
+            font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
         }
@@ -332,14 +416,15 @@
         .sidebar-link:hover {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
-            border-left-color: rgba(255, 255, 255, 0.5);
+            border-left: 4px solid var(--accent-color);
+            transform: translateX(5px);
         }
         
         .sidebar-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.15);
             color: white;
-            border-left-color: white;
-            font-weight: 500;
+            border-left: 4px solid var(--accent-color);
+            font-weight: 600;
         }
         
         .sidebar-link i {
@@ -359,7 +444,7 @@
         
         .content-area {
             margin-left: var(--sidebar-width);
-            padding: 16px;
+            padding: 30px;
             transition: all 0.3s ease;
         }
         
@@ -374,33 +459,60 @@
             z-index: 101;
             width: 30px;
             height: 30px;
-            background: #3498db;
+            background: var(--secondary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             cursor: pointer;
-            transition: left 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             border: none;
+        }
+        
+        .toggle-sidebar:hover {
+            transform: scale(1.1);
         }
         
         .toggle-sidebar.collapsed {
             left: calc(var(--sidebar-width-collapsed) - 15px);
         }
         
-        .navbar-mobile {
-            background: white;
+        /* Navbar */
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
             border-radius: 10px;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
         
+        .user-info {
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 50px;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fadeIn {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .registered-by-you {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        /* Responsive Adjustments */
         @media (max-width: 1199.98px) {
             .stats-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
+                font-size: 2.5rem;
             }
             
             .stats-card h3 {
@@ -410,15 +522,6 @@
             .stats-card h5 {
                 font-size: 0.85rem;
             }
-            
-            .action-buttons .btn-sm {
-                padding: 0.2rem 0.4rem;
-                font-size: 0.7rem;
-            }
-            
-            .action-buttons .btn-sm i {
-                margin-right: 0;
-            }
         }
         
         @media (max-width: 991.98px) {
@@ -426,26 +529,22 @@
                 display: none;
             }
             
-            .table thead th,
-            .table tbody td {
-                padding: 8px;
-            }
-            
             .welcome-banner h2 {
-                font-size: calc(1.1rem + 0.5vw);
+                font-size: calc(1.2rem + 0.5vw);
             }
             
             .welcome-banner p {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
             }
         }
         
         @media (max-width: 767.98px) {
             .sidebar {
+                position: static;
+                padding-top: 0;
+                height: auto;
                 margin-left: calc(-1 * var(--sidebar-width));
                 position: fixed;
-                height: 100%;
-                width: var(--sidebar-width);
                 z-index: 999;
             }
             
@@ -455,11 +554,15 @@
             
             .content-area {
                 margin-left: 0;
-                padding: 12px;
+                padding: 15px;
             }
             
             .welcome-banner {
-                padding: 16px;
+                padding: 20px;
+            }
+            
+            .sidebar-link:hover {
+                transform: none;
             }
             
             .toggle-sidebar {
@@ -468,47 +571,20 @@
         }
         
         @media (max-width: 575.98px) {
-            .card-header h5 {
-                font-size: 0.9rem;
-            }
-            
             .welcome-banner {
-                padding: 12px;
+                padding: 15px;
             }
             
             .welcome-banner h2 {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
             
             .welcome-banner p {
                 font-size: 0.8rem;
             }
             
-            .table {
-                font-size: 0.75rem;
-            }
-            
-            .table thead th {
-                font-size: 0.7rem;
-                padding: 6px;
-            }
-            
-            .table tbody td {
-                padding: 6px;
-            }
-            
-            .patient-image {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .btn-sm {
-                padding: 0.15rem 0.3rem;
-                font-size: 0.7rem;
-            }
-            
             .badge {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 padding: 0.3em 0.5em;
             }
         }
@@ -519,30 +595,31 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 d-md-block sidebar" id="sidebar">
-                <div class="sidebar-header mb-3">
-                    <i class="fas fa-hospital-user text-light fa-2x mb-2"></i>
-                    <h5 class="text-light">Patient Management</h5>
+                <div class="position-sticky">
+                    <div class="text-center mb-4 mt-3">
+                        <div class="sidebar-header">
+                            <i class="fas fa-user-nurse fa-3x mb-3"></i>
+                            <h5>Patient Management System</h5>
+                        </div>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="sidebar-link active" href="${pageContext.request.contextPath}/nurse/dashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Register Patient</span>
+                                <i class="fas fa-user-plus me-2"></i>Register Patient
                         </a>
                     </li>
-                    <li class="nav-item mt-3">
+                        <li class="nav-item">
                         <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
                         </a>
                     </li>
                 </ul>
+                </div>
             </div>
 
             <!-- Toggle sidebar button -->
@@ -553,14 +630,14 @@
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content-area" id="mainContent">
                 <!-- Top Navbar for mobile -->
-                <nav class="navbar navbar-expand-lg navbar-light mb-3 shadow-sm rounded d-md-none navbar-mobile">
+                <nav class="navbar navbar-expand-lg navbar-light mb-4 shadow-sm rounded d-md-none">
                     <div class="container-fluid">
-                        <button class="navbar-toggler border-0" type="button" id="sidebarToggle">
+                        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <span class="navbar-brand">PMS</span>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="user-info small">
+                            <div class="user-info">
                                 <i class="fas fa-user-nurse me-1"></i>${nurse.firstName} ${nurse.lastName}
                             </div>
                         </div>
@@ -569,63 +646,58 @@
 
                 <!-- Success message if present -->
                 <c:if test="${not empty successMessage}">
-                    <div class="alert alert-success">
+                    <div class="alert alert-success fadeIn">
                         <i class="fas fa-check-circle me-2"></i>${successMessage}
                     </div>
                 </c:if>
                 
                 <!-- Error message if present -->
                 <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning fadeIn">
                         <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
                     </div>
                 </c:if>
                 
                 <!-- Welcome message -->
                 <div class="welcome-banner">
-                    <h2><i class="fas fa-user-nurse me-2"></i>Welcome, ${nurse.firstName} ${nurse.lastName}!</h2>
-                    <p class="mb-0">You are logged in as a nurse from ${nurse.healthCenter} health center.</p>
+                    <div class="row align-items-center">
+                        <div class="col-md-1 text-center">
+                            <i class="fas fa-user-nurse fa-3x welcome-icon"></i>
+                        </div>
+                        <div class="col-md-11">
+                            <h2>Welcome, ${nurse.firstName} ${nurse.lastName}!</h2>
+                            <p>You are logged in as a nurse from ${nurse.healthCenter} health center.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Statistics Cards -->
-                <div class="row mb-3">
+                <div class="row mb-4">
                     <div class="col-md-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="stats-icon patients patients-bg">
-                                    <i class="fas fa-users"></i>
-                                </div>
+                        <div class="stats-card">
+                            <i class="fas fa-users stats-icon patients"></i>
                                 <h3>${patientCount}</h3>
                                 <h5>Total Patients</h5>
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="stats-icon referrable referrable-bg">
-                                    <i class="fas fa-hospital-user"></i>
-                                </div>
+                        <div class="stats-card">
+                            <i class="fas fa-hospital-user stats-icon referrable"></i>
                                 <h3>${referrableCount}</h3>
                                 <h5>Referrable Cases</h5>
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="stats-icon non-referrable non-referrable-bg">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
+                        <div class="stats-card">
+                            <i class="fas fa-user-check stats-icon non-referrable"></i>
                                 <h3>${nonReferrableCount}</h3>
                                 <h5>Non-Referrable Cases</h5>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Patient List -->
-                <div class="card mb-3">
+                <div class="card mb-4">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
@@ -654,15 +726,10 @@
                                         <i class="fas fa-plus me-1"></i>Register Your First Patient
                                     </a>
                                 </div>
-                                <!-- Debug information (will be removed in production) -->
-                                <p class="text-center text-muted small">Debug: Empty patients list</p>
                             </c:when>
                             <c:otherwise>
-                                <!-- Debug information (will be removed in production) -->
-                                <p class="text-center text-muted small">Debug: Found ${registeredPatients.size()} patients</p>
-                                
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-hover table-striped">
                                         <thead>
                                             <tr>
                                                 <th>Photo</th>
@@ -740,9 +807,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Toggle sidebar on mobile
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.querySelector('[data-bs-toggle="collapse"]');
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('show');
         });
+            }
         
         // Toggle sidebar collapse for desktop
         const toggleBtn = document.getElementById('toggleSidebar');
@@ -750,6 +821,7 @@
         const mainContent = document.getElementById('mainContent');
         const toggleIcon = document.getElementById('toggleIcon');
         
+            if (toggleBtn) {
         toggleBtn.addEventListener('click', function() {
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('expanded');
@@ -763,29 +835,8 @@
                 toggleIcon.classList.add('fa-chevron-left');
             }
         });
-        
-        // Check screen size on load and resize
-        function checkScreenSize() {
-            if (window.innerWidth < 1400 && window.innerWidth >= 768) {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('expanded');
-                toggleBtn.classList.add('collapsed');
-                toggleIcon.classList.remove('fa-chevron-left');
-                toggleIcon.classList.add('fa-chevron-right');
-            } else if (window.innerWidth >= 1400) {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('expanded');
-                toggleBtn.classList.remove('collapsed');
-                toggleIcon.classList.remove('fa-chevron-right');
-                toggleIcon.classList.add('fa-chevron-left');
             }
-        }
-        
-        // Run on page load
-        checkScreenSize();
-        
-        // Run when window resizes
-        window.addEventListener('resize', checkScreenSize);
+        });
     </script>
 </body>
 </html> 
