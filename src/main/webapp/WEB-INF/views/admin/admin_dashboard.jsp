@@ -299,6 +299,123 @@
                         </c:choose>
                     </div>
                 </div>
+
+                <!-- Hospitals and Health Centers -->
+                <div class="row mb-4">
+                    <!-- Hospitals List -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-hospital me-1"></i>Registered Hospitals
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3 text-end">
+                                    <a href="${pageContext.request.contextPath}/admin/register-hospital" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Add Hospital
+                                    </a>
+                                </div>
+                                <c:choose>
+                                    <c:when test="${empty hospitals}">
+                                        <p class="text-center text-muted">No hospitals registered yet</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Name</th>
+                                                        <th>Location</th>
+                                                        <th>Contact</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:forEach items="${hospitals}" var="hospital">
+                                                        <tr>
+                                                            <td>${hospital.id}</td>
+                                                            <td>${hospital.name}</td>
+                                                            <td>${hospital.location}</td>
+                                                            <td>${hospital.contactNumber}</td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <a href="${pageContext.request.contextPath}/admin/edit-hospital/${hospital.id}" class="btn btn-sm btn-outline-primary">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                    <a href="${pageContext.request.contextPath}/admin/delete-hospital/${hospital.id}" class="btn btn-sm btn-outline-danger" 
+                                                                       onclick="return confirm('Are you sure you want to delete this hospital?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Centers List -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-clinic-medical me-1"></i>Registered Health Centers
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3 text-end">
+                                    <a href="${pageContext.request.contextPath}/admin/register-health-center" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Add Health Center
+                                    </a>
+                                </div>
+                                <c:choose>
+                                    <c:when test="${empty healthCenters}">
+                                        <p class="text-center text-muted">No health centers registered yet</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Name</th>
+                                                        <th>Location</th>
+                                                        <th>Contact</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:forEach items="${healthCenters}" var="center">
+                                                        <tr>
+                                                            <td>${center.id}</td>
+                                                            <td>${center.name}</td>
+                                                            <td>${center.location}</td>
+                                                            <td>${center.contactNumber}</td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <a href="${pageContext.request.contextPath}/admin/edit-health-center/${center.id}" class="btn btn-sm btn-outline-primary">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                    <a href="${pageContext.request.contextPath}/admin/delete-health-center/${center.id}" class="btn btn-sm btn-outline-danger"
+                                                                       onclick="return confirm('Are you sure you want to delete this health center?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
