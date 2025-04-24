@@ -601,24 +601,24 @@
                             <i class="fas fa-user-nurse fa-3x mb-3"></i>
                             <h5>Patient Management System</h5>
                         </div>
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="sidebar-link active" href="${pageContext.request.contextPath}/nurse/dashboard">
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="sidebar-link active" href="${pageContext.request.contextPath}/nurse/dashboard">
                                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="sidebar-link" href="${pageContext.request.contextPath}/nurse/patient-registration">
                                 <i class="fas fa-user-plus me-2"></i>Register Patient
-                            </a>
-                        </li>
+                        </a>
+                    </li>
                         <li class="nav-item">
-                            <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
+                        <a class="sidebar-link" href="${pageContext.request.contextPath}/logout">
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
-                            </a>
-                        </li>
-                    </ul>
+                        </a>
+                    </li>
+                </ul>
                 </div>
             </div>
 
@@ -676,22 +676,22 @@
                     <div class="col-md-4">
                         <div class="stats-card">
                             <i class="fas fa-users stats-icon patients"></i>
-                            <h3>${patientCount}</h3>
-                            <h5>Total Patients</h5>
+                                <h3>${patientCount}</h3>
+                                <h5>Total Patients</h5>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stats-card">
                             <i class="fas fa-hospital-user stats-icon referrable"></i>
-                            <h3>${referrableCount}</h3>
-                            <h5>Referrable Cases</h5>
+                                <h3>${referrableCount}</h3>
+                                <h5>Referrable Cases</h5>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stats-card">
                             <i class="fas fa-user-check stats-icon non-referrable"></i>
-                            <h3>${nonReferrableCount}</h3>
-                            <h5>Non-Referrable Cases</h5>
+                                <h3>${nonReferrableCount}</h3>
+                                <h5>Non-Referrable Cases</h5>
                         </div>
                     </div>
                 </div>
@@ -811,30 +811,30 @@
             const mobileToggle = document.querySelector('[data-bs-toggle="collapse"]');
             if (mobileToggle) {
                 mobileToggle.addEventListener('click', function() {
-                    document.getElementById('sidebar').classList.toggle('show');
-                });
+            document.getElementById('sidebar').classList.toggle('show');
+        });
             }
-            
-            // Toggle sidebar collapse for desktop
-            const toggleBtn = document.getElementById('toggleSidebar');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
+        
+        // Toggle sidebar collapse for desktop
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
             if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('expanded');
-                    toggleBtn.classList.toggle('collapsed');
-                    
-                    if (sidebar.classList.contains('collapsed')) {
-                        toggleIcon.classList.remove('fa-chevron-left');
-                        toggleIcon.classList.add('fa-chevron-right');
-                    } else {
-                        toggleIcon.classList.remove('fa-chevron-right');
-                        toggleIcon.classList.add('fa-chevron-left');
-                    }
-                });
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            toggleBtn.classList.toggle('collapsed');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        });
             }
         });
     </script>
