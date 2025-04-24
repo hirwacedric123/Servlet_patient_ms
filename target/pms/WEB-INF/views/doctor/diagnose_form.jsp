@@ -283,6 +283,12 @@
             transition: all 0.3s ease;
         }
         
+        /* Add container for content width control */
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
         .badge {
             padding: 0.5rem 0.8rem;
             border-radius: 50px;
@@ -389,116 +395,119 @@
                     </div>
                 </nav>
 
-                <!-- Breadcrumb -->
-                <nav aria-label="breadcrumb" class="fadeIn">
-                    <ol class="breadcrumb bg-white shadow-sm p-3 rounded">
-                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/doctor/dashboard" class="text-decoration-none">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Patient Diagnosis</li>
-                    </ol>
-                </nav>
+                <!-- Content container to control width -->
+                <div class="content-container">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="fadeIn">
+                        <ol class="breadcrumb bg-white shadow-sm p-3 rounded">
+                            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/doctor/dashboard" class="text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Patient Diagnosis</li>
+                        </ol>
+                    </nav>
 
-                <!-- Error Message if present -->
-                <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-danger fadeIn">
-                        <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
-                    </div>
-                </c:if>
-                
-                <div class="card fadeIn">
-                    <div class="card-header d-flex align-items-center">
-                        <i class="fas fa-stethoscope fa-lg me-3"></i>
-                        <h5 class="mb-0">Patient Diagnosis</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Patient Information -->
-                        <div class="patient-info">
-                            <h5><i class="fas fa-user-circle"></i> Patient Information</h5>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <p><span class="fw-bold text-primary">Name:</span> ${patient.firstName} ${patient.lastName}</p>
-                                    <p><span class="fw-bold text-primary">Gender:</span> ${patient.gender}</p>
-                                    <p><span class="fw-bold text-primary">Age:</span> ${patient.age}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><span class="fw-bold text-primary">Contact:</span> ${patient.contactNumber}</p>
-                                    <p><span class="fw-bold text-primary">Email:</span> ${patient.email}</p>
-                                    <p><span class="fw-bold text-primary">Blood Group:</span> ${patient.bloodGroup}</p>
-                                </div>
-                            </div>
+                    <!-- Error Message if present -->
+                    <c:if test="${not empty errorMessage}">
+                        <div class="alert alert-danger fadeIn">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
                         </div>
-
-                        <!-- Diagnosis Information -->
-                        <div class="patient-info">
-                            <h5><i class="fas fa-clipboard-list"></i> Diagnosis Information</h5>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <p><span class="fw-bold text-primary">Diagnosis ID:</span> ${diagnosis.diagnosisID}</p>
-                                    <p>
-                                        <span class="fw-bold text-primary">Status:</span> 
-                                        <span class="badge ${diagnosis.diagnoStatus eq 'Referrable' ? 'badge-referrable' : 'badge-not-referrable'}">
-                                            ${diagnosis.diagnoStatus}
-                                        </span>
-                                    </p>
-                                    <p><span class="fw-bold text-primary">Current Result:</span> ${diagnosis.result}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><span class="fw-bold text-primary">Referred by Nurse:</span> ${nurseName}</p>
-                                    <p><span class="fw-bold text-primary">Created Date:</span> ${diagnosis.createdDate}</p>
-                                    <p><span class="fw-bold text-primary">Last Updated:</span> ${diagnosis.updatedDate}</p>
-                                </div>
-                            </div>
+                    </c:if>
+                    
+                    <div class="card fadeIn">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-stethoscope fa-lg me-3"></i>
+                            <h5 class="mb-0">Patient Diagnosis</h5>
                         </div>
-
-                        <!-- Diagnosis Form - Only show if referrable and pending -->
-                        <c:choose>
-                            <c:when test="${diagnosis.diagnoStatus eq 'Referrable' && diagnosis.isPending()}">
-                                <div class="card mb-0 mt-4 border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <h5 class="mb-4 text-primary"><i class="fas fa-edit me-2"></i>Enter Diagnosis</h5>
-                                        <form action="${pageContext.request.contextPath}/doctor/diagnose" method="post">
-                                            <input type="hidden" name="diagnosisId" value="${diagnosis.diagnosisID}">
-                                            
-                                            <div class="mb-4">
-                                                <label for="diagnosisResult" class="form-label">Diagnosis Result <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" id="diagnosisResult" name="diagnosisResult" rows="5" required 
-                                                    placeholder="Enter your detailed diagnosis and treatment plan for the patient"></textarea>
-                                                <div class="form-text">
-                                                    <i class="fas fa-info-circle me-1"></i>
-                                                    Provide a detailed diagnosis and recommended treatment plan for this patient
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="d-flex justify-content-end gap-3 mt-4">
-                                                <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary">
-                                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                                                </a>
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-save me-2"></i>Save Diagnosis
-                                                </button>
-                                            </div>
-                                        </form>
+                        <div class="card-body">
+                            <!-- Patient Information -->
+                            <div class="patient-info">
+                                <h5><i class="fas fa-user-circle"></i> Patient Information</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <p><span class="fw-bold text-primary">Name:</span> ${patient.firstName} ${patient.lastName}</p>
+                                        <p><span class="fw-bold text-primary">Gender:</span> ${patient.gender}</p>
+                                        <p><span class="fw-bold text-primary">Age:</span> ${patient.age}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><span class="fw-bold text-primary">Contact:</span> ${patient.contactNumber}</p>
+                                        <p><span class="fw-bold text-primary">Email:</span> ${patient.email}</p>
+                                        <p><span class="fw-bold text-primary">Blood Group:</span> ${patient.bloodGroup}</p>
                                     </div>
                                 </div>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="alert alert-warning fadeIn mt-4">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    <c:choose>
-                                        <c:when test="${diagnosis.diagnoStatus ne 'Referrable'}">
-                                            This case is marked as "Not Referrable" and cannot be updated.
-                                        </c:when>
-                                        <c:otherwise>
-                                            This case has already been diagnosed and cannot be updated again.
-                                        </c:otherwise>
-                                    </c:choose>
+                            </div>
+
+                            <!-- Diagnosis Information -->
+                            <div class="patient-info">
+                                <h5><i class="fas fa-clipboard-list"></i> Diagnosis Information</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <p><span class="fw-bold text-primary">Diagnosis ID:</span> ${diagnosis.diagnosisID}</p>
+                                        <p>
+                                            <span class="fw-bold text-primary">Status:</span> 
+                                            <span class="badge ${diagnosis.diagnoStatus eq 'Referrable' ? 'badge-referrable' : 'badge-not-referrable'}">
+                                                ${diagnosis.diagnoStatus}
+                                            </span>
+                                        </p>
+                                        <p><span class="fw-bold text-primary">Current Result:</span> ${diagnosis.result}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><span class="fw-bold text-primary">Referred by Nurse:</span> ${nurseName}</p>
+                                        <p><span class="fw-bold text-primary">Created Date:</span> ${diagnosis.createdDate}</p>
+                                        <p><span class="fw-bold text-primary">Last Updated:</span> ${diagnosis.updatedDate}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex justify-content-end mt-4">
-                                    <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                                    </a>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
+                            </div>
+
+                            <!-- Diagnosis Form - Only show if referrable and pending -->
+                            <c:choose>
+                                <c:when test="${diagnosis.diagnoStatus eq 'Referrable' && diagnosis.isPending()}">
+                                    <div class="card mb-0 mt-4 border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="mb-4 text-primary"><i class="fas fa-edit me-2"></i>Enter Diagnosis</h5>
+                                            <form action="${pageContext.request.contextPath}/doctor/diagnose" method="post">
+                                                <input type="hidden" name="diagnosisId" value="${diagnosis.diagnosisID}">
+                                                
+                                                <div class="mb-4">
+                                                    <label for="diagnosisResult" class="form-label">Diagnosis Result <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="diagnosisResult" name="diagnosisResult" rows="5" required 
+                                                        placeholder="Enter your detailed diagnosis and treatment plan for the patient"></textarea>
+                                                    <div class="form-text">
+                                                        <i class="fas fa-info-circle me-1"></i>
+                                                        Provide a detailed diagnosis and recommended treatment plan for this patient
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="d-flex justify-content-end gap-3 mt-4">
+                                                    <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary">
+                                                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                                    </a>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-save me-2"></i>Save Diagnosis
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-warning fadeIn mt-4">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <c:choose>
+                                            <c:when test="${diagnosis.diagnoStatus ne 'Referrable'}">
+                                                This case is marked as "Not Referrable" and cannot be updated.
+                                            </c:when>
+                                            <c:otherwise>
+                                                This case has already been diagnosed and cannot be updated again.
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <a href="${pageContext.request.contextPath}/doctor/dashboard" class="btn btn-secondary">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                        </a>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -518,5 +527,4 @@
         });
     </script>
 </body>
-</html> 
 </html> 
