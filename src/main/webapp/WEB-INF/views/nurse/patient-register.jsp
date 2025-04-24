@@ -464,29 +464,30 @@
                 </c:if>
                 
                 <!-- Form Container - Added to constrain width -->
-                <div class="form-container mx-auto" style="max-width: 800px;">
+                <div class="form-container mx-auto">
                     <!-- Registration Form Card -->
                     <div class="card mb-5">
-                        <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register New Patient</h5>
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-user-plus fa-lg me-3"></i>
+                            <h5 class="mb-0">Register New Patient</h5>
                         </div>
                         <div class="card-body">
                             <form action="${pageContext.request.contextPath}/nurse/patient-registration" method="post" enctype="multipart/form-data">
                                 <h5 class="section-title"><i class="fas fa-id-card me-2"></i>Personal Information</h5>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
                                         <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="firstName" name="firstName" required>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-6">
                                         <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="lastName" name="lastName" required>
                                     </div>
                                 </div>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
                                         <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
                                         <select class="form-select" id="gender" name="gender" required>
                                             <option value="" selected disabled>Select Gender</option>
@@ -495,29 +496,29 @@
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-6">
                                         <label for="dateOfBirth" class="form-label">Date of Birth</label>
                                         <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
                                     </div>
                                 </div>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
                                         <label for="contactNumber" class="form-label">Contact Number <span class="text-danger">*</span></label>
                                         <input type="tel" class="form-control" id="contactNumber" name="contactNumber" required>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-6">
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" class="form-control" id="email" name="email">
                                     </div>
                                 </div>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
                                         <label for="emergencyContact" class="form-label">Emergency Contact</label>
                                         <input type="tel" class="form-control" id="emergencyContact" name="emergencyContact">
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-6">
                                         <label for="bloodGroup" class="form-label">Blood Group</label>
                                         <select class="form-select" id="bloodGroup" name="bloodGroup">
                                             <option value="" selected disabled>Select Blood Group</option>
@@ -536,35 +537,35 @@
                                 
                                 <div class="mb-4">
                                     <label for="address" class="form-label">Address</label>
-                                    <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                                    <textarea class="form-control" id="address" name="address" rows="2"></textarea>
                                 </div>
                                 
                                 <h5 class="section-title"><i class="fas fa-user-lock me-2"></i>Account Information</h5>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
                                         <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="username" name="username" required>
                                         <div class="form-text">
                                             <i class="fas fa-info-circle me-1"></i>
-                                            Choose a unique username that the patient can remember easily.
+                                            Auto-generated from name
                                         </div>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-6">
                                         <label for="initialPassword" class="form-label">Initial Password <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="initialPassword" name="initialPassword" 
                                                value="Patient123" required>
                                         <div class="form-text">
                                             <i class="fas fa-info-circle me-1"></i>
-                                            Patient can change this password after first login.
+                                            Can be changed after login
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <h5 class="section-title"><i class="fas fa-notes-medical me-2"></i>Medical Information</h5>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
                                         <label for="diagnoStatus" class="form-label">Diagnosis Status <span class="text-danger">*</span></label>
                                         <select class="form-select" id="diagnoStatus" name="diagnoStatus" required>
                                             <option value="" selected disabled>Select Diagnosis Status</option>
@@ -574,23 +575,23 @@
                                             <option value="Observation">Under Observation</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-6">
                                         <label for="patientImage" class="form-label">Patient Image</label>
                                         <input type="file" class="form-control" id="patientImage" name="patientImage" accept="image/*">
                                         <div class="form-text">
                                             <i class="fas fa-info-circle me-1"></i>
-                                            Upload a photo of the patient (optional).
+                                            Optional photo
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="mb-4">
                                     <label for="symptoms" class="form-label">Symptoms</label>
-                                    <textarea class="form-control" id="symptoms" name="symptoms" rows="3"></textarea>
+                                    <textarea class="form-control" id="symptoms" name="symptoms" rows="2"></textarea>
                                 </div>
                                 
-                                <div class="row">
-                                    <div class="col-md-6 text-center">
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mx-auto text-center">
                                         <div id="imagePreviewContainer" class="mt-2 mb-3"></div>
                                     </div>
                                 </div>
