@@ -171,6 +171,11 @@
         .form-control:focus {
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .form-control:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .required-field::after {
@@ -501,11 +506,11 @@
                                     </div>
                                     
                                     <div class="mt-4 text-center">
-                                        <button type="submit" class="btn btn-primary btn-lg">
-                                            <i class="fas fa-save me-1"></i>Register Doctor
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fas fa-save me-2"></i>Register Doctor
                                         </button>
-                                        <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-secondary btn-lg ms-2">
-                                            <i class="fas fa-times me-1"></i>Cancel
+                                        <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-secondary btn-lg ms-3 px-5">
+                                            <i class="fas fa-times me-2"></i>Cancel
                                         </a>
                                     </div>
                                 </form>
