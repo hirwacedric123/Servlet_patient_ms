@@ -327,6 +327,39 @@
             letter-spacing: 0.5px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
+        
+        /* Register Doctor Button */
+        .btn-register-doctor {
+            background: linear-gradient(to right, var(--accent-color), var(--secondary-color)) !important;
+            border: none !important;
+            padding: 0.7rem 1.8rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px !important;
+            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.3) !important;
+        }
+        
+        .btn-register-doctor:hover {
+            background: linear-gradient(to right, var(--secondary-color), var(--accent-color)) !important;
+            transform: translateY(-5px) !important;
+            box-shadow: 0 8px 20px rgba(26, 188, 156, 0.4) !important;
+        }
+        
+        /* Pulse Animation */
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(26, 188, 156, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(26, 188, 156, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(26, 188, 156, 0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -380,8 +413,15 @@
 
                 <!-- Welcome message -->
                 <div class="welcome-banner">
-                    <h2><i class="fas fa-user-check me-2"></i>Welcome, ${user.username}!</h2>
-                    <p>You are logged in as an administrator. Here's an overview of your system.</p>
+                    <div class="row align-items-center">
+                        <div class="col-md-1 text-center">
+                            <i class="fas fa-user-shield fa-3x welcome-icon"></i>
+                        </div>
+                        <div class="col-md-11">
+                            <h2>Welcome, ${user.username}!</h2>
+                            <p>You are logged in as an administrator. Here's an overview of your system.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Statistics Overview -->
