@@ -9,27 +9,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .card-header {
-            background-color: #2c3e50;
-            color: white;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-color: #f8f9fa;
+            --dark-color: #222;
         }
-        .welcome-banner {
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            overflow-x: hidden;
         }
-        .stats-card {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .stats-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        .doctor-icon { color: #3498db; }
-        .nurse-icon { color: #2ecc71; }
+        
         /* Sidebar styles */
         .sidebar {
             position: fixed;
@@ -38,35 +31,272 @@
             left: 0;
             z-index: 100;
             padding: 48px 0 0;
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-            background-color: #2c3e50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            overflow-y: auto;
         }
+        
+        .sidebar:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C20,0 50,0 100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+            pointer-events: none;
+        }
+        
         .sidebar-link {
             display: block;
-            padding: 0.5rem 1rem;
-            color: white;
+            padding: 0.8rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: all 0.3s;
+            border-left: 4px solid transparent;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 5px;
+            font-weight: 500;
         }
+        
         .sidebar-link:hover {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
+            border-left: 4px solid var(--accent-color);
+            transform: translateX(5px);
         }
+        
         .sidebar-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.15);
             color: white;
+            border-left: 4px solid var(--accent-color);
+            font-weight: 600;
         }
+        
         .content-area {
             margin-left: 250px;
-            padding: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
         }
+        
+        /* Card Styles */
+        .card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border: none;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C30,40 70,40 100,0 L100,100 0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+        }
+        
+        .card-body {
+            padding: 1.8rem;
+            background-color: white;
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Welcome Banner */
+        .welcome-banner {
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C30,40 70,40 100,0 L100,100 0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+        }
+        
+        .welcome-banner h2 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            position: relative;
+            font-size: 1.1rem;
+        }
+        
+        /* Table Styles */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table thead th {
+            background-color: rgba(44, 62, 80, 0.05);
+            border-color: rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 15px;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.08);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            font-weight: 500;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+        
+        .badge.bg-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+        }
+        
+        .badge.bg-success {
+            background: linear-gradient(to right, #2ecc71, var(--accent-color)) !important;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        
+        .user-info {
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 50px;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            text-align: center;
+            padding: 25px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border-bottom: 4px solid transparent;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 4px solid var(--secondary-color);
+        }
+        
+        .stats-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .doctor-icon { 
+            background: linear-gradient(135deg, var(--secondary-color), #3498db); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nurse-icon { 
+            background: linear-gradient(135deg, #2ecc71, var(--accent-color)); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Adjustments */
         @media (max-width: 767.98px) {
             .sidebar {
                 position: static;
                 padding-top: 0;
+                height: auto;
             }
+            
             .content-area {
                 margin-left: 0;
+                padding: 15px;
+            }
+            
+            .welcome-banner {
+                padding: 20px;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .sidebar-link:hover {
+                transform: none;
             }
         }
     </style>
@@ -78,8 +308,10 @@
             <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky">
                     <div class="text-center mb-4 mt-3">
-                        <i class="fas fa-hospital text-light fa-3x mb-3"></i>
-                        <h5 class="text-light">Patient Management System</h5>
+                        <div class="sidebar-logo">
+                            <i class="fas fa-hospital-user fa-3x mb-3"></i>
+                            <h5>Patient Management System</h5>
+                        </div>
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
