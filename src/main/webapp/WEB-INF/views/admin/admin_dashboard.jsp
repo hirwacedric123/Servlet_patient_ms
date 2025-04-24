@@ -482,7 +482,7 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-3 text-end">
-                            <a href="${pageContext.request.contextPath}/admin/register-doctor" class="btn btn-primary">
+                            <a href="${pageContext.request.contextPath}/admin/register-doctor" class="btn btn-primary btn-register-doctor pulse-animation">
                                 <i class="fas fa-plus me-1"></i>Register New Doctor
                             </a>
                         </div>
