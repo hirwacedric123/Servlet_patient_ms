@@ -151,12 +151,6 @@
         }
         
         /* Form Styles */
-        .form-label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-        
         .form-control {
             border-radius: 10px;
             padding: 12px 15px;
@@ -164,6 +158,14 @@
             font-size: 0.95rem;
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            padding-left: 5px;
         }
         
         .form-control:focus {
@@ -323,6 +325,33 @@
                 max-width: 100%;
             }
         }
+        
+        .form-card {
+            max-width: 100%;
+        }
+        
+        /* Form Container */
+        .form-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Form Container Specific Styling */
+        .form-container .card {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .form-container .card-header {
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .form-container .card-body {
+            padding: 2rem;
+        }
     </style>
 </head>
 <body>
@@ -394,7 +423,7 @@
                 </c:if>
 
                 <!-- Doctor Registration Form -->
-                <div class="row justify-content-center">
+                <div class="row justify-content-center form-container">
                     <div class="col-lg-9 col-xl-8">
                         <div class="card mb-4 shadow">
                             <div class="card-header">
