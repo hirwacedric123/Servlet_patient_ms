@@ -98,6 +98,22 @@
             padding: 8px 20px;
             font-weight: 600;
         }
+        .hero-image {
+            max-width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transform: perspective(1000px) rotateY(-10deg);
+            transition: all 0.5s ease;
+        }
+        .hero-image:hover {
+            transform: perspective(1000px) rotateY(0deg);
+        }
+        .image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -132,7 +148,9 @@
                     <a href="login" class="btn btn-light btn-login">Log In</a>
                 </div>
                 <div class="col-lg-5">
-                    <!-- Placeholder for a future image -->
+                    <div class="image-container">
+                        <img src="images/healthcare-image.jpg" alt="Healthcare Dashboard" class="hero-image">
+                    </div>
                 </div>
             </div>
         </div>
