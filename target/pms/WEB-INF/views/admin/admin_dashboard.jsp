@@ -574,46 +574,6 @@
                         </c:choose>
                     </div>
                 </div>
-
-                <!-- Nurses List -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-user-nurse me-1"></i>Registered Nurses
-                    </div>
-                    <div class="card-body">
-                        <c:choose>
-                            <c:when test="${empty nurses}">
-                                <p class="text-center text-muted">No nurses registered yet</p>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Department</th>
-                                                <th>Contact</th>
-                                                <th>Email</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <c:forEach items="${nurses}" var="nurse">
-                                                <tr>
-                                                    <td>${nurse.nurseID}</td>
-                                                    <td>${nurse.firstName} ${nurse.lastName}</td>
-                                                    <td>${nurse.department}</td>
-                                                    <td>${nurse.contactNumber}</td>
-                                                    <td>${nurse.email}</td>
-                                                </tr>
-                                            </c:forEach>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
