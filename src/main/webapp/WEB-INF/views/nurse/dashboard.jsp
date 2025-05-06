@@ -707,7 +707,7 @@
                                         All Patients in System
                                     </c:when>
                                     <c:otherwise>
-                                        Patients You've Registered
+                                        Patients Diagnosis Table
                                     </c:otherwise>
                                 </c:choose>
                             </h5>
@@ -732,7 +732,6 @@
                                     <table class="table table-hover table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Photo</th>
                                                 <th>ID</th>
                                                 <th>Patient Name</th>
                                                 <th>Gender</th>
@@ -744,16 +743,6 @@
                                         <tbody>
                                             <c:forEach items="${registeredPatients}" var="patient" varStatus="loop">
                                                 <tr class="${patient.getCreatedBy() == nurse.getNurseID() ? 'registered-by-you' : ''}">
-                                                    <td>
-                                                        <c:choose>
-                                                            <c:when test="${not empty patient.profileImage}">
-                                                                <img src="${pageContext.request.contextPath}/${patient.profileImage}" class="patient-image" alt="Patient Photo">
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <img src="${pageContext.request.contextPath}/images/default-avatar.png" class="patient-image" alt="Default Photo">
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </td>
                                                     <td>${patient.patientID}</td>
                                                     <td>${patient.firstName} ${patient.lastName}</td>
                                                     <td>${patient.gender}</td>
