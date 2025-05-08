@@ -14,10 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet({"/doctor/diagnose"})
 public class DiagnosePatientServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(DiagnosePatientServlet.class.getName());
+    
     private DiagnosisDAO diagnosisDAO;
     private PatientDAO patientDAO;
 
@@ -28,6 +32,7 @@ public class DiagnosePatientServlet extends HttpServlet {
         patientDAO = new PatientDAO();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         
@@ -43,19 +48,39 @@ public class DiagnosePatientServlet extends HttpServlet {
             return;
         }
         
-        // Get the patient ID from the request
-        String patientId = request.getParameter("id");
-        if (patientId == null || patientId.isEmpty()) {
-            request.setAttribute("errorMessage", "No patient ID provided");
+        // Get diagnosis ID from request parameter
+        String diagnosisId = request.getParameter("id");
+        if (diagnosisId == null || diagnosisId.isEmpty()) {
+            request.setAttribute("errorMessage", "Missing diagnosis ID");
             request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
             return;
         }
         
         try {
-            int patientID = Integer.parseInt(patientId);
+            int diagnosisID = Integer.parseInt(diagnosisId);
+            
+            // Get the diagnosis information
+            Diagnosis diagnosis = diagnosisDAO.getDiagnosisById(diagnosisID);
+            
+            if (diagnosis == null) {
+                request.setAttribute("errorMessage", "Diagnosis not found");
+                request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+                return;
+            }
+            
+            // Check if diagnosis is referrable and pending - using isPending() method
+            if (!"Referrable".equals(diagnosis.getDiagnoStatus()) || !diagnosis.isPending()) {
+                if (!"Referrable".equals(diagnosis.getDiagnoStatus())) {
+                    request.setAttribute("errorMessage", "Cannot update non-referrable diagnosis");
+                } else {
+                    request.setAttribute("errorMessage", "This diagnosis has already been updated");
+                }
+                request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+                return;
+            }
             
             // Get the patient information
-            Patient patient = patientDAO.getPatientByID(patientID);
+            Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
             
             if (patient == null) {
                 request.setAttribute("errorMessage", "Patient not found");
@@ -63,76 +88,29 @@ public class DiagnosePatientServlet extends HttpServlet {
                 return;
             }
             
-            // Get diagnosis or create a new one if it doesn't exist
-            Diagnosis diagnosis = diagnosisDAO.getDiagnosisByPatientID(patientID);
-            
-            if (diagnosis == null) {
-                // Create a new diagnosis for this patient
-                diagnosis = new Diagnosis();
-                diagnosis.setPatientID(patientID);
-                
-                // Get the doctor ID from the session
-                int doctorId = 0;
-                if (session.getAttribute("doctor") != null) {
-                    doctorId = ((com.pms.model.Doctor) session.getAttribute("doctor")).getId();
-                } else {
-                    doctorId = user.getUserID();
-                }
-                
-                diagnosis.setDoctorID(doctorId);
-                
-                // Use the User ID as nurse ID temporarily (or fetch from patient record if possible)
-                // For a real system, you should store or retrieve the actual nurse ID
-                int nurseId = 0;
-                try {
-                    // Try to get the nurse ID associated with the patient
-                    nurseId = patient.getCreatedBy();
-                } catch (Exception e) {
-                    // If not available, use the first available nurse or a default value
-                    nurseId = 1; // Default to first nurse ID
-                }
-                
-                diagnosis.setNurseID(nurseId);
-                diagnosis.setDiagnoStatus("Referrable"); // Default to referrable
-                diagnosis.setResult("Pending"); // Default to pending
-                
-                // Set timestamps
-                Timestamp now = new Timestamp(System.currentTimeMillis());
-                diagnosis.setCreatedDate(now);
-                diagnosis.setUpdatedDate(now);
-                
-                // Add the diagnosis to the database
-                boolean added = diagnosisDAO.addDiagnosis(diagnosis);
-                
-                if (!added) {
-                    request.setAttribute("errorMessage", "Failed to create diagnosis record");
-                    request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
-                    return;
-                }
-                
-                // Get the newly created diagnosis with its ID
-                diagnosis = diagnosisDAO.getDiagnosisByPatientID(patientID);
-                
-                if (diagnosis == null) {
-                    request.setAttribute("errorMessage", "Failed to retrieve newly created diagnosis");
-                    request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
-                    return;
-                }
-            }
-            
             // Set attributes for the JSP
             request.setAttribute("patient", patient);
             request.setAttribute("diagnosis", diagnosis);
+            
+            // Get nurse name who created this diagnosis
+            String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+            request.setAttribute("nurseName", nurseName);
             
             // Forward to the diagnosis form JSP
             request.getRequestDispatcher("/WEB-INF/views/doctor/diagnose_form.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid patient ID");
+            LOGGER.log(Level.WARNING, "Invalid diagnosis ID format: " + diagnosisId);
+            request.setAttribute("errorMessage", "Invalid diagnosis ID format");
+            request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error accessing diagnosis", e);
+            request.setAttribute("errorMessage", "Error accessing diagnosis: " + e.getMessage());
             request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         
@@ -150,57 +128,71 @@ public class DiagnosePatientServlet extends HttpServlet {
         
         // Get form data
         String diagnosisIdParam = request.getParameter("diagnosisId");
-        String patientIdParam = request.getParameter("patientId");
         String diagnosisResult = request.getParameter("diagnosisResult");
         
-        if (diagnosisIdParam == null || patientIdParam == null || diagnosisResult == null) {
-            request.setAttribute("errorMessage", "Missing required parameters");
+        if (diagnosisIdParam == null || diagnosisIdParam.isEmpty() || diagnosisResult == null || diagnosisResult.isEmpty()) {
+            request.setAttribute("errorMessage", "Diagnosis ID and result are required");
             response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
             return;
         }
         
         try {
-            int diagnosisId = Integer.parseInt(diagnosisIdParam);
-            int patientId = Integer.parseInt(patientIdParam);
+            int diagnosisID = Integer.parseInt(diagnosisIdParam);
             
-            // Get the diagnosis from the database
-            Diagnosis diagnosis = diagnosisDAO.getDiagnosisByID(diagnosisId);
+            // Get current diagnosis
+            Diagnosis diagnosis = diagnosisDAO.getDiagnosisById(diagnosisID);
             
             if (diagnosis == null) {
-                session.setAttribute("errorMessage", "Diagnosis not found");
-                response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+                request.setAttribute("errorMessage", "Diagnosis not found");
+                request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
                 return;
             }
             
-            // Get the doctor ID from the session (User ID or Doctor ID based on your implementation)
-            int doctorId = 0;
-            if (session.getAttribute("doctor") != null) {
-                // If doctor object is in session, use its ID
-                doctorId = ((com.pms.model.Doctor) session.getAttribute("doctor")).getId();
-            } else {
-                // Otherwise, use the user ID as doctor ID
-                doctorId = user.getUserID();
+            // Check if this diagnosis is referrable and pending - using isPending() method
+            if (!"Referrable".equals(diagnosis.getDiagnoStatus()) || !diagnosis.isPending()) {
+                if (!"Referrable".equals(diagnosis.getDiagnoStatus())) {
+                    request.setAttribute("errorMessage", "Cannot update non-referrable diagnosis");
+                } else {
+                    request.setAttribute("errorMessage", "This diagnosis has already been updated");
+                }
+                request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+                return;
             }
             
             // Update the diagnosis
-            diagnosis.setDoctorID(doctorId);
             diagnosis.setResult(diagnosisResult);
             diagnosis.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
             
             boolean updated = diagnosisDAO.updateDiagnosis(diagnosis);
             
             if (updated) {
-                session.setAttribute("successMessage", "Diagnosis updated successfully");
+                // Set success message and redirect to dashboard
+                session.setAttribute("successMessage", "Diagnosis result updated successfully");
+                response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
             } else {
-                session.setAttribute("errorMessage", "Failed to update diagnosis");
+                // Handle update failure
+                request.setAttribute("errorMessage", "Failed to update diagnosis");
+                
+                // Get patient for form
+                Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
+                request.setAttribute("patient", patient);
+                request.setAttribute("diagnosis", diagnosis);
+                
+                // Get nurse name who created this diagnosis
+                String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                request.setAttribute("nurseName", nurseName);
+                
+                request.getRequestDispatcher("/WEB-INF/views/doctor/diagnose_form.jsp").forward(request, response);
             }
             
-            // Redirect back to the dashboard
-            response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
-            
         } catch (NumberFormatException e) {
-            session.setAttribute("errorMessage", "Invalid diagnosis or patient ID");
-            response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+            LOGGER.log(Level.WARNING, "Invalid diagnosis ID format", e);
+            request.setAttribute("errorMessage", "Invalid diagnosis ID format");
+            request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error updating diagnosis", e);
+            request.setAttribute("errorMessage", "Error updating diagnosis: " + e.getMessage());
+            request.getRequestDispatcher("/doctor/dashboard").forward(request, response);
         }
     }
 } 

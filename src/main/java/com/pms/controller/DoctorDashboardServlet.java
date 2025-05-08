@@ -21,10 +21,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/doctor/dashboard")
 public class DoctorDashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(DoctorDashboardServlet.class.getName());
+    
     private DoctorDAO doctorDAO;
     private PatientDAO patientDAO;
     private DiagnosisDAO diagnosisDAO;
@@ -61,84 +65,145 @@ public class DoctorDashboardServlet extends HttpServlet {
             
             // If doctor still null, handle the error case
             if (doctor == null) {
-                // Either create a temporary doctor object with minimal info
-                doctor = new Doctor();
-                doctor.setId(0); // Use setId with a default ID
-                doctor.setName(user.getUsername()); // Use setName
-                doctor.setSpecialization("General");
-                doctor.setUserId(user.getUserID()); // Use setUserId
-                
-                // Add a message to the request about the missing doctor record
                 request.setAttribute("errorMessage", "Doctor profile is incomplete. Please contact an administrator.");
-                
-                // Or you could instead redirect to a profile setup page
-                // response.sendRedirect(request.getContextPath() + "/doctor/setup-profile");
-                // return;
+                request.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
+                return;
             }
             
             session.setAttribute("doctor", doctor);
         }
         
-        // Initialize empty lists
-        List<Map<String, Object>> pendingCases = new ArrayList<>();
-        List<Map<String, Object>> confirmedCases = new ArrayList<>();
+        // Get success message from session if exists and then remove it
+        String successMessage = (String) session.getAttribute("successMessage");
+        if (successMessage != null) {
+            request.setAttribute("successMessage", successMessage);
+            session.removeAttribute("successMessage");
+        }
+        
+        // Initialize dashboard data
+        List<Map<String, Object>> pendingReferrals = new ArrayList<>();
+        List<Map<String, Object>> completedCases = new ArrayList<>();
+        List<Map<String, Object>> nonReferrableCases = new ArrayList<>();
+        int pendingCount = 0;
+        int confirmedCount = 0;
+        int referrableCount = 0;
+        int nursesCount = 0;
         
         try {
-            // Get pending patient cases (patients without diagnosis by this doctor)
-            List<Patient> patients = patientDAO.getPatientsWithoutDiagnosis();
+            // Get pending referrals (referrable cases with pending results)
+            List<Diagnosis> pendingDiagnoses = diagnosisDAO.getReferrableDiagnosesByDoctorID(doctor.getDoctorID());
             
-            for (Patient patient : patients) {
-                Map<String, Object> patientData = new HashMap<>();
-                patientData.put("patientID", patient.getPatientID());
-                patientData.put("patientName", patient.getFirstName() + " " + patient.getLastName());
-                patientData.put("patientAge", patient.getAge());
-                patientData.put("patientGender", patient.getGender());
-                patientData.put("symptoms", patient.getSymptoms());
+            for (Diagnosis diagnosis : pendingDiagnoses) {
+                Map<String, Object> caseData = new HashMap<>();
                 
-                // Get the name of the nurse who registered this patient
-                String nurseName = patientDAO.getRegisteringNurseName(patient.getPatientID());
-                patientData.put("registeredByNurse", nurseName);
+                // Get the patient details
+                Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
                 
-                pendingCases.add(patientData);
-            }
-            
-            if (doctor.getId() > 0) {
-                // Retrieve confirmed cases (patients with diagnosis)
-                List<Diagnosis> diagnoses = diagnosisDAO.getDiagnosesByDoctorID(doctor.getId());
-                
-                for (Diagnosis diagnosis : diagnoses) {
-                    Map<String, Object> caseDetails = new HashMap<>();
-                    Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
+                if (patient != null) {
+                    caseData.put("diagnosisID", diagnosis.getDiagnosisID());
+                    caseData.put("patientID", patient.getPatientID());
+                    caseData.put("patientName", patient.getFirstName() + " " + patient.getLastName());
+                    caseData.put("patientAge", patient.getAge());
+                    caseData.put("patientGender", patient.getGender());
+                    caseData.put("diagnosisStatus", diagnosis.getDiagnoStatus());
+                    caseData.put("diagnosisResult", diagnosis.getResult());
+                    caseData.put("createdDate", diagnosis.getCreatedDate());
                     
-                    if (patient != null) {
-                        caseDetails.put("patientID", patient.getPatientID());
-                        caseDetails.put("patientName", patient.getFirstName() + " " + patient.getLastName());
-                        caseDetails.put("patientAge", patient.getAge());
-                        caseDetails.put("diagnosis", diagnosis.getDiagnoStatus());
-                        caseDetails.put("treatment", diagnosis.getResult());
-                        caseDetails.put("diagnosisDate", diagnosis.getCreatedDate());
-                        
-                        confirmedCases.add(caseDetails);
+                    // Get the nurse who submitted this diagnosis
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
                     }
+                    caseData.put("submittedByNurse", nurseName);
+                    
+                    pendingReferrals.add(caseData);
+                    pendingCount++;
+                    referrableCount++;
                 }
-                
-                // Get nurses registered by this doctor
-                List<Nurse> nursesRegistered = nurseDAO.getNursesByDoctor(doctor.getId());
-                request.setAttribute("nursesRegistered", nursesRegistered);
-                request.setAttribute("nursesCount", nursesRegistered.size());
             }
+            
+            // Get completed referrable cases
+            List<Diagnosis> completedDiagnoses = diagnosisDAO.getCompletedReferrableDiagnosesByDoctorID(doctor.getDoctorID());
+            
+            for (Diagnosis diagnosis : completedDiagnoses) {
+                Map<String, Object> caseData = new HashMap<>();
+                
+                // Get the patient details
+                Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
+                
+                if (patient != null) {
+                    caseData.put("diagnosisID", diagnosis.getDiagnosisID());
+                    caseData.put("patientID", patient.getPatientID());
+                    caseData.put("patientName", patient.getFirstName() + " " + patient.getLastName());
+                    caseData.put("patientAge", patient.getAge());
+                    caseData.put("patientGender", patient.getGender());
+                    caseData.put("diagnosisStatus", diagnosis.getDiagnoStatus());
+                    caseData.put("diagnosisResult", diagnosis.getResult());
+                    caseData.put("createdDate", diagnosis.getCreatedDate());
+                    
+                    // Get the nurse who submitted this diagnosis
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    }
+                    caseData.put("submittedByNurse", nurseName);
+                    
+                    completedCases.add(caseData);
+                    confirmedCount++;
+                }
+            }
+            
+            // Get non-referrable cases (for read-only view)
+            List<Diagnosis> nonReferrableDiagnoses = diagnosisDAO.getNonReferrableDiagnoses();
+            
+            for (Diagnosis diagnosis : nonReferrableDiagnoses) {
+                Map<String, Object> caseData = new HashMap<>();
+                
+                // Get the patient details
+                Patient patient = patientDAO.getPatientByID(diagnosis.getPatientID());
+                
+                if (patient != null) {
+                    caseData.put("diagnosisID", diagnosis.getDiagnosisID());
+                    caseData.put("patientID", patient.getPatientID());
+                    caseData.put("patientName", patient.getFirstName() + " " + patient.getLastName());
+                    caseData.put("patientAge", patient.getAge());
+                    caseData.put("patientGender", patient.getGender());
+                    caseData.put("diagnosisStatus", diagnosis.getDiagnoStatus());
+                    caseData.put("diagnosisResult", diagnosis.getResult());
+                    caseData.put("createdDate", diagnosis.getCreatedDate());
+                    
+                    // Get the nurse who submitted this diagnosis
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    }
+                    caseData.put("submittedByNurse", nurseName);
+                    
+                    nonReferrableCases.add(caseData);
+                }
+            }
+            
+            // Get count of nurses registered in the hospital
+            List<Nurse> nurses = nurseDAO.getAllNurses();
+            nursesCount = nurses.size();
+            
         } catch (Exception e) {
-            // Log the error and add an error message to the request
-            e.printStackTrace();
-            request.setAttribute("errorMessage", "Error retrieving patient data: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error retrieving dashboard data", e);
+            request.setAttribute("errorMessage", "Error retrieving dashboard data: " + e.getMessage());
         }
         
         // Set attributes for the JSP
         request.setAttribute("doctor", doctor);
-        request.setAttribute("pendingCases", pendingCases);
-        request.setAttribute("confirmedCases", confirmedCases);
-        request.setAttribute("pendingCasesCount", pendingCases.size());
-        request.setAttribute("confirmedCasesCount", confirmedCases.size());
+        request.setAttribute("pendingReferrals", pendingReferrals);
+        request.setAttribute("completedCases", completedCases);
+        request.setAttribute("nonReferrableCases", nonReferrableCases);
+        request.setAttribute("pendingCount", pendingCount);
+        request.setAttribute("confirmedCount", confirmedCount);
+        request.setAttribute("referrableCount", referrableCount);
+        request.setAttribute("nursesCount", nursesCount);
         
         // Forward to the dashboard JSP
         request.getRequestDispatcher("/WEB-INF/views/doctor/doctor_dashboard.jsp").forward(request, response);

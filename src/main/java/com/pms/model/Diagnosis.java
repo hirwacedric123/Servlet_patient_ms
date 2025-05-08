@@ -148,7 +148,7 @@ public class Diagnosis {
      * @return whether the diagnosis result is pending
      */
     public boolean isPending() {
-        return "Pending".equalsIgnoreCase(result);
+        return result != null && result.contains("Pending");
     }
     
     /**

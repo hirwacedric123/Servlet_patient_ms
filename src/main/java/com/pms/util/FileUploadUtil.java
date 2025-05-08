@@ -10,9 +10,20 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import javax.servlet.http.Part;
+import javax.servlet.ServletContext;
 
 public class FileUploadUtil {
     private static final String UPLOAD_DIRECTORY = "patient_images";
+    private static ServletContext servletContext;
+    
+    /**
+     * Set the ServletContext for file operations
+     * 
+     * @param context The ServletContext
+     */
+    public static void setServletContext(ServletContext context) {
+        servletContext = context;
+    }
     
     /**
      * Saves an uploaded file to the server's file system
@@ -31,33 +42,90 @@ public class FileUploadUtil {
         // Generate a unique file name to prevent collisions
         String fileName = UUID.randomUUID().toString() + getFileExtension(part);
         
-        // Create the upload directory if it doesn't exist
-        String applicationPath = getApplicationPath();
-        String uploadPath = applicationPath + File.separator + UPLOAD_DIRECTORY;
+        // Try multiple potential upload paths
+        String realPath = null;
+        File uploadDir = null;
         
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
+        // First attempt: Try using the servlet context's real path if available
+        if (servletContext != null) {
+            realPath = servletContext.getRealPath("/" + UPLOAD_DIRECTORY);
+            System.out.println("Trying servlet context real path: " + realPath);
+            if (realPath != null) {
+                uploadDir = new File(realPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+                if (uploadDir.exists() && uploadDir.canWrite()) {
+                    System.out.println("Using servlet context real path for upload: " + realPath);
+                } else {
+                    uploadDir = null; // Reset for next attempt
+                }
+            }
+        }
+        
+        // Second attempt: Try using the catalina base webapps directory
+        if (uploadDir == null) {
+            String catalinaBase = System.getProperty("catalina.base");
+            System.out.println("Catalina base: " + catalinaBase);
+            
+            if (catalinaBase != null) {
+                realPath = catalinaBase + File.separator + "webapps" + File.separator + UPLOAD_DIRECTORY;
+                System.out.println("Trying catalina webapps path: " + realPath);
+                uploadDir = new File(realPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+                if (uploadDir.exists() && uploadDir.canWrite()) {
+                    System.out.println("Using catalina webapps path for upload: " + realPath);
+                } else {
+                    uploadDir = null; // Reset for next attempt
+                }
+            }
+        }
+        
+        // Third attempt: Try using the ROOT webapp directory
+        if (uploadDir == null) {
+            String catalinaBase = System.getProperty("catalina.base");
+            if (catalinaBase != null) {
+                realPath = catalinaBase + File.separator + "webapps" + File.separator + "ROOT" + 
+                          File.separator + UPLOAD_DIRECTORY;
+                System.out.println("Trying ROOT webapp path: " + realPath);
+                uploadDir = new File(realPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+                if (uploadDir.exists() && uploadDir.canWrite()) {
+                    System.out.println("Using ROOT webapp path for upload: " + realPath);
+                } else {
+                    uploadDir = null; // Reset for next attempt
+                }
+            }
+        }
+        
+        // Fourth attempt: Try using the user's temp directory
+        if (uploadDir == null) {
+            realPath = System.getProperty("java.io.tmpdir") + File.separator + UPLOAD_DIRECTORY;
+            System.out.println("Trying temp directory path: " + realPath);
+            uploadDir = new File(realPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            if (uploadDir.exists() && uploadDir.canWrite()) {
+                System.out.println("Using temp directory for upload: " + realPath);
+            } else {
+                throw new IOException("Failed to create writable upload directory in any location");
+            }
         }
         
         // Save the file
         try (InputStream input = part.getInputStream()) {
-            Path filePath = Paths.get(uploadPath, fileName);
+            Path filePath = Paths.get(realPath, fileName);
             Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("File saved successfully at: " + filePath);
             
-            // Return the relative path to the file (to be stored in the database)
-            return UPLOAD_DIRECTORY + "/" + fileName;
+            // Return the image path
+            return "/patient_images/" + fileName;
         }
-    }
-    
-    /**
-     * Gets the application's absolute path for file operations
-     * 
-     * @return The application's absolute path
-     */
-    private static String getApplicationPath() {
-        // Get the absolute path to the application
-        return System.getProperty("catalina.base") + File.separator + "webapps";
     }
     
     /**
@@ -91,10 +159,54 @@ public class FileUploadUtil {
             return false;
         }
         
-        String applicationPath = getApplicationPath();
-        Path filePath = Paths.get(applicationPath, relativePath);
+        // Remove leading slash if present
+        if (relativePath.startsWith("/")) {
+            relativePath = relativePath.substring(1);
+        }
         
+        // Try multiple locations
+        boolean deleted = false;
+        
+        // Try servlet context real path
+        if (servletContext != null) {
+            String realPath = servletContext.getRealPath("/" + relativePath);
+            if (realPath != null) {
+                try {
+                    Path filePath = Paths.get(realPath);
+                    deleted = Files.deleteIfExists(filePath);
+                    if (deleted) {
+                        return true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        // Try catalina base
+        String catalinaBase = System.getProperty("catalina.base");
+        if (catalinaBase != null) {
+            try {
+                Path filePath = Paths.get(catalinaBase, "webapps", relativePath);
+                deleted = Files.deleteIfExists(filePath);
+                if (deleted) {
+                    return true;
+                }
+                
+                // Try ROOT webapp
+                filePath = Paths.get(catalinaBase, "webapps", "ROOT", relativePath);
+                deleted = Files.deleteIfExists(filePath);
+                if (deleted) {
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // Try temp directory
         try {
+            Path filePath = Paths.get(System.getProperty("java.io.tmpdir"), relativePath);
             return Files.deleteIfExists(filePath);
         } catch (IOException e) {
             e.printStackTrace();
