@@ -518,4 +518,70 @@ public class NurseDAO {
         
         return nurses;
     }
+    
+    /**
+     * Get nurse name by nurse ID
+     * 
+     * @param nurseID the ID of the nurse
+     * @return the full name of the nurse
+     */
+    public String getNurseNameByID(int nurseID) {
+        String sql = "SELECT FirstName, LastName FROM Nurses WHERE NurseID = ?";
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String nurseName = "Unknown";
+        
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, nurseID);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                nurseName = rs.getString("FirstName") + " " + rs.getString("LastName");
+            } else {
+                // Try looking up by UserID if NurseID doesn't match
+                String userSql = "SELECT FirstName, LastName FROM Users WHERE UserID = ? AND Role = 'Nurse'";
+                PreparedStatement userStmt = null;
+                ResultSet userRs = null;
+                
+                try {
+                    userStmt = connection.prepareStatement(userSql);
+                    userStmt.setInt(1, nurseID);
+                    userRs = userStmt.executeQuery();
+                    
+                    if (userRs.next()) {
+                        nurseName = userRs.getString("FirstName") + " " + userRs.getString("LastName");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (userRs != null) {
+                        try { userRs.close(); } catch (SQLException e) { e.printStackTrace(); }
+                    }
+                    if (userStmt != null) {
+                        try { userStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        return nurseName;
+    }
 } 

@@ -110,7 +110,11 @@ public class DoctorDashboardServlet extends HttpServlet {
                     caseData.put("createdDate", diagnosis.getCreatedDate());
                     
                     // Get the nurse who submitted this diagnosis
-                    String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    }
                     caseData.put("submittedByNurse", nurseName);
                     
                     pendingReferrals.add(caseData);
@@ -139,7 +143,11 @@ public class DoctorDashboardServlet extends HttpServlet {
                     caseData.put("createdDate", diagnosis.getCreatedDate());
                     
                     // Get the nurse who submitted this diagnosis
-                    String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    }
                     caseData.put("submittedByNurse", nurseName);
                     
                     completedCases.add(caseData);
@@ -167,7 +175,11 @@ public class DoctorDashboardServlet extends HttpServlet {
                     caseData.put("createdDate", diagnosis.getCreatedDate());
                     
                     // Get the nurse who submitted this diagnosis
-                    String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    }
                     caseData.put("submittedByNurse", nurseName);
                     
                     nonReferrableCases.add(caseData);

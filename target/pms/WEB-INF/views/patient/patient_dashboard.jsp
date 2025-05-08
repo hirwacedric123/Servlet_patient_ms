@@ -11,106 +11,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
-        .diagnosis-card {
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            border: none;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-color: #f8f9fa;
+            --dark-color: #222;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
         }
-        .diagnosis-card:hover {
-            transform: translateY(-5px);
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            overflow-x: hidden;
         }
-        .diagnosis-card.pending {
-            border-left: 4px solid #ffc107;
-        }
-        .diagnosis-card.confirmed {
-            border-left: 4px solid #28a745;
-        }
-        .diagnosis-card.negative {
-            border-left: 4px solid #6c757d;
-        }
-        .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .patient-info-text {
-            color: #495057;
-        }
-        .health-widget {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 10px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            min-height: 180px;
-        }
-        .health-widget:hover {
-            transform: translateY(-5px);
-        }
-        .health-widget-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        .health-widget.referrable {
-            background: linear-gradient(to bottom right, #ff7e7e, #ef5350);
-            color: white;
-        }
-        .health-widget.not-referrable {
-            background: linear-gradient(to bottom right, #a8e063, #56ab2f);
-            color: white;
-        }
-        .health-widget.pending {
-            background: linear-gradient(to bottom right, #ffeb3b, #ffa000);
-            color: white;
-        }
-        .health-widget.negative {
-            background: linear-gradient(to bottom right, #6c757d, #495057);
-            color: white;
-        }
-        .health-widget.confirmed {
-            background: linear-gradient(to bottom right, #4caf50, #2e7d32);
-            color: white;
-        }
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-        .timeline:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 10px;
-            bottom: 0;
-            width: 2px;
-            background: #e9ecef;
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 20px;
-        }
-        .timeline-item:before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            top: 0;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #007bff;
-        }
-        .timeline-date {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-        .animated-card {
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        
         /* Sidebar styles */
         .sidebar {
             position: fixed;
@@ -119,28 +36,245 @@
             left: 0;
             z-index: 100;
             padding: 48px 0 0;
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-            background-color: #343a40;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            overflow-y: auto;
         }
+        
+        .sidebar:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C20,0 50,0 100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+            pointer-events: none;
+        }
+        
         .sidebar-link {
             display: block;
-            padding: 0.5rem 1rem;
-            color: white;
+            padding: 0.8rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: all 0.3s;
+            border-left: 4px solid transparent;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 5px;
+            font-weight: 500;
         }
+        
         .sidebar-link:hover {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
+            border-left: 4px solid var(--accent-color);
+            transform: translateX(5px);
         }
+        
         .sidebar-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.15);
             color: white;
+            border-left: 4px solid var(--accent-color);
+            font-weight: 600;
         }
+        
         .content-area {
             margin-left: 250px;
-            padding: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
         }
+
+        /* Card Styles */
+        .card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border: none;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C30,40 70,40 100,0 L100,100 0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+        }
+        
+        .card-body {
+            padding: 1.8rem;
+            background-color: white;
+        }
+        
+        /* Welcome Banner */
+        .welcome-banner {
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C30,40 70,40 100,0 L100,100 0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100% 100%;
+        }
+        
+        .welcome-banner h2 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            position: relative;
+            font-size: 1.1rem;
+        }
+        
+        .welcome-icon {
+            color: rgba(255, 255, 255, 0.9);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatIcon {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .health-widget {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            min-height: 180px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .health-widget:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .health-widget-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+        }
+        
+        .health-widget h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .health-widget h5 {
+            font-weight: 600;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+        
+        .health-widget.pending {
+            background: linear-gradient(to bottom right, var(--warning-color), #ffca28);
+            color: white;
+        }
+        
+        .health-widget.not-referrable,
+        .health-widget.negative {
+            background: linear-gradient(to bottom right, #6c757d, #495057);
+            color: white;
+        }
+        
+        .health-widget.confirmed {
+            background: linear-gradient(to bottom right, var(--success-color), #66bb6a);
+            color: white;
+        }
+        
+        .patient-info-text {
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .diagnosis-card {
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border: none;
+        }
+        
+        .diagnosis-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .diagnosis-card.pending {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .diagnosis-card.confirmed {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .diagnosis-card.negative {
+            border-left: 4px solid #6c757d;
+        }
+        
+        /* Animation classes */
+        .animated-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fadeIn {
+            animation: fadeIn 0.5s ease;
+        }
+        
         @media (max-width: 767.98px) {
             .sidebar {
                 position: static;
@@ -201,27 +335,30 @@
 
                 <!-- Error message if present -->
                 <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-warning animated-card">
+                    <div class="alert alert-warning fadeIn">
                         <i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}
                     </div>
                 </c:if>
 
                 <!-- Welcome message -->
-                <div class="welcome-banner mb-4 animated-card">
+                <div class="welcome-banner">
                     <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h2><i class="fas fa-user me-2"></i>Welcome, ${patient.firstName} ${patient.lastName}!</h2>
-                            <p class="mb-0">Here's your health information at a glance.</p>
+                        <div class="col-md-1 text-center">
+                            <i class="fas fa-user fa-3x welcome-icon"></i>
                         </div>
-                        <div class="col-md-4 text-md-end">
+                        <div class="col-md-9">
+                            <h2>Welcome, ${patient.firstName} ${patient.lastName}!</h2>
+                            <p>Here's your health information at a glance.</p>
+                        </div>
+                        <div class="col-md-2 text-end">
                             <c:if test="${not empty patient.profileImage}">
                                 <img src="${pageContext.request.contextPath}${patient.profileImage}" 
                                      alt="Patient Photo" class="img-thumbnail rounded-circle" 
-                                     style="width: 100px; height: 100px; object-fit: cover;">
+                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                             </c:if>
                             <c:if test="${empty patient.profileImage}">
                                 <div class="text-center">
-                                    <i class="fas fa-user-circle text-secondary" style="font-size: 5rem;"></i>
+                                    <i class="fas fa-user-circle text-white" style="font-size: 4rem; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));"></i>
                                 </div>
                             </c:if>
                         </div>
@@ -231,7 +368,7 @@
                 <!-- Health Status Widgets -->
                 <div class="row mb-4">
                     <div class="col-md-4 mb-4">
-                        <div class="health-widget pending shadow-sm rounded animated-card">
+                        <div class="health-widget pending">
                             <i class="fas fa-clock health-widget-icon"></i>
                             <h3>${pendingCount}</h3>
                             <h5>Pending Diagnoses</h5>
@@ -239,7 +376,7 @@
                     </div>
                     
                     <div class="col-md-4 mb-4">
-                        <div class="health-widget confirmed shadow-sm rounded animated-card">
+                        <div class="health-widget confirmed">
                             <i class="fas fa-check-circle health-widget-icon"></i>
                             <h3>${confirmedCount}</h3>
                             <h5>Confirmed Diagnoses</h5>
@@ -247,7 +384,7 @@
                     </div>
                     
                     <div class="col-md-4 mb-4">
-                        <div class="health-widget negative shadow-sm rounded animated-card">
+                        <div class="health-widget negative">
                             <i class="fas fa-shield-alt health-widget-icon"></i>
                             <h3>${negativeCount}</h3>
                             <h5>Not Referable</h5>
@@ -256,7 +393,7 @@
                 </div>
 
                 <!-- Patient Information Card -->
-                <div class="card mb-4 shadow-sm animated-card">
+                <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Patient Profile</h5>
                     </div>
@@ -288,8 +425,8 @@
                                         <p><strong>Address:</strong> <span class="patient-info-text">${patient.address}</span></p>
                                     </div>
                                 </div>
-                                <div class="text-end mt-2">
-                                    <a href="${pageContext.request.contextPath}/patient/profile" class="btn btn-outline-primary btn-sm">
+                                <div class="text-end mt-3">
+                                    <a href="${pageContext.request.contextPath}/patient/profile" class="btn btn-primary">
                                         <i class="fas fa-user-edit me-1"></i>Edit Profile
                                     </a>
                                 </div>
@@ -299,7 +436,7 @@
                 </div>
 
                 <!-- Recent Diagnoses -->
-                <div class="card mb-4 shadow-sm animated-card">
+                <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Diagnosis Status</h5>
                     </div>
@@ -380,7 +517,7 @@
                 <div class="row">
                     <c:forEach var="diagnosis" items="${diagnoses}" varStatus="status">
                         <div class="col-md-6 mb-4">
-                            <div class="card diagnosis-card ${diagnosis.isPending ? 'pending' : diagnosis.isNegative ? 'negative' : 'confirmed'} shadow-sm animated-card">
+                            <div class="card diagnosis-card ${diagnosis.isPending ? 'pending' : diagnosis.isNegative ? 'negative' : 'confirmed'}">
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <c:choose>

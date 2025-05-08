@@ -2,9 +2,11 @@ package com.pms.controller;
 
 import com.pms.dao.DiagnosisDAO;
 import com.pms.dao.PatientDAO;
+import com.pms.dao.NurseDAO;
 import com.pms.model.Diagnosis;
 import com.pms.model.Patient;
 import com.pms.model.User;
+import com.pms.model.Nurse;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,10 +25,12 @@ public class PatientDashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private PatientDAO patientDAO;
     private DiagnosisDAO diagnosisDAO;
+    private NurseDAO nurseDAO;
 
     public void init() {
         patientDAO = new PatientDAO();
         diagnosisDAO = new DiagnosisDAO();
+        nurseDAO = new NurseDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -94,7 +98,12 @@ public class PatientDashboardServlet extends HttpServlet {
                     detail.put("isConfirmed", isConfirmed);
                     
                     // Get nurse and doctor information if available
-                    String nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    String nurseName = nurseDAO.getNurseNameByID(diagnosis.getNurseID());
+                    if (nurseName == null || nurseName.trim().isEmpty() || "Unknown".equals(nurseName)) {
+                        // If NurseDAO doesn't return a name, fallback to PatientDAO
+                        nurseName = patientDAO.getNurseNameByID(diagnosis.getNurseID());
+                    }
+                    
                     String doctorName = "";
                     if (diagnosis.getDoctorID() > 0) {
                         doctorName = patientDAO.getDoctorNameByID(diagnosis.getDoctorID());
