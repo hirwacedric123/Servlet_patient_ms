@@ -158,4 +158,26 @@ public class DoctorDAO {
         }
         return doctor;
     }
+
+    /**
+     * Get doctor's full name by doctor ID
+     * @param doctorID the ID of the doctor
+     * @return doctor's full name or "Unknown" if not found
+     */
+    public String getDoctorNameByID(int doctorID) {
+        String doctorName = "Unknown";
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT FirstName, LastName FROM doctors WHERE DoctorID=?");
+            ps.setInt(1, doctorID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String firstName = rs.getString("FirstName");
+                String lastName = rs.getString("LastName");
+                doctorName = firstName + " " + lastName;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctorName;
+    }
 } 

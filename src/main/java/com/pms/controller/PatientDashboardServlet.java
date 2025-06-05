@@ -3,6 +3,7 @@ package com.pms.controller;
 import com.pms.dao.DiagnosisDAO;
 import com.pms.dao.PatientDAO;
 import com.pms.dao.NurseDAO;
+import com.pms.dao.DoctorDAO;
 import com.pms.model.Diagnosis;
 import com.pms.model.Patient;
 import com.pms.model.User;
@@ -26,11 +27,13 @@ public class PatientDashboardServlet extends HttpServlet {
     private PatientDAO patientDAO;
     private DiagnosisDAO diagnosisDAO;
     private NurseDAO nurseDAO;
+    private DoctorDAO doctorDAO;
 
     public void init() {
         patientDAO = new PatientDAO();
         diagnosisDAO = new DiagnosisDAO();
         nurseDAO = new NurseDAO();
+        doctorDAO = new DoctorDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -106,7 +109,11 @@ public class PatientDashboardServlet extends HttpServlet {
                     
                     String doctorName = "";
                     if (diagnosis.getDoctorID() > 0) {
-                        doctorName = patientDAO.getDoctorNameByID(diagnosis.getDoctorID());
+                        doctorName = doctorDAO.getDoctorNameByID(diagnosis.getDoctorID());
+                        // If not found in the doctors table, try the users table as a fallback
+                        if (doctorName == null || doctorName.trim().isEmpty() || "Unknown".equals(doctorName)) {
+                            doctorName = patientDAO.getDoctorNameByID(diagnosis.getDoctorID());
+                        }
                     }
                     
                     detail.put("nurseName", nurseName);
